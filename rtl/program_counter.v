@@ -6,7 +6,7 @@ module program_counter
     input   wire                    clk             ,
     input   wire                    i_rst_n         ,
     input   wire    [NB_WIDTH-1:0]  i_addr2jump     ,
-    input   wire                    i_valid         ,
+    input   wire                    i_valid         , // pc <= addr2jump (saltos)
     output  reg     [NB_WIDTH-1:0]  o_pcounter      ,
     output  reg     [NB_WIDTH-1:0]  o_pcounter4     ,
     input   wire                    i_halt          ,
