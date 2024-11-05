@@ -1,34 +1,63 @@
 module register_file
 #(
     parameter NB_DATA = 32,
-    parameter NB_REGS = 32,
-    parameter NB_ADDR = 12
+    parameter NB_ADDR = 5,
+    parameter NB_REG  = 1
 )(
-    input wire clk                                                                              ,
-    input wire i_rst_n                                                                          ,
-    input wire i_we                                                                             ,
-    input wire [NB_DATA-1:0] i_data                                                             ,
-    input wire [NB_ADDR-1:0] i_addr_w                                                           ,
-    //input wire [NB_ADDR-1:0] i_addr_a,
-    //input wire [NB_ADDR-1:0] i_addr_b,
+    input wire              clk                         ,
+    input wire              i_rst_n                     ,
+    
+    //write
+    input wire              i_we                        ,
+    input wire  [NB_ADDR:0] i_wr_addr                   ,
+    input wire  [NB_DATA:0] i_wr_data                   ,
+    
+    //read               
+    input wire  [NB_ADDR:0] i_rd_addr1                  ,
+    input wire  [NB_ADDR:0] i_rd_addr2                  ,
 
-    output wire [NB_DATA-1:0] o_data
-
+    output wire [NB_DATA:0] o_rd_data1                  ,
+    output wire [NB_DATA:0] o_rd_data2
 );
-    localparam DATA_WIDTH = NB_DATA/4                                                           ;
 
-    reg [DATA_WIDTH-1:0] regs [2**NB_ADDR-1:0]                                                  ; 
+    reg [NB_DATA-1:0] reg_file[2**NB_ADDR:0]            ;
+    reg [NB_DATA-1:0] rd_data1, rd_data2                ;
+    integer i;
 
-    always @(posedge clk) begin
-
-        else if(i_we) begin
-            regs[i_addr_w  ] <= i_data[NB_DATA-1: NB_DATA - 1 - DATA_WIDTH  ]                   ;
-            regs[i_addr_w+1] <= i_data[23       :   16                      ]                   ;
-            regs[i_addr_w+2] <= i_data[15       :   8                       ]                   ;
-            regs[i_addr_w+3] <= i_data[7        :   0                       ]                   ;
+    //! writing block
+    always @(negedge clk or negedge i_rst_n)
+    begin
+        if(~i_rst_n)
+        begin
+            for( i = 0; i < 2**NB_ADDR; i++)
+            begin
+                reg_file[i] <= 0                        ;
+            end
+        end
+        else
+        begin
+            if(i_we)
+            begin
+                reg_file[i_wr_addr] <= i_wr_data        ;
+            end
+        end
+    end
+    //! reading block
+    always @(posedge clk or negedge i_rst_n)
+    begin
+        if(~i_rst_n)
+        begin
+            o_rd_data1 <= 0                             ;
+            o_rd_data2 <= 0                             ;
+        end
+        else
+        begin
+            rd_data1 <= reg_file[i_rd_addr1]            ;
+            rd_data2 <= reg_file[i_rd_addr2]            ;
         end
     end
 
-    assign o_data = {regs[i_addr_w], regs[i_addr_w+1], regs[i_addr_w+2], regs[i_addr_w+3]}      ;
+    assign o_rd_data1 = rd_data1                        ;
+    assign o_rd_data2 = rd_data2                        ;
 
 endmodule
