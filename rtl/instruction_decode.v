@@ -28,7 +28,7 @@ module instruction_decode
 );
 
     wire [31:0] wire_D1, wire_D2;
-    wire [4v:0] rs, rt, rd;
+    wire [4 :0] rs, rt, rd;
     register_file #()
     regFile1(
         .clk        (clk        )           ,
