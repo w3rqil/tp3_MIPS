@@ -35,6 +35,7 @@ module control_unit
     always @(*) begin
 
         case (i_opcode)
+            r_immediate = 1'b0;
             R_TYPE: begin
                 r_regDst    = 1'b1      ;
                 r_ALUSrc    = 1'b0      ;
@@ -89,6 +90,7 @@ module control_unit
                 r_branch    = 1'b0      ;
                 r_jump      = 1'b0      ;
                 r_aluOP     = 2'b00     ;
+                r_immediate = 1'b0      ;
             end
             J_TYPE: begin
                 r_regDst    = 1'b0      ; //x
