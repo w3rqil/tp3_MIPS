@@ -25,7 +25,7 @@ module instruction_decode
     output reg [NB_DATA-1:0]   o_immediat                     ,
     output reg [5 :0]   o_opcode                        ,
     output reg [4 :0]   o_shamt                         ,
-    output reg [4 :0]   o_func                          ,
+    output reg [5 :0]   o_func                          ,
     output reg [15:0]   o_addr                          ,//jmp
 
     //ctrl unit
