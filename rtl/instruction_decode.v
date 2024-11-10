@@ -22,7 +22,7 @@ module instruction_decode
     output reg [NB_DATA-1:0]   o_reg_DA                        ,
     output reg [NB_DATA-1:0]   o_reg_DB                        ,
 
-    output reg [NB_DATA-1:0]   o_immediat                     ,
+    output reg [NB_DATA-1:0]   o_immediate                     ,
     output reg [5 :0]   o_opcode                        ,
     output reg [4 :0]   o_shamt                         ,
     output reg [5 :0]   o_func                          ,
@@ -35,7 +35,7 @@ module instruction_decode
     output wire         o_mem2Reg                       , 
     output wire         o_memRead                       , 
     output wire         o_memWrite                      , 
-    output wire         o_immediate                      , 
+    output wire         o_immediate_flag                      , 
     output wire         o_regWrite                      ,
     output wire [1:0]   o_aluSrc                        ,
     output wire [1:0]   o_aluOp
@@ -119,7 +119,7 @@ module instruction_decode
                 o_func     <= i_instruction [5 :0   ]       ;
                 o_addr     <= i_instruction [15:0   ]       ;
                 
-                o_immediat <= w_immediat                   ;
+                o_immediate <= w_immediat                   ;
             // ctrl unit
             //reg_opcode <= i_instruction [31:25  ]       ;
             //reg_funct  <= i_instruction [5:0    ]       ;
@@ -134,7 +134,7 @@ module instruction_decode
     assign o_mem2Reg  = w_mem2Reg                           ;
     assign o_memRead  = w_memRead                           ;
     assign o_memWrite = w_memWrite                          ;
-//assign o_immediat= w_immediate                         ;
+    assign o_immediate_flag= w_immediate                         ;
     assign o_regWrite = w_regWrite                          ;
     assign o_aluSrc   = w_aluSrc                            ;
     assign o_aluOp    = w_aluOp                             ;
