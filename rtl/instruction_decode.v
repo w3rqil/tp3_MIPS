@@ -20,7 +20,7 @@ module instruction_decode
     output reg [31:0]   o_reg_DA                        ,
     output reg [31:0]   o_reg_DB                        ,
 
-    output reg [31:0]   o_immediate                     ,
+    output reg [31:0]   o_immediat                     ,
     output reg [5 :0]   o_opcode                        ,
     output reg [4 :0]   o_shamt                         ,
     output reg [4 :0]   o_func                          ,
@@ -33,7 +33,7 @@ module instruction_decode
     output wire         o_mem2Reg                       , 
     output wire         o_memRead                       , 
     output wire         o_memWrite                      , 
-    output wire         o_immediat                     , 
+    output wire         o_immediate                      , 
     output wire         o_regWrite                      ,
     output wire [1:0]   o_aluSrc                        ,
     output wire [1:0]   o_aluOp
@@ -93,16 +93,16 @@ module instruction_decode
 
     always @(posedge clk or negedge i_rst_n) begin
         if(!i_rst_n) begin
-            o_reg_DA <= 32'b0                          ;
-            o_reg_DB <= 32'b0                          ;
-            o_rd     <= 5'b0                           ;
-            o_rs     <= 5'b0                           ;
-            o_rt     <= 5'b0                           ;
-            r_immediate<= 16'b0                        ;
-            o_opcode   <= 6'b0                         ;
-            o_shamt    <= 5'b0                         ;
-            o_func     <= 6'b0                         ;
-            o_addr     <= 16'b0                        ;
+            o_reg_DA <= 32'b0                               ;
+            o_reg_DB <= 32'b0                               ;
+            o_rd     <= 5'b0                                ;
+            o_rs     <= 5'b0                                ;
+            o_rt     <= 5'b0                                ;
+            r_immediate<= 16'b0                             ;
+            o_opcode   <= 6'b0                              ;
+            o_shamt    <= 5'b0                              ;
+            o_func     <= 6'b0                              ;
+            o_addr     <= 16'b0                             ;
 
         end else begin
             if(!i_stall) begin
@@ -125,19 +125,19 @@ module instruction_decode
         end
     end
 
-    assign o_jump     = w_jump                          ;
-    assign o_branch   = w_branch                        ;
-    assign o_regDst   = w_regDst                        ;
-    assign o_mem2Reg  = w_mem2Reg                       ;
-    assign o_memRead  = w_memRead                       ;
-    assign o_memWrite = w_memWrite                      ;
-    assign o_immediate= w_immediate                     ;
-    assign o_regWrite = w_regWrite                      ;
-    assign o_aluSrc   = w_aluSrc                        ;
-    assign o_aluOp    = w_aluOp                         ;
+    assign o_jump     = w_jump                              ;
+    assign o_branch   = w_branch                            ;
+    assign o_regDst   = w_regDst                            ;
+    assign o_mem2Reg  = w_mem2Reg                           ;
+    assign o_memRead  = w_memRead                           ;
+    assign o_memWrite = w_memWrite                          ;
+    assign o_immediat= w_immediate                         ;
+    assign o_regWrite = w_regWrite                          ;
+    assign o_aluSrc   = w_aluSrc                            ;
+    assign o_aluOp    = w_aluOp                             ;
 
-    assign rs = i_instruction[25:21]                    ;
-    assign rt = i_instruction[20:16]                    ;
-    assign rd = i_instruction[15:11]                    ;
+    assign rs = i_instruction[25:21]                        ;
+    assign rt = i_instruction[20:16]                        ;
+    assign rd = i_instruction[15:11]                        ;
 
 endmodule
