@@ -7,6 +7,7 @@ module instruction_decode
     input wire [31:0]   i_instruction                   ,
     input wire [31:0]   i_pcounter4                     ,
     input wire          i_we_wb                         ,
+    input wire          i_we                            ,
     input wire          i_wr_addr                       ,
     input wire [31:0]   i_wr_data_WB                    ,
     input wire          i_stall                         ,
@@ -32,7 +33,7 @@ module instruction_decode
     output wire         o_mem2Reg                       , 
     output wire         o_memRead                       , 
     output wire         o_memWrite                      , 
-    output wire         o_immediate                     , 
+    output wire         o_immediat                     , 
     output wire         o_regWrite                      ,
     output wire [1:0]   o_aluSrc                        ,
     output wire [1:0]   o_aluOp
@@ -53,8 +54,8 @@ module instruction_decode
     regFile1(
         .clk        (clk        )                       ,
         .i_rst_n    (i_rst_n    )                       ,
-        .i_we       (i_we       )                       ,
-        .i_wr_addr  (i_wr_addr  )                       ,
+        .i_we       (i_we       )                       , // todo: poner en 0
+        .i_wr_addr  (i_wr_addr  )                       , // todo: poner en 0
         .i_wr_data  (i_pcounter4)                       ,
         .i_rd_addr1 (rs)                                ,
         .i_rd_addr2 (rt)                                ,
@@ -79,7 +80,6 @@ module instruction_decode
         .o_regWrite (w_regWrite ),
         .o_memWrite (w_memWrite ),
         .o_immediate(w_immediate)
-
     );
 
     sign_extension #()
@@ -88,34 +88,41 @@ module instruction_decode
         .i_immediate_flag   (w_immediate),
         .i_immediate_value  (r_immediate),
 
-        .o_data             (o_immediate)
+        .o_data             (o_immediat)
     );
 
     always @(posedge clk or negedge i_rst_n) begin
         if(!i_rst_n) begin
-            
+            o_reg_DA <= 32'b0                          ;
+            o_reg_DB <= 32'b0                          ;
+            o_rd     <= 5'b0                           ;
+            o_rs     <= 5'b0                           ;
+            o_rt     <= 5'b0                           ;
+            r_immediate<= 16'b0                        ;
+            o_opcode   <= 6'b0                         ;
+            o_shamt    <= 5'b0                         ;
+            o_func     <= 6'b0                         ;
+            o_addr     <= 16'b0                        ;
+
         end else begin
-            o_reg_DA <= wire_D1                         ;
-            o_reg_DB <= wire_D2                         ;
-            o_rd     <= rd                              ;
-            o_rs     <= rs                              ;
-            o_rt     <= rt                              ;
-            r_immediate<= i_instruction [15:0   ]       ;
-            o_opcode   <= i_instruction [31:25  ]       ;
-            o_shamt    <= i_instruction [10:6   ]       ;
-            o_func     <= i_instruction [5 :0   ]       ;
-            o_addr     <= i_instruction [15:0   ]       ;
+            if(!i_stall) begin
+                o_reg_DA <= wire_D1                         ;
+                o_reg_DB <= wire_D2                         ;
+                o_rd     <= rd                              ;
+                o_rs     <= rs                              ;
+                o_rt     <= rt                              ;
+                r_immediate<= i_instruction [15:0   ]       ;
+                o_opcode   <= i_instruction [31:25  ]       ;
+                o_shamt    <= i_instruction [10:6   ]       ;
+                o_func     <= i_instruction [5 :0   ]       ;
+                o_addr     <= i_instruction [15:0   ]       ;
 
             // ctrl unit
             //reg_opcode <= i_instruction [31:25  ]       ;
             //reg_funct  <= i_instruction [5:0    ]       ;
-
+            end
 
         end
-    end
-
-    always @(*) begin
-        
     end
 
     assign o_jump     = w_jump                          ;
