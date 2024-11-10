@@ -1,11 +1,12 @@
 module control_unit
-#(
+#( 
+    parameter NB_OP = 6
 
 )(
     input wire clk,
     input wire i_rst_n,
-    input wire [5:0] i_opcode       , //[31:26] instruction
-    input wire [5:0] i_funct        , // for R-type [5:0] field
+    input wire [NB_OP-1:0] i_opcode       , //[31:26] instruction
+    input wire [NB_OP-1:0] i_funct        , // for R-type [5:0] field
 
 
 
@@ -33,9 +34,19 @@ module control_unit
     reg r_jump, r_ALUSrc, r_branch, r_regDst, r_mem2Reg, r_regWrite, r_memRead, r_memWrite, r_immediate;
     reg [1:0] r_aluOP;
     always @(*) begin
+        r_immediate = 1'b0;
+        r_regDst    = 1'b0      ; 
+        r_ALUSrc    = 1'b0      ; 
+        r_mem2Reg   = 1'b0      ; 
+        r_regWrite  = 1'b0      ;
+        r_memRead   = 1'b0      ;
+        r_memWrite  = 1'b0      ;
+        r_branch    = 1'b0      ;
+        r_jump      = 1'b0      ;
+        r_aluOP     = 2'b00     ; 
 
         case (i_opcode)
-            r_immediate = 1'b0;
+
             R_TYPE: begin
                 r_regDst    = 1'b1      ;
                 r_ALUSrc    = 1'b0      ;
@@ -102,17 +113,6 @@ module control_unit
                 r_branch    = 1'b0      ;
                 r_jump      = 1'b1      ;
                 r_aluOP     = 2'b00     ; //x
-            end
-            default: begin
-                r_regDst    = 1'b0      ; 
-                r_ALUSrc    = 1'b0      ; 
-                r_mem2Reg   = 1'b0      ; 
-                r_regWrite  = 1'b0      ;
-                r_memRead   = 1'b0      ;
-                r_memWrite  = 1'b0      ;
-                r_branch    = 1'b0      ;
-                r_jump      = 1'b0      ;
-                r_aluOP     = 2'b00     ; 
             end
         endcase
     end
