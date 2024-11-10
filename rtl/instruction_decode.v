@@ -2,68 +2,135 @@ module instruction_decode
 #(
 
 )(
-    input wire          clk                 ,
-    input wire          i_rst_n             ,
-    input wire [31:0]   i_instruction       ,
-    input wire [31:0]   i_pcounter4         ,
-    input wire          i_we_wb             ,
-    input wire          i_wr_addr           ,
-    input wire [31:0]   i_wr_data_WB        ,
-    input wire          i_stall             ,
-    //
-    //
-    output reg [4:0]    o_rs                ,
-    output reg [4:0]    o_rt                ,
-    output reg [4:0]    o_rd                ,
+    input wire          clk                             ,
+    input wire          i_rst_n                         ,
+    input wire [31:0]   i_instruction                   ,
+    input wire [31:0]   i_pcounter4                     ,
+    input wire          i_we_wb                         ,
+    input wire          i_wr_addr                       ,
+    input wire [31:0]   i_wr_data_WB                    ,
+    input wire          i_stall                         ,
+    //      
+    //      
+    output reg [4:0]    o_rs                            ,
+    output reg [4:0]    o_rt                            ,
+    output reg [4:0]    o_rd                            ,
 
-    output reg [31:0]   o_reg_DA              ,
-    output reg [31:0]   o_reg_DB              ,
+    output reg [31:0]   o_reg_DA                        ,
+    output reg [31:0]   o_reg_DB                        ,
 
-    output reg [15:0]   o_immediat            ,
-    output reg [5 :0]   o_opcode              ,
-    output reg [4 :0]   o_shamt               ,
-    output reg [4 :0]   o_func                ,
-    output reg [15:0]   o_addr                  //jmp
+    output reg [31:0]   o_immediate                     ,
+    output reg [5 :0]   o_opcode                        ,
+    output reg [4 :0]   o_shamt                         ,
+    output reg [4 :0]   o_func                          ,
+    output reg [15:0]   o_addr                          ,//jmp
+
+    //ctrl unit
+    output wire         o_jump                          , 
+    output wire         o_branch                        , 
+    output wire         o_regDst                        , 
+    output wire         o_mem2Reg                       , 
+    output wire         o_memRead                       , 
+    output wire         o_memWrite                      , 
+    output wire         o_immediate                     , 
+    output wire         o_regWrite                      ,
+    output wire [1:0]   o_aluSrc                        ,
+    output wire [1:0]   o_aluOp
 
 );
 
     wire [31:0] wire_D1, wire_D2;
     wire [4 :0] rs, rt, rd;
+    reg  [15:0] r_immediate;
+
+    // ---- ctrl unit ----
+    //reg [5:0] reg_opcode, reg_funct;
+    wire w_jump, w_branch, w_regDst, w_mem2Reg, w_memRead, w_memWrite, w_immediate, w_regWrite;
+    wire [1:0] w_aluSrc, w_aluOp;
+
+
     register_file #()
     regFile1(
-        .clk        (clk        )           ,
-        .i_rst_n    (i_rst_n    )           ,
-        .i_we       (i_we       )           ,
-        .i_wr_addr  (i_wr_addr  )           ,
-        .i_wr_data  (i_pcounter4)           ,
-        .i_rd_addr1 ()  ,
-        .i_rd_addr2 ()  ,
-        .o_rd_data1 (wire_D1)  ,
+        .clk        (clk        )                       ,
+        .i_rst_n    (i_rst_n    )                       ,
+        .i_we       (i_we       )                       ,
+        .i_wr_addr  (i_wr_addr  )                       ,
+        .i_wr_data  (i_pcounter4)                       ,
+        .i_rd_addr1 (rs)                                ,
+        .i_rd_addr2 (rt)                                ,
+        .o_rd_data1 (wire_D1)                           ,
         .o_rd_data2 (wire_D2)
+    );
+
+    control_unit #()
+    controlU1
+    (
+        .clk        (clk        ),
+        .i_rst_n    (i_rst_n    ),
+        .i_opcode   (o_opcode   ),
+        .i_funct    (o_func     ),
+        //
+        .o_jump     (w_jump     ),
+        .o_aluSrc   (w_aluSrc   ),
+        .o_aluOp    (w_aluOp    ),
+        .o_branch   (w_branch   ),
+        .o_regDst   (w_regDst   ),
+        .o_mem2Reg  (w_mem2Reg  ),
+        .o_regWrite (w_regWrite ),
+        .o_memWrite (w_memWrite ),
+        .o_immediate(w_immediate)
+
+    );
+
+    sign_extension #()
+    se1
+    (
+        .i_immediate_flag   (w_immediate),
+        .i_immediate_value  (r_immediate),
+
+        .o_data             (o_immediate)
     );
 
     always @(posedge clk or negedge i_rst_n) begin
         if(!i_rst_n) begin
             
         end else begin
-            o_reg_DA <= wire_D1;
-            o_reg_DB <= wire_D2;
-            o_rd     <= rd;
-            o_rs     <= rs;
-            o_rt     <= rt;
-            o_immediat <= i_instruction [15:0];
-            o_opcode   <= i_instruction [31:25];
-            o_shamt    <= i_instruction [10:6 ];
-            o_func     <= i_instruction [5 :0];
-            o_addr     <= i_instruction [15:0];
+            o_reg_DA <= wire_D1                         ;
+            o_reg_DB <= wire_D2                         ;
+            o_rd     <= rd                              ;
+            o_rs     <= rs                              ;
+            o_rt     <= rt                              ;
+            r_immediate<= i_instruction [15:0   ]       ;
+            o_opcode   <= i_instruction [31:25  ]       ;
+            o_shamt    <= i_instruction [10:6   ]       ;
+            o_func     <= i_instruction [5 :0   ]       ;
+            o_addr     <= i_instruction [15:0   ]       ;
 
+            // ctrl unit
+            //reg_opcode <= i_instruction [31:25  ]       ;
+            //reg_funct  <= i_instruction [5:0    ]       ;
 
 
         end
     end
 
-    assign rs = i_instruction[25:21];
-    assign rt = i_instruction[20:16];
-    assign rd = i_instruction[15:11];
+    always @(*) begin
+        
+    end
+
+    assign o_jump     = w_jump                          ;
+    assign o_branch   = w_branch                        ;
+    assign o_regDst   = w_regDst                        ;
+    assign o_mem2Reg  = w_mem2Reg                       ;
+    assign o_memRead  = w_memRead                       ;
+    assign o_memWrite = w_memWrite                      ;
+    assign o_immediate= w_immediate                     ;
+    assign o_regWrite = w_regWrite                      ;
+    assign o_aluSrc   = w_aluSrc                        ;
+    assign o_aluOp    = w_aluOp                         ;
+
+    assign rs = i_instruction[25:21]                    ;
+    assign rt = i_instruction[20:16]                    ;
+    assign rd = i_instruction[15:11]                    ;
 
 endmodule
