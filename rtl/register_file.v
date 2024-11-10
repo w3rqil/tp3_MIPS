@@ -29,7 +29,7 @@ module register_file
     begin
         if(~i_rst_n)
         begin
-            for( i = 0; i < 2**NB_ADDR; i++)
+            for( i = 0; i < 2**NB_ADDR; i= i+1)
             begin
                 reg_file[i] <= 0                        ;
             end
@@ -47,8 +47,8 @@ module register_file
     begin
         if(~i_rst_n)
         begin
-            o_rd_data1 <= 0                             ;
-            o_rd_data2 <= 0                             ;
+            rd_data1 <= 0                               ;
+            rd_data2 <= 0                               ;
         end
         else
         begin
