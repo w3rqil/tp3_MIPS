@@ -50,7 +50,7 @@ module instruction_decode
     //reg [5:0] reg_opcode, reg_funct;
     wire w_jump, w_branch, w_regDst, w_mem2Reg, w_memRead, w_memWrite, w_immediate, w_regWrite;
     wire [1:0] w_aluSrc, w_aluOp;
-
+    wire [NB_DATA -1: 0] w_immediat;
 
     register_file #()
     regFile1(
@@ -90,7 +90,7 @@ module instruction_decode
         .i_immediate_flag   (w_immediate),
         .i_immediate_value  (r_immediate),
 
-        .o_data             (o_immediat)
+        .o_data             (w_immediat)
     );
 
     always @(posedge clk or negedge i_rst_n) begin
@@ -119,7 +119,7 @@ module instruction_decode
                 o_func     <= i_instruction [5 :0   ]       ;
                 o_addr     <= i_instruction [15:0   ]       ;
                 
-                o_immediat <= w_immediate                   ;
+                o_immediat <= w_immediat                   ;
             // ctrl unit
             //reg_opcode <= i_instruction [31:25  ]       ;
             //reg_funct  <= i_instruction [5:0    ]       ;
