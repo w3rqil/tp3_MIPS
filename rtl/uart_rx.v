@@ -21,7 +21,7 @@
 
 module uart_rx
 #(
-    parameter NB_DATA  = 8                                                    ,
+    parameter NB_DATA  = 32                                                    ,
     parameter NB_STOP  = 16 //stops at 16 count
 )(
     input   wire                    clk                             ,
