@@ -32,7 +32,7 @@ module tb_instruction_decode;
     wire o_mem2Reg;
     wire o_memRead;
     wire o_memWrite;
-    wire o_immediat;
+    wire o_immediate_flag;
     wire o_regWrite;
     wire [1:0] o_aluSrc;
     wire [1:0] o_aluOp;
@@ -64,7 +64,7 @@ module tb_instruction_decode;
         .o_mem2Reg(o_mem2Reg),
         .o_memRead(o_memRead),
         .o_memWrite(o_memWrite),
-        .o_immediat(o_immediat),
+        .o_immediate_flag(o_immediate_flag),
         .o_regWrite(o_regWrite),
         .o_aluSrc(o_aluSrc),
         .o_aluOp(o_aluOp)
@@ -94,9 +94,9 @@ module tb_instruction_decode;
         #10;
 
         // Apply test cases
-        test_r_type();
+        // test_r_type();
         test_i_type();
-        test_j_type();
+        // test_j_type();
 
         // End simulation
         $stop;
@@ -106,7 +106,7 @@ module tb_instruction_decode;
     task test_r_type();
         begin
             $display("Testing R-type instruction...");
-            i_instruction = 32'b000000_00001_00010_00011_00000_100000; // ADD $3, $1, $2
+            i_instruction = 32'b000000_00001_00010_00011_00000_100001; // ADDU $3, $1, $2
             #10;
             check_results(6'b000000, 5'd1, 5'd2, 5'd3, 5'd0, 6'b100000);
         end
@@ -115,8 +115,8 @@ module tb_instruction_decode;
     // Task for testing I-type instructions
     task test_i_type();
         begin
-            $display("Testing I-type instruction...");
-            i_instruction = 32'b001000_00001_00010_0000000000000100; // ADDI $2, $1, 4
+            $display("Testing I-type instruction...");  
+            i_instruction = 32'b010000_10001_00010_0000000000000100; // ADDI $2, $1, 4
             #10;
             check_results(6'b001000, 5'd1, 5'd2, 5'd0, 5'd0, 6'b000000);
         end

@@ -72,7 +72,7 @@ module instruction_decode
         .i_rst_n    (i_rst_n    ),
         .i_opcode   (o_opcode   ),
         .i_funct    (o_func     ),
-        //
+        
         .o_jump     (w_jump     ),
         .o_aluSrc   (w_aluSrc   ),
         .o_aluOp    (w_aluOp    ),
@@ -80,6 +80,7 @@ module instruction_decode
         .o_regDst   (w_regDst   ),
         .o_mem2Reg  (w_mem2Reg  ),
         .o_regWrite (w_regWrite ),
+        .o_memRead  (w_memRead  ),
         .o_memWrite (w_memWrite ),
         .o_immediate(w_immediate)
     );
