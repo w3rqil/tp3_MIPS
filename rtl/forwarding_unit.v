@@ -24,7 +24,7 @@ module forwarding_unit
 
 
 
-    always @(*) begin
+    always @(*) begin : fwd_ctrl
         o_fw_a =    ((i_rd_IDEX     == i_rs_IFID) && i_wr_WB )  ? 2'b11 :
                     ((i_rd_EX_MEMWB == i_rs_IFID) && i_wr_MEM)  ? 2'b10 :
                                                                   2'b00 ;
