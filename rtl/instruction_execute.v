@@ -53,29 +53,29 @@ module instruction_execute
 );
 
     localparam [2:1]
-                ADDI    = 3'b000;
-                ANDI    = 3'b100;
-                ORI     = 3'b101;
-                XORI    = 3'b110;
-                SLTI    = 3'b010;
-                LUI     = 3'b111;
+                ADDI    = 3'b000                                ,
+                ANDI    = 3'b100                                ,
+                ORI     = 3'b101                                ,
+                XORI    = 3'b110                                ,
+                SLTI    = 3'b010                                ,
+                LUI     = 3'b111                                ;
 
     localparam [1:0]
-                    LOAD_STORE = 2'b00,
-                    BRANCH     = 2'b01,
-                    R_TYPE     = 2'b10,
-                    I_TYPE     = 2'b11;
+                    LOAD_STORE = 2'b00                          ,
+                    BRANCH     = 2'b01                          ,
+                    R_TYPE     = 2'b10                          ,
+                    I_TYPE     = 2'b11                          ;
 
-    reg [5:0] opcode;
-    reg [NB_DATA-1:0] alu_datoA, alu_datoB;
-    reg [NB_DATA-1:0] alu_result;
+    reg [5:0]           opcode                                  ;
+    reg [NB_DATA-1:0]   alu_datoA, alu_datoB                    ;
+    reg [NB_DATA-1:0]   alu_result                              ;
 
     // state machine for alu
     always(*) begin: alu_ctrl
 
         case(i_aluOP)
             LOAD_STORE: begin
-                opcode = ADD;
+                opcode = ADD                                    ;
             end
             BRANCH: begin
                 // sub
@@ -83,16 +83,16 @@ module instruction_execute
             end
             R_TYPE: begin
                 // and
-                opcode = i_func;
+                opcode = i_func                                 ;
     
             end
             I_TYPE: begin
                 // or
-                opcode = i_opcode;
+                opcode = i_opcode                               ;
             end
             default: begin
                 // nop
-                opcode= 6'b0;
+                opcode= 6'b0                                    ;
             end
         endcase
     end
@@ -101,7 +101,7 @@ module instruction_execute
         case(i_fw_a)
             2'b00: begin
                 // datoA = reg[rs]
-                alu_datoA = i_reg_DA;
+                alu_datoA = i_reg_DA                            ;
             end
             2'b10: begin
                 // datoA = datoB
@@ -113,7 +113,7 @@ module instruction_execute
             end
             default: begin
                 // nop
-                alu_datoA = 8'b0;
+                alu_datoA = 8'b0                                ;
             end
         endcase
     end
@@ -124,7 +124,7 @@ module instruction_execute
         case(i_fw_b)
             2'b00: begin
                 // datoB = reg[rt]
-                alu_datoB = i_reg_DB;
+                alu_datoB = i_reg_DB                            ;
             end
             2'b10: begin
                 // datoB = datoB
@@ -136,11 +136,11 @@ module instruction_execute
             end
             default: begin
                 // nop
-                alu_datoB = 8'b0;
+                alu_datoB = 8'b0                                ;
             end
         endcase
 
-        if(i_immediate_flag) alu_datoB = i_immediate;
+        if(i_immediate_flag) alu_datoB = i_immediate            ;
 
     end
     
@@ -150,32 +150,30 @@ module instruction_execute
         // when deasserted The register destination number for the Write register
         // comes from the rt field
         if(!i_rst_n) begin
-            o_write_reg = 5'b0;
+            o_write_reg = 5'b0                                  ;
         end else begin
-            o_write_reg = i_regDst ? i_rt : i_rd;
+            o_write_reg = i_regDst ? i_rt : i_rd                ;
         end
     end
     
     always @(posedge clk or negedge i_rst_n) begin
         if(!i_rst_n) begin
-            o_mem2reg <= 1'b0                                       ;
-            o_memRead <= 1'b0                                       ;
-            o_memWrite<= 1'b0                                       ;
-            o_regWrite<= 1'b0                                       ;
-            o_aluSrc  <= 2'b00                                      ;
-            o_aluOP   <= 3'b000                                     ;
-            o_result  <= 8'b0                                       ;
+            o_mem2reg <= 1'b0                                   ;
+            o_memRead <= 1'b0                                   ;
+            o_memWrite<= 1'b0                                   ;
+            o_regWrite<= 1'b0                                   ;
+            o_aluSrc  <= 2'b00                                  ;
+            o_aluOP   <= 3'b000                                 ;
+            o_result  <= 8'b0                                   ;
         end else begin
-            o_mem2reg   <= i_mem2Reg                                ;
-            o_memRead   <= i_memRead                                ;
-            o_memWrite  <= i_memWrite                               ;
-            o_regWrite  <= i_regWrite                               ;
-            o_aluSrc    <= i_aluSrc                                 ;
-            o_aluOP     <= opcode                                   ;
-            o_result    <= alu_result                               ;
-        end else begin
-            
-        end
+            o_mem2reg   <= i_mem2Reg                            ;
+            o_memRead   <= i_memRead                            ;
+            o_memWrite  <= i_memWrite                           ;
+            o_regWrite  <= i_regWrite                           ;
+            o_aluSrc    <= i_aluSrc                             ;
+            o_aluOP     <= opcode                               ;
+            o_result    <= alu_result                           ;
+        end 
     end
 
     alu #(
