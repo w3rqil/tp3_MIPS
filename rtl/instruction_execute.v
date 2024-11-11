@@ -32,19 +32,23 @@ module instruction_execute
     input wire                  i_regWrite                      ,
     input wire [1:0]            i_aluSrc                        ,
     input wire [1:0]            i_aluOp                         ,
+
+    //fwd unit
     input wire [1:0]            i_fw_a                          ,
     input wire [1:0]            i_fw_b                          ,
     
     
-
-    output reg [4:0]            o_write_reg                     ,
+    // ctrl signals
     output reg                  o_mem2reg                       ,
     output reg                  o_memRead                       ,
     output reg                  o_memWrite                      ,
     output reg                  o_regWrite                      ,
     output reg [1:0]            o_aluSrc                        ,
+    output reg                  o_jump                          ,
+
+    output reg [4:0]            o_write_reg                     ,
     output reg [2:1]            o_aluOP                         ,
-    output reg [NB_DATA-1:0]    o_result                        ,
+    output reg [NB_DATA-1:0]    o_result                        
 
 );
 
