@@ -20,19 +20,33 @@ module control_unit
     output wire         o_regWrite  , //! write enable for register file
     output wire         o_memRead   , //! enable reading
     output wire         o_memWrite  , //! enable writinh to memory (1: Memory write is enabled (used for sw))
+    output wire [1:0]   o_width     , //! width of the data to be written to memory. 11 = word | 01 = half word | 00 = byte
     output wire         o_immediate
 );  
     
     localparam [5:0]
-                    R_TYPE  = 6'b000000,
-                    LW_TYPE = 6'b100011,
-                    SW_TYPE = 6'b101011,
-                    BEQ_TYPE= 6'b000100,
-                    ADDI_TYPE= 6'b000100,
-                    J_TYPE  = 6'b000010;
+                    R_TYPE      = 6'b000000,
+                    LW_TYPE     = 6'b100011,
+                    SW_TYPE     = 6'b101011,
+                    BEQ_TYPE    = 6'b000100,
+                    ADDI_TYPE   = 6'b000100,
+                    J_TYPE      = 6'b000010,
+                    JAL_TYPE    = 6'b000011,
+                    LHU_TYPE    = 6'b100101,
+                    LBU_TYPE    = 6'b100100,
+                    LWU_TYPE    = 6'b100111,
+                    SB_TYPE     = 6'b101000,
+                    SH_TYPE     = 6'b101001,
+                    ORI_TYPE    = 6'b001101,
+                    XORI_TYPE   = 6'b001110,
+                    LUI_TYPE    = 6'b001111,
+                    LB_TYPE     = 6'b100000,
+                    LH_TYPE     = 6'b100001,
+                    BNE_TYPE    = 6'b000101,
+l                   STLI_TYPE   = 6'b001010;
 
     reg r_jump, r_ALUSrc, r_branch, r_regDst, r_mem2Reg, r_regWrite, r_memRead, r_memWrite, r_immediate;
-    reg [1:0] r_aluOP;
+    reg [1:0] r_aluOP, r_width;
     always @(*) begin
         r_immediate = 1'b0;
         r_regDst    = 1'b0      ; 
@@ -44,6 +58,7 @@ module control_unit
         r_branch    = 1'b0      ;
         r_jump      = 1'b0      ;
         r_aluOP     = 2'b00     ; 
+        r_width     = 2'b11     ;
 
         case (i_opcode)
 
@@ -68,6 +83,7 @@ module control_unit
                 r_branch    = 1'b0      ;
                 r_jump      = 1'b0      ;
                 r_aluOP     = 2'b00     ;
+                r_width     = 2'b11     ;   // word
             end
             SW_TYPE: begin
                 r_regDst    = 1'b0      ; //x
@@ -79,17 +95,23 @@ module control_unit
                 r_branch    = 1'b0      ;
                 r_jump      = 1'b0      ;
                 r_aluOP     = 2'b00     ;
+                r_width     = 2'b11     ;   // word
             end
             BEQ_TYPE: begin
                 r_regDst    = 1'b0      ; //x
-                r_ALUSrc    = 1'b0      ;
+                r_ALUSrc    = 1'b0      ; //--
                 r_mem2Reg   = 1'b0      ; //x
                 r_regWrite  = 1'b0      ;
                 r_memRead   = 1'b0      ;
                 r_memWrite  = 1'b0      ;
-                r_branch    = 1'b1      ;
+                r_branch    = 1'b1      ; //--
                 r_jump      = 1'b0      ;
-                r_aluOP     = 2'b01     ;
+                r_aluOP     = 2'b01     ; //--
+            end
+            BNE_TYPE: begin
+                r_ALUSrc    = 1'b0;
+                r_branch    = 1'b1;
+                r_aluOp     = 2'b01;
             end
             ADDI_TYPE: begin
                 r_regDst    = 1'b0      ;
@@ -102,6 +124,100 @@ module control_unit
                 r_jump      = 1'b0      ;
                 r_aluOP     = 2'b00     ;
                 r_immediate = 1'b0      ;
+            end
+            ORI_TYPE: begin // revisar
+                r_regDst    = 1'b0;
+                r_ALUSrc    = 1'b1;
+                r_mem2Reg   = 1'b0;
+                r_regWrite  = 1'b1;
+                r_aluOp     = 2'b01;  // Logical OR
+                r_immediate = 1'b1;
+            end
+            XORI_TYPE: begin
+                r_regDst    = 1'b0;
+                r_ALUSrc    = 1'b1;
+                r_mem2Reg   = 1'b0;
+                r_regWrite  = 1'b1;
+                r_aluOp     = 2'b01;  // Logical XOR
+                r_immediate = 1'b1;
+            end
+
+            LUI_TYPE: begin
+                r_regDst    = 1'b0;
+                r_ALUSrc    = 1'b1;
+                r_mem2Reg   = 1'b0;
+                r_regWrite  = 1'b1;
+                r_immediate = 1'b1;  // Load Upper Immediate
+            end
+
+            SLTI_TYPE: begin
+                r_regDst    = 1'b0;
+                r_ALUSrc    = 1'b1;
+                r_mem2Reg   = 1'b0;
+                r_regWrite  = 1'b1;
+                r_aluOp     = 2'b11;  // Set Less Than Immediate
+                r_immediate = 1'b1;
+            end
+            JAL_TYPE: begin
+                r_jump      = 1'b1;
+                r_regWrite  = 1'b1;
+            end
+
+            LB_TYPE: begin
+                r_regDst    = 1'b0;
+                r_ALUSrc    = 1'b1;
+                r_mem2Reg   = 1'b1;
+                r_regWrite  = 1'b1;
+                r_memRead   = 1'b1;
+                r_width     = 2'b00;  // Byte
+            end
+
+            LH_TYPE: begin
+                r_regDst    = 1'b0;
+                r_ALUSrc    = 1'b1;
+                r_mem2Reg   = 1'b1;
+                r_regWrite  = 1'b1;
+                r_memRead   = 1'b1;
+                r_width     = 2'b01;  // Half Word
+            end
+
+            LBU_TYPE: begin
+                r_regDst    = 1'b0;
+                r_ALUSrc    = 1'b1;
+                r_mem2Reg   = 1'b1;
+                r_regWrite  = 1'b1;
+                r_memRead   = 1'b1;
+                r_width     = 2'b00;  // Byte (Unsigned)
+            end
+
+            LHU_TYPE: begin
+                r_regDst    = 1'b0;
+                r_ALUSrc    = 1'b1;
+                r_mem2Reg   = 1'b1;
+                r_regWrite  = 1'b1;
+                r_memRead   = 1'b1;
+                r_width     = 2'b01;  // Half Word (Unsigned)
+            end
+
+            LWU_TYPE: begin
+                r_regDst    = 1'b0;
+                r_ALUSrc    = 1'b1;
+                r_mem2Reg   = 1'b1;
+                r_regWrite  = 1'b1;
+                r_memRead   = 1'b1;
+                r_width     = 2'b11;  // Word (Unsigned)
+            end
+
+            SB_TYPE: begin
+                r_ALUSrc    = 1'b1;
+                r_memWrite  = 1'b1;
+                r_width     = 2'b00;  // Byte
+            end
+
+            SH_TYPE: begin
+                r_ALUSrc    = 1'b1;
+                r_memWrite  = 1'b1;
+                r_width     = 2'b01;  // Half Word
             end
             J_TYPE: begin
                 r_regDst    = 1'b0      ; //x
@@ -127,5 +243,5 @@ module control_unit
     assign o_memWrite      = r_memWrite         ;
     assign o_regDst        = r_regDst           ;
     assign o_regWrite      = r_regWrite         ;
-
+    assign o_width         = r_width            ;
 endmodule
