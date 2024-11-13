@@ -6,12 +6,12 @@ module instruction_decode
 )(
     input wire          clk                             ,
     input wire          i_rst_n                         ,
-    input wire [NB_DATA-1:0]   i_instruction                   ,
-    input wire [NB_DATA-1:0]   i_pcounter4                     ,
+    input wire [NB_DATA-1:0]   i_instruction            ,
+    input wire [NB_DATA-1:0]   i_pcounter4              ,
     input wire          i_we_wb                         ,
     input wire          i_we                            ,
     input wire          i_wr_addr                       ,
-    input wire [NB_DATA-1:0]   i_wr_data_WB                    ,
+    input wire [NB_DATA-1:0]   i_wr_data_WB             ,
     input wire          i_stall                         ,
     //      
     //      
@@ -19,10 +19,10 @@ module instruction_decode
     output reg [4:0]    o_rt                            ,
     output reg [4:0]    o_rd                            ,
 
-    output reg [NB_DATA-1:0]   o_reg_DA                        ,
-    output reg [NB_DATA-1:0]   o_reg_DB                        ,
+    output reg [NB_DATA-1:0]   o_reg_DA                 ,
+    output reg [NB_DATA-1:0]   o_reg_DB                 ,
 
-    output reg [NB_DATA-1:0]   o_immediate                     ,
+    output reg [NB_DATA-1:0]   o_immediate              ,
     output reg [5 :0]   o_opcode                        ,
     output reg [4 :0]   o_shamt                         ,
     output reg [5 :0]   o_func                          ,
@@ -35,9 +35,10 @@ module instruction_decode
     output wire         o_mem2Reg                       , 
     output wire         o_memRead                       , 
     output wire         o_memWrite                      , 
-    output wire         o_immediate_flag                      , 
+    output wire         o_immediate_flag                , 
     output wire         o_regWrite                      ,
     output wire [1:0]   o_aluSrc                        ,
+    output wire [1:0]   o_width                         ,
     output wire [1:0]   o_aluOp
 
 );
@@ -48,7 +49,7 @@ module instruction_decode
 
     // ---- ctrl unit ----
     //reg [5:0] reg_opcode, reg_funct;
-    wire w_jump, w_branch, w_regDst, w_mem2Reg, w_memRead, w_memWrite, w_immediate, w_regWrite;
+    wire w_jump, w_branch, w_regDst, w_mem2Reg, w_memRead, w_memWrite, w_immediate, w_regWrite, w_width;
     wire [1:0] w_aluSrc, w_aluOp;
     wire [NB_DATA -1: 0] w_immediat;
 
@@ -82,6 +83,7 @@ module instruction_decode
         .o_regWrite (w_regWrite ),
         .o_memRead  (w_memRead  ),
         .o_memWrite (w_memWrite ),
+        .o_width    (w_width    ),
         .o_immediate(w_immediate)
     );
 
@@ -90,7 +92,6 @@ module instruction_decode
     (
         .i_immediate_flag   (w_immediate),
         .i_immediate_value  (r_immediate),
-
         .o_data             (w_immediat)
     );
 
@@ -125,7 +126,6 @@ module instruction_decode
             //reg_opcode <= i_instruction [31:25  ]       ;
             //reg_funct  <= i_instruction [5:0    ]       ;
             end
-
         end
     end
 
@@ -135,10 +135,11 @@ module instruction_decode
     assign o_mem2Reg  = w_mem2Reg                           ;
     assign o_memRead  = w_memRead                           ;
     assign o_memWrite = w_memWrite                          ;
-    assign o_immediate_flag= w_immediate                         ;
+    assign o_immediate_flag= w_immediate                    ;
     assign o_regWrite = w_regWrite                          ;
     assign o_aluSrc   = w_aluSrc                            ;
     assign o_aluOp    = w_aluOp                             ;
+    assign o_width    = w_width                             ;
 
     assign rs = i_instruction[25:21]                        ;
     assign rt = i_instruction[20:16]                        ;
