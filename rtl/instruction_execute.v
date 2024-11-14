@@ -1,6 +1,6 @@
 module instruction_execute
 #(
-    parameter NB_DATA = 8
+    parameter NB_DATA = 32
 )
 (
     input wire                  clk                             ,
@@ -32,7 +32,8 @@ module instruction_execute
     input wire                  i_regWrite                      ,
     input wire [1:0]            i_aluSrc                        ,
     input wire [1:0]            i_aluOp                         ,
-
+    input wire [1:0]            i_width                         ,
+    input wire                  i_sign_flag                     ,
     //fwd unit
     input wire [1:0]            i_fw_a                          ,
     input wire [1:0]            i_fw_b                          ,
@@ -46,11 +47,16 @@ module instruction_execute
     output reg [1:0]            o_aluSrc                        ,
     output reg                  o_jump                          ,
 
-    output reg [4:0]            o_write_reg                     ,
+    output reg                  o_sign_flag                     ,
+    output reg [1:0]            o_width                         ,
+    output reg [4:0]            o_write_reg                     , // EX/MEM.RegisterRd for control unit
     output reg [2:1]            o_aluOP                         ,
+    output reg [NB_DATA-1:0]    o_data4Mem                      ,
     output reg [NB_DATA-1:0]    o_result                        
 
 );
+    localparam [5:0]
+                    ADD = 6'b000000                            ;
 
     localparam [2:1]
                 ADDI    = 3'b000                                ,
@@ -67,7 +73,8 @@ module instruction_execute
                     I_TYPE     = 2'b11                          ;
 
     reg [5:0]           opcode                                  ;
-    reg [NB_DATA-1:0]   alu_datoA, alu_datoB                    ;
+    reg [NB_DATA-1:0]   alu_datoA, alu_datoB, data4Mem          ;
+    reg [1:0]           aluOP                                   ;
     reg [NB_DATA-1:0]   alu_result                              ;
 
     // state machine for alu
@@ -75,7 +82,7 @@ module instruction_execute
 
         case(i_aluOP)
             LOAD_STORE: begin
-                opcode = ADD                                    ;
+                opcode = ADD                                    ; // to do
             end
             BRANCH: begin
                 // sub
@@ -142,6 +149,7 @@ module instruction_execute
 
         if(i_immediate_flag) alu_datoB = i_immediate            ;
 
+        data4Mem = alu_datoB                                    ;   
     end
     
     always @(*) begin: mux3
@@ -165,14 +173,20 @@ module instruction_execute
             o_aluSrc  <= 2'b00                                  ;
             o_aluOP   <= 3'b000                                 ;
             o_result  <= 8'b0                                   ;
+            o_data4Mem<= 8'b0                                   ;
+            o_width   <= 2'b11                                  ;
+            o_sign_flag<= 1'b0                                  ;
         end else begin
             o_mem2reg   <= i_mem2Reg                            ;
             o_memRead   <= i_memRead                            ;
             o_memWrite  <= i_memWrite                           ;
             o_regWrite  <= i_regWrite                           ;
             o_aluSrc    <= i_aluSrc                             ;
+            o_width     <= i_width                              ;
+            o_sign_flag <= i_sign_flag                          ;
             o_aluOP     <= opcode                               ;
             o_result    <= alu_result                           ;
+            o_data4Mem  <= data4Mem                             ;
         end 
     end
 

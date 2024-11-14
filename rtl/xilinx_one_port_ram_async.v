@@ -1,7 +1,7 @@
 module xilinx_one_port_ram_async
 #(
     parameter NB_DATA = 32,    // Data width for a single read/write operation
-    parameter NB_ADDR = 12     // Address width
+    parameter NB_ADDR = 8      // Address width
 )(
     input  wire clk                         ,
     input  wire i_rst_n                     ,
