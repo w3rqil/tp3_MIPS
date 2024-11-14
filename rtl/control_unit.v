@@ -44,10 +44,11 @@ module control_unit
                     LB_TYPE     = 6'b100000,
                     LH_TYPE     = 6'b100001,
                     BNE_TYPE    = 6'b000101,
-l                   STLI_TYPE   = 6'b001010;
+                   STLI_TYPE   = 6'b001010;
 
     reg r_jump, r_ALUSrc, r_branch, r_regDst, r_mem2Reg, r_regWrite, r_memRead, r_memWrite, r_immediate, r_sign_flag;
-    reg [1:0] r_aluOP, r_width;
+    reg [1:0] r_aluOP;
+    reg [1:0] r_width;
     always @(*) begin
         r_immediate = 1'b0;
         r_regDst    = 1'b0      ; 

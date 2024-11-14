@@ -8,9 +8,9 @@ module instruction_execute
     input wire                  i_stall                         ,
     input wire                  i_halt                          ,
 
-    input wire [4:0]            o_rs                            ,
-    input wire [4:0]            o_rt                            ,
-    input wire [4:0]            o_rd                            ,
+    input wire [4:0]            i_rs                            ,
+    input wire [4:0]            i_rt                            ,
+    input wire [4:0]            i_rd                            ,
 
     input wire [NB_DATA-1:0]    i_reg_DA                        ,
     input wire [NB_DATA-1:0]    i_reg_DB                        ,
@@ -78,9 +78,9 @@ module instruction_execute
     reg [NB_DATA-1:0]   alu_result                              ;
 
     // state machine for alu
-    always(*) begin: alu_ctrl
+    always @(*) begin: alu_ctrl
 
-        case(i_aluOP)
+        case(aluOP)
             LOAD_STORE: begin
                 opcode = ADD                                    ; // to do
             end
@@ -177,6 +177,7 @@ module instruction_execute
             o_width   <= 2'b11                                  ;
             o_sign_flag<= 1'b0                                  ;
         end else begin
+            aluOP   <= i_aluOP                                    ;
             o_mem2reg   <= i_mem2Reg                            ;
             o_memRead   <= i_memRead                            ;
             o_memWrite  <= i_memWrite                           ;
