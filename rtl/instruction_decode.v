@@ -29,17 +29,18 @@ module instruction_decode
     output reg [15:0]   o_addr                          ,//jmp
 
     //ctrl unit
-    output wire         o_jump                          , 
-    output wire         o_branch                        , 
-    output wire         o_regDst                        , 
-    output wire         o_mem2Reg                       , 
-    output wire         o_memRead                       , 
-    output wire         o_memWrite                      , 
-    output wire         o_immediate_flag                , 
-    output wire         o_regWrite                      ,
-    output wire [1:0]   o_aluSrc                        ,
-    output wire [1:0]   o_width                         ,
-    output wire [1:0]   o_aluOp
+    output reg         o_jump                          , 
+    output reg         o_branch                        , 
+    output reg         o_regDst                        , 
+    output reg         o_mem2Reg                       , 
+    output reg         o_memRead                       , 
+    output reg         o_memWrite                      , 
+    output reg         o_immediate_flag                , 
+    output reg         o_sign_flag                     ,
+    output reg         o_regWrite                      ,
+    output reg [1:0]   o_aluSrc                        ,
+    output reg [1:0]   o_width                         ,
+    output reg [1:0]   o_aluOp
 
 );
 
@@ -49,7 +50,7 @@ module instruction_decode
 
     // ---- ctrl unit ----
     //reg [5:0] reg_opcode, reg_funct;
-    wire w_jump, w_branch, w_regDst, w_mem2Reg, w_memRead, w_memWrite, w_immediate, w_regWrite, w_width;
+    wire w_jump, w_branch, w_regDst, w_mem2Reg, w_memRead, w_memWrite, w_immediate, w_regWrite, w_width, w_sign_flag;
     wire [1:0] w_aluSrc, w_aluOp;
     wire [NB_DATA -1: 0] w_immediat;
 
@@ -84,6 +85,7 @@ module instruction_decode
         .o_memRead  (w_memRead  ),
         .o_memWrite (w_memWrite ),
         .o_width    (w_width    ),
+        .o_sign_flag(w_sign_flag),
         .o_immediate(w_immediate)
     );
 
@@ -122,13 +124,31 @@ module instruction_decode
                 o_addr     <= i_instruction [15:0   ]       ;
                 
                 o_immediate <= w_immediat                   ;
+
+                o_jump     <= w_jump                        ;
+                o_branch   <= w_branch                      ;   
+                o_regDst   <= w_regDst                      ;
+                o_mem2Reg  <= w_mem2Reg                     ;
+                o_memRead  <= w_memRead                     ;
+                o_memWrite <= w_memWrite                    ;
+                o_immediate_flag<= w_immediate              ;
+                o_regWrite <= w_regWrite                    ;
+                o_aluSrc   <= w_aluSrc                      ;
+                o_aluOp    <= w_aluOp                       ;
+                o_width    <= w_width                       ;
+                o_sign_flag<= w_sign_flag                   ;
+
+                rs <= i_instruction[25:21]                  ;
+                rt <= i_instruction[20:16]                  ;
+                rd <= i_instruction[15:11]                  ;
+
             // ctrl unit
             //reg_opcode <= i_instruction [31:25  ]       ;
             //reg_funct  <= i_instruction [5:0    ]       ;
             end
         end
     end
-
+/*
     assign o_jump     = w_jump                              ;
     assign o_branch   = w_branch                            ;
     assign o_regDst   = w_regDst                            ;
@@ -144,5 +164,6 @@ module instruction_decode
     assign rs = i_instruction[25:21]                        ;
     assign rt = i_instruction[20:16]                        ;
     assign rd = i_instruction[15:11]                        ;
+    */
 
 endmodule

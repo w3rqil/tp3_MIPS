@@ -21,6 +21,7 @@ module control_unit
     output wire         o_memRead   , //! enable reading
     output wire         o_memWrite  , //! enable writinh to memory (1: Memory write is enabled (used for sw))
     output wire [1:0]   o_width     , //! width of the data to be written to memory. 11 = word | 01 = half word | 00 = byte
+    output wire         o_sign_flag , //! sign flag for the load/store instructions || 0-Signed | 1-Unsigned
     output wire         o_immediate
 );  
     
@@ -45,7 +46,7 @@ module control_unit
                     BNE_TYPE    = 6'b000101,
 l                   STLI_TYPE   = 6'b001010;
 
-    reg r_jump, r_ALUSrc, r_branch, r_regDst, r_mem2Reg, r_regWrite, r_memRead, r_memWrite, r_immediate;
+    reg r_jump, r_ALUSrc, r_branch, r_regDst, r_mem2Reg, r_regWrite, r_memRead, r_memWrite, r_immediate, r_sign_flag;
     reg [1:0] r_aluOP, r_width;
     always @(*) begin
         r_immediate = 1'b0;
@@ -59,6 +60,7 @@ l                   STLI_TYPE   = 6'b001010;
         r_jump      = 1'b0      ;
         r_aluOP     = 2'b00     ; 
         r_width     = 2'b11     ;
+        r_sign_flag = 1'b0      ;
 
         case (i_opcode)
 
@@ -84,6 +86,7 @@ l                   STLI_TYPE   = 6'b001010;
                 r_jump      = 1'b0      ;
                 r_aluOP     = 2'b00     ;
                 r_width     = 2'b11     ;   // word
+                r_sign_flag = 1'b0      ;   // signed
             end
             SW_TYPE: begin
                 r_regDst    = 1'b0      ; //x
@@ -96,6 +99,7 @@ l                   STLI_TYPE   = 6'b001010;
                 r_jump      = 1'b0      ;
                 r_aluOP     = 2'b00     ;
                 r_width     = 2'b11     ;   // word
+                r_sign_flag = 1'b0      ;   // signed
             end
             BEQ_TYPE: begin
                 r_regDst    = 1'b0      ; //x
@@ -148,6 +152,7 @@ l                   STLI_TYPE   = 6'b001010;
                 r_mem2Reg   = 1'b0;
                 r_regWrite  = 1'b1;
                 r_immediate = 1'b1;  // Load Upper Immediate
+                r_sign_flag = 1'b1;
             end
 
             SLTI_TYPE: begin
@@ -157,6 +162,7 @@ l                   STLI_TYPE   = 6'b001010;
                 r_regWrite  = 1'b1;
                 r_aluOp     = 2'b11;  // Set Less Than Immediate
                 r_immediate = 1'b1;
+
             end
             JAL_TYPE: begin
                 r_jump      = 1'b1;
@@ -170,6 +176,7 @@ l                   STLI_TYPE   = 6'b001010;
                 r_regWrite  = 1'b1;
                 r_memRead   = 1'b1;
                 r_width     = 2'b00;  // Byte
+                r_sign_flag = 1'b0;
             end
 
             LH_TYPE: begin
@@ -179,6 +186,7 @@ l                   STLI_TYPE   = 6'b001010;
                 r_regWrite  = 1'b1;
                 r_memRead   = 1'b1;
                 r_width     = 2'b01;  // Half Word
+                r_sign_flag = 1'b0;
             end
 
             LBU_TYPE: begin
@@ -188,6 +196,7 @@ l                   STLI_TYPE   = 6'b001010;
                 r_regWrite  = 1'b1;
                 r_memRead   = 1'b1;
                 r_width     = 2'b00;  // Byte (Unsigned)
+                r_sign_flag = 1'b1;
             end
 
             LHU_TYPE: begin
@@ -197,6 +206,7 @@ l                   STLI_TYPE   = 6'b001010;
                 r_regWrite  = 1'b1;
                 r_memRead   = 1'b1;
                 r_width     = 2'b01;  // Half Word (Unsigned)
+                r_sign_flag = 1'b1;
             end
 
             LWU_TYPE: begin
@@ -206,18 +216,21 @@ l                   STLI_TYPE   = 6'b001010;
                 r_regWrite  = 1'b1;
                 r_memRead   = 1'b1;
                 r_width     = 2'b11;  // Word (Unsigned)
+                r_sign_flag = 1'b1;
             end
 
             SB_TYPE: begin
                 r_ALUSrc    = 1'b1;
                 r_memWrite  = 1'b1;
                 r_width     = 2'b00;  // Byte
+                r_sign_flag = 1'b0;
             end
 
             SH_TYPE: begin
                 r_ALUSrc    = 1'b1;
                 r_memWrite  = 1'b1;
                 r_width     = 2'b01;  // Half Word
+                r_sign_flag = 1'b0;
             end
             J_TYPE: begin
                 r_regDst    = 1'b0      ; //x
