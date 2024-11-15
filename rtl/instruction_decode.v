@@ -138,9 +138,9 @@ module instruction_decode
                 o_width    <= w_width                       ;
                 o_sign_flag<= w_sign_flag                   ;
 
-                rs <= i_instruction[25:21]                  ;
-                rt <= i_instruction[20:16]                  ;
-                rd <= i_instruction[15:11]                  ;
+                o_rs <= i_instruction[25:21]                ;
+                o_rt <= i_instruction[20:16]                ;
+                o_rd <= i_instruction[15:11]                ;
 
             // ctrl unit
             //reg_opcode <= i_instruction [31:25  ]       ;

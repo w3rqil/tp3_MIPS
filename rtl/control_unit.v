@@ -44,7 +44,7 @@ module control_unit
                     LB_TYPE     = 6'b100000,
                     LH_TYPE     = 6'b100001,
                     BNE_TYPE    = 6'b000101,
-                   STLI_TYPE   = 6'b001010;
+                    STLI_TYPE   = 6'b001010;
 
     reg r_jump, r_ALUSrc, r_branch, r_regDst, r_mem2Reg, r_regWrite, r_memRead, r_memWrite, r_immediate, r_sign_flag;
     reg [1:0] r_aluOP;
@@ -113,10 +113,10 @@ module control_unit
                 r_jump      = 1'b0      ;
                 r_aluOP     = 2'b01     ; //--
             end
-            BNE_TYPE: begin
+            BNE_TYPE: begin //
                 r_ALUSrc    = 1'b0;
                 r_branch    = 1'b1;
-                r_aluOp     = 2'b01;
+                r_aluOP     = 2'b01;
             end
             ADDI_TYPE: begin
                 r_regDst    = 1'b0      ;
@@ -130,12 +130,12 @@ module control_unit
                 r_aluOP     = 2'b00     ;
                 r_immediate = 1'b0      ;
             end
-            ORI_TYPE: begin // revisar
+            ORI_TYPE: begin // 
                 r_regDst    = 1'b0;
                 r_ALUSrc    = 1'b1;
                 r_mem2Reg   = 1'b0;
                 r_regWrite  = 1'b1;
-                r_aluOp     = 2'b01;  // Logical OR
+                r_aluOP     = 2'b01;  // Logical OR
                 r_immediate = 1'b1;
             end
             XORI_TYPE: begin
@@ -143,11 +143,11 @@ module control_unit
                 r_ALUSrc    = 1'b1;
                 r_mem2Reg   = 1'b0;
                 r_regWrite  = 1'b1;
-                r_aluOp     = 2'b01;  // Logical XOR
+                r_aluOP     = 2'b01;  // Logical XOR
                 r_immediate = 1'b1;
             end
 
-            LUI_TYPE: begin
+            LUI_TYPE: begin 
                 r_regDst    = 1'b0;
                 r_ALUSrc    = 1'b1;
                 r_mem2Reg   = 1'b0;
@@ -156,12 +156,12 @@ module control_unit
                 r_sign_flag = 1'b1;
             end
 
-            SLTI_TYPE: begin
+            STLI_TYPE: begin //
                 r_regDst    = 1'b0;
                 r_ALUSrc    = 1'b1;
                 r_mem2Reg   = 1'b0;
                 r_regWrite  = 1'b1;
-                r_aluOp     = 2'b11;  // Set Less Than Immediate
+                r_aluOP     = 2'b11;  // Set Less Than Immediate
                 r_immediate = 1'b1;
 
             end
