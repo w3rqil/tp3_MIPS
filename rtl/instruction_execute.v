@@ -72,10 +72,10 @@ module instruction_execute
                     R_TYPE     = 2'b10                          ,
                     I_TYPE     = 2'b11                          ;
 
-    reg [5:0]           opcode                                  ;
-    reg [NB_DATA-1:0]   alu_datoA, alu_datoB, data4Mem          ;
-    reg [1:0]           aluOP                                   ;
-    reg [NB_DATA-1:0]   alu_result                              ;
+    reg  [5:0]           opcode                                  ;
+    reg  [NB_DATA-1:0]   alu_datoA, alu_datoB, data4Mem          ;
+    reg  [1:0]           aluOP                                   ;
+    wire [NB_DATA-1:0]   alu_result                              ;
 
     // state machine for alu
     always @(*) begin: alu_ctrl
@@ -196,12 +196,11 @@ module instruction_execute
         .NB_OP  (6              )
     ) alu1
     (
-        .clk    (clk            ),
-        .i_rst_n(i_rst_n        ),
         .i_op   (opcode         ),
         .i_datoA(alu_datoA      ),
         .i_datoB(alu_datoB      ),
-        .o_result(alu_result    )
+        .i_shamt(i_shamt        ),
+        .o_resultALU(alu_result    )
     );
 
 

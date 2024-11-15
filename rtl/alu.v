@@ -1,14 +1,14 @@
 module alu
 #(
-    parameter NB_DATA   = 8, //! BITs de datos y LEDs
+    parameter NB_DATA   = 32, //! BITs de datos y LEDs
     parameter NB_OP     = 6  //! BITs de operaciones
 )
 (
     input   wire    signed [NB_DATA-1:0]   i_datoA                                              , //! Dato de entrada
     input   wire    signed [NB_DATA-1:0]   i_datoB                                              , //! Dato de entrada
-    input   wire           [NB_OP - 1:0]   i_operation                                          , //! Operación a realizar    
+    input   wire           [NB_OP - 1:0]   i_op                                          , //! Operación a realizar    
     input   wire    signed [ 4       :0]   i_shamt                                              , //! Shift amount
-    output  wire    signed [NB_DATA-1:0]   o_data                                                 //! output  
+    output  wire    signed [NB_DATA-1:0]   o_resultALU                                                 //! output  
 );
 
     reg signed [NB_DATA-1:0] result                                                             ; //! Resultado de la operación
@@ -49,7 +49,7 @@ module alu
     always @(*) begin
         result = 0;
         result_U = 0;
-        case(i_operation)
+        case(i_op)
             ADD_OP:   result   = i_datoA + i_datoB                                                  ;
             SUB_OP:   result   = i_datoA - i_datoB                                                  ;
             SLL_OP:   result   = i_datoB << i_shamt                                                 ;
@@ -81,9 +81,9 @@ module alu
         endcase
     end
                           
-    assign is_unsigned = (i_operation == ADDU_OP) || (i_operation == SUBU_OP) || (i_operation == SLTU_OP)
-    || (i_operation == SLTIU_OP) || (i_operation == ADDIU_OP);
-    assign o_data = is_unsigned ? result_U : result                                             ;
+    assign is_unsigned = (i_op == ADDU_OP) || (i_op == SUBU_OP) || (i_op == SLTU_OP)
+    || (i_op == SLTIU_OP) || (i_op == ADDIU_OP);
+    assign o_resultALU = is_unsigned ? result_U : result                                             ;
 
 
 endmodule
