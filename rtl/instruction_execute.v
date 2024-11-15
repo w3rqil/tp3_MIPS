@@ -31,7 +31,7 @@ module instruction_execute
     input wire                  i_immediate_flag                , 
     input wire                  i_regWrite                      ,
     input wire [1:0]            i_aluSrc                        ,
-    input wire [1:0]            i_aluOp                         ,
+    input wire [1:0]            i_aluOP                         ,
     input wire [1:0]            i_width                         ,
     input wire                  i_sign_flag                     ,
     //fwd unit

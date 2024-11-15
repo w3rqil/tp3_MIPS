@@ -18,7 +18,7 @@ module hazard_detection_unit (
                                 (i_ID_EX_RegisterRt == i_IF_ID_RegisterRs) ||
                                 (i_ID_EX_RegisterRt == i_IF_ID_RegisterRt)
         )) begin
-            o_sall = 1'b1;
+            o_stall = 1'b1;
         end
     end
 
