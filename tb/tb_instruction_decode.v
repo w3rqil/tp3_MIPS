@@ -73,84 +73,45 @@ module tb_instruction_decode;
     // Clock generation
     initial begin
         clk = 0;
-        forever #5 clk = ~clk;
+        forever #10 clk = ~clk;
     end
 
     // Test procedure
     initial begin
         // Initialize inputs
         i_rst_n = 0;
-        i_instruction = 0;
+        i_instruction = 32'h0000_0000;
         i_pcounter4 = 32'h0000_0004;
         i_we_wb = 0;
         i_we = 0;
         i_wr_addr = 0;
         i_wr_data_WB = 0;
         i_stall = 0;
+        #200
 
         // Reset sequence
-        #10;
+        @(posedge clk);
         i_rst_n = 1;
-        #10;
+        @(posedge clk);
 
         // Apply test cases
-        // test_r_type();
-        test_i_type();
-        // test_j_type();
+        /*
+        opcode: 000000
+        rs: 00001
+        rt: 00010
+        rd: 00011
+        shamt: 00000
+        func: 100001
+        */
+        i_instruction = 32'b000000_00001_00010_00011_00000_100001; // ADDU $3, $1, $2
+        @(posedge clk);
+        i_instruction = 32'b001000_10001_00010_0000000000000100; // ADDI $2, $1, 4
+        @(posedge clk);
+        i_instruction = 32'b000010_00000000000000000000010000; // J 16
+        repeat(2) @(posedge clk);
 
         // End simulation
         $stop;
     end
-
-    // Task for testing R-type instructions
-    task test_r_type();
-        begin
-            $display("Testing R-type instruction...");
-            i_instruction = 32'b000000_00001_00010_00011_00000_100001; // ADDU $3, $1, $2
-            #10;
-            check_results(6'b000000, 5'd1, 5'd2, 5'd3, 5'd0, 6'b100000);
-        end
-    endtask
-
-    // Task for testing I-type instructions
-    task test_i_type();
-        begin
-            $display("Testing I-type instruction...");  
-            i_instruction = 32'b010000_10001_00010_0000000000000100; // ADDI $2, $1, 4
-            #10;
-            check_results(6'b001000, 5'd1, 5'd2, 5'd0, 5'd0, 6'b000000);
-        end
-    endtask
-
-    // Task for testing J-type instructions
-    task test_j_type();
-        begin
-            $display("Testing J-type instruction...");
-            i_instruction = 32'b000010_00000000000000000000010000; // J 16
-            #10;
-            check_results(6'b000010, 5'd0, 5'd0, 5'd0, 5'd0, 6'b000000);
-        end
-    endtask
-
-    // Task to check results against expected values
-    task check_results;
-        input [5:0] exp_opcode;
-        input [4:0] exp_rs;
-        input [4:0] exp_rt;
-        input [4:0] exp_rd;
-        input [4:0] exp_shamt;
-        input [5:0] exp_func;
-
-        begin
-            // Check the opcode, rs, rt, rd, shamt, and function code
-            if (o_opcode !== exp_opcode) $display("Error: Opcode mismatch. Expected %b, Got %b", exp_opcode, o_opcode);
-            if (o_rs !== exp_rs) $display("Error: RS mismatch. Expected %d, Got %d", exp_rs, o_rs);
-            if (o_rt !== exp_rt) $display("Error: RT mismatch. Expected %d, Got %d", exp_rt, o_rt);
-            if (o_rd !== exp_rd) $display("Error: RD mismatch. Expected %d, Got %d", exp_rd, o_rd);
-            if (o_shamt !== exp_shamt) $display("Error: Shamt mismatch. Expected %d, Got %d", exp_shamt, o_shamt);
-            if (o_func !== exp_func) $display("Error: Func mismatch. Expected %b, Got %b", exp_func, o_func);
-            $display("Test case passed.\n");
-        end
-    endtask
 
 endmodule

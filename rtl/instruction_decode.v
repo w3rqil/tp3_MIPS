@@ -154,7 +154,7 @@ module instruction_decode
                 o_rs     <= rs                              ;
                 o_rt     <= rt                              ;
                 r_immediate<= i_instruction [15:0   ]       ;
-                o_opcode   <= i_instruction [31:25  ]       ;
+                o_opcode   <= i_instruction [31:26  ]       ;
                 o_shamt    <= i_instruction [10:6   ]       ;
                 o_func     <= i_instruction [5 :0   ]       ;
                 o_addr     <= i_instruction [15:0   ]       ;

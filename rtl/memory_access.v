@@ -1,7 +1,7 @@
 module memory_access
 #(
     parameter NB_DATA = 32,
-    parameter NB_ADDR = 5,
+    parameter NB_ADDR = 8,
     parameter NB_REG  = 1
 
 )(
@@ -35,7 +35,8 @@ module memory_access
 
     
 );
-    reg [NB_DATA-1:0] data2mem, reg_read;
+    reg [NB_DATA-1:0] data2mem;
+    wire [NB_DATA-1:0] reg_read;
     wire writeEnable;
     //wire []
 

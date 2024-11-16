@@ -22,9 +22,9 @@ module alu_tb;
     ) uut (
         .i_datoA(i_datoA),
         .i_datoB(i_datoB),
-        .i_operation(i_operation),
+        .i_op(i_operation),
         .i_shamt(i_shamt),
-        .o_data(o_data)
+        .o_resultALU(o_data)
     );
 
     // Test Procedure
