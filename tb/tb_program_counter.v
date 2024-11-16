@@ -30,29 +30,26 @@ module tb_program_counter;
     );
 
     // Clock generation
-    always #5 clk = ~clk; // 10ns clock period
+    always #10 clk = ~clk; // 10ns clock period
     
 
     // Test procedure
     initial begin
         // Initialize inputs
         clk = 0;
-        i_rst_n = 1;
-        @(posedge clk);
         i_rst_n = 0;
         i_jump = 0;
         i_addr2jump = 0;
         i_halt = 0;
         i_stall = 1;
-        @(posedge clk);
-        i_stall = 0;
+        #100
 
         // Apply reset and observe the initial state
         @(posedge clk);
         i_rst_n = 1;
         
         // Add a delay right after reset to observe the initial PC value
-        @(posedge clk);
+        
         //$display("After reset: PC = %h, PC+4 = %h", o_pcounter, o_pcounter4);
 
         // ** Test 1: Normal increment (PC + 4) **
@@ -60,7 +57,7 @@ module tb_program_counter;
         i_halt = 0;
         i_stall = 0;
         i_jump = 0;
-        @(posedge clk);
+        
         //$display("Test 1: PC = %h, PC+4 = %h", o_pcounter, o_pcounter4);
         
         repeat (5) @(posedge clk);

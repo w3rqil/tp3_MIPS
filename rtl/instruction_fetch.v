@@ -8,7 +8,7 @@ module instruction_fetch
     input wire [31:0] i_instr_data,  // Data to write if i_we is high
     input wire i_halt,
     input wire i_stall,
-    output wire [31:0] o_pcounter4,
+    //output wire [31:0] o_pcounter4,
     output reg  [31:0] o_instruction,
     output  wire [31:0] o_pcounter 
 );
@@ -22,7 +22,7 @@ module instruction_fetch
         .i_addr2jump(i_addr2jump),
         .i_jump    (i_jump),
         .o_pcounter (o_pcounter),
-        .o_pcounter4(o_pcounter4),
+        //.o_pcounter4(o_pcounter4),
         .i_halt     (i_halt),
         .i_stall    (i_stall)
     );
@@ -33,7 +33,7 @@ module instruction_fetch
         .NB_ADDR(8)
     ) ram1 (
         .clk        (clk),
-        .i_rst_n    (i_rst_n),
+       // .i_rst_n    (i_rst_n),
         .i_we       (i_we),               // Controlled externally, should be 0 during fetch phase
         .i_data     (i_instr_data),
         .i_addr_w   (o_pcounter[7:0]),      // Address from the program counter

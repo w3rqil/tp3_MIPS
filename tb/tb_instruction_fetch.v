@@ -27,14 +27,14 @@ module tb_instruction_fetch;
         .i_instr_data(i_instr_data),
         .i_halt      (i_halt),  
         .i_stall     (i_stall),
-        .o_pcounter4 (o_pcounter4),
+        //.o_pcounter4 (o_pcounter4),
         .o_instruction(o_instruction),
         .o_pcounter    (o_pcounter)
     );
 
     // Clock Generation
     initial clk = 0;
-    always #5 clk = ~clk;  // 10ns clock period
+    always #10 clk = ~clk;  // 10ns clock period
 
     // Test sequence
     initial begin
@@ -46,6 +46,7 @@ module tb_instruction_fetch;
         i_instr_data = 0;
         i_halt = 0;
         i_stall = 0;
+        #200;
 
         // Reset sequence
         repeat(5) @(posedge clk);
@@ -84,13 +85,13 @@ module tb_instruction_fetch;
         repeat(3) @(posedge clk);
 
         // jump to 0xC0
-        i_addr2jump = 32'h10;
+        i_addr2jump = 32'h40;
         i_jump = 1;
         @(posedge clk);
         i_jump = 0;
 
         @(posedge clk);
-        i_rst_n = 0; 
+        //i_rst_n = 0; 
         @(posedge clk); 
         i_rst_n = 1;
 
