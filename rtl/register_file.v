@@ -9,15 +9,15 @@ module register_file
     
     //write
     input wire              i_we                        ,
-    input wire  [NB_ADDR:0] i_wr_addr                   ,
-    input wire  [NB_DATA:0] i_wr_data                   ,
+    input wire  [NB_ADDR-1:0] i_wr_addr                   ,
+    input wire  [NB_DATA-1:0] i_wr_data                   ,
     
     //read               
-    input wire  [NB_ADDR:0] i_rd_addr1                  ,
-    input wire  [NB_ADDR:0] i_rd_addr2                  ,
+    input wire  [NB_ADDR-1:0] i_rd_addr1                  ,
+    input wire  [NB_ADDR-1:0] i_rd_addr2                  ,
 
-    output wire [NB_DATA:0] o_rd_data1                  ,
-    output wire [NB_DATA:0] o_rd_data2
+    output wire [NB_DATA-1:0] o_rd_data1                  ,
+    output wire [NB_DATA-1:0] o_rd_data2
 );
 
     reg [NB_DATA-1:0] reg_file[2**NB_ADDR:0]            ;

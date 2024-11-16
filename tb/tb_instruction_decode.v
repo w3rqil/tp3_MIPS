@@ -108,7 +108,7 @@ module tb_instruction_decode;
         i_instruction = 32'b001000_10001_00010_0000000000000100; // ADDI $2, $1, 4
         @(posedge clk);
         i_instruction = 32'b000010_00000000000000000000010000; // J 16
-        repeat(2) @(posedge clk);
+        repeat(4) @(posedge clk);
 
         // End simulation
         $stop;

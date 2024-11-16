@@ -85,6 +85,11 @@ module tb_control_unit;
         @(posedge clk);
         $display("BEQ: o_branch=%b, o_aluOp=%b", o_branch, o_aluOp);
 
+        // Test BNE instruction
+        i_opcode = 6'b000101; // BNE_TYPE
+        @(posedge clk);
+        $display("BNE: o_aluSrc=%b,o_branch=%b, o_aluOp=%b", o_aluSrc, o_branch, o_aluOp);
+
         // Test ADDI instruction
         i_opcode = 6'b001000; // ADDI_TYPE
         @(posedge clk);
@@ -94,6 +99,11 @@ module tb_control_unit;
         i_opcode = 6'b001101; // ORI_TYPE
         @(posedge clk);
         $display("ORI: o_aluOp=%b, o_immediate=%b, o_regWrite=%b", o_aluOp, o_immediate, o_regWrite);
+
+        // Test XORI instruction
+        i_opcode = 6'b001110; // XORI_TYPE
+        @(posedge clk);
+        $display("XORI: o_aluOp=%b, o_immediate=%b, o_regWrite=%b", o_aluOp, o_immediate, o_regWrite);
 
         // Test J instruction
         i_opcode = 6'b000010; // J_TYPE
@@ -109,7 +119,7 @@ module tb_control_unit;
         i_opcode = 6'b100000; // LB_TYPE
         @(posedge clk);
         $display("LB: o_memRead=%b, o_width=%b, o_sign_flag=%b", o_memRead, o_width, o_sign_flag);
-
+        
         // End simulation
         $stop;
     end
