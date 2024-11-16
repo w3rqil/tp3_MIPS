@@ -26,9 +26,9 @@ module instruction_decode
     output reg [5 :0]   o_opcode                        ,
     output reg [4 :0]   o_shamt                         ,
     output reg [5 :0]   o_func                          ,
-    output reg [15:0]   o_addr                          ,//jmp
-    output reg [15:0]   o_jmp_addr                      ,
-
+    output reg [15:0]   o_addr                          ,
+    output reg [32:0]   o_jmp_addr                      ,
+    output reg [1: 0]   o_jump_cases                    ,
     //ctrl unit
     output reg         o_jump                          , 
     output reg         o_branch                        , 
@@ -48,6 +48,14 @@ module instruction_decode
     wire [NB_DATA-1:0] wire_D1, wire_D2;
     wire [4 :0] rs, rt, rd;
     reg  [15:0] r_immediate;
+    parameter [5:0] 
+                    JR_TYPE     = 6'b001000,
+                    JARL_TYPE   = 6'b001001,
+                    R_TYPE      = 6'b000000,
+                    BEQ_TYPE    = 6'b000100,
+                    J_TYPE      = 6'b000010,
+                    JAL_TYPE    = 6'b000011,
+                    BNE_TYPE    = 6'b000101;
 
     // ---- ctrl unit ----
     //reg [5:0] reg_opcode, reg_funct;
@@ -100,9 +108,29 @@ module instruction_decode
 
 
     always @(*) begin : jumps
-        o_jump = 0;
-        o_branch =
-
+        if(w_jump || w_branch) begin // the following will execute only when a jump opcode is detected
+            case (o_opcode) 
+                R_TYPE: begin
+                    if(o_func == JR_TYPE) begin
+                        
+                    end else begin //jarl
+                        
+                    end
+                end
+                BEQ_TYPE: begin
+                    
+                end
+                BNE_TYPE: begin
+                    
+                end
+                JAL_TYPE: begin
+                    
+                end
+                J_TYPE: begin
+                    
+                end
+            endcase
+        end
     end
 
     always @(posedge clk or negedge i_rst_n) begin
