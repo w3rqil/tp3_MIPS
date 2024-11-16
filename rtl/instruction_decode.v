@@ -27,6 +27,7 @@ module instruction_decode
     output reg [4 :0]   o_shamt                         ,
     output reg [5 :0]   o_func                          ,
     output reg [15:0]   o_addr                          ,//jmp
+    output reg [15:0]   o_jmp_addr                      ,
 
     //ctrl unit
     output reg         o_jump                          , 
@@ -96,6 +97,13 @@ module instruction_decode
         .i_immediate_value  (r_immediate),
         .o_data             (w_immediat)
     );
+
+
+    always @(*) begin : jumps
+        o_jump = 0;
+        o_branch =
+
+    end
 
     always @(posedge clk or negedge i_rst_n) begin
         if(!i_rst_n) begin

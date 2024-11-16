@@ -81,7 +81,7 @@ module instruction_execute
     always @(*) begin: alu_ctrl
 
         case(aluOP)
-            LOAD_STORE: begin
+            LOAD_STORE: begin // load - store - j type
                 opcode = ADD                                    ; // to do
             end
             BRANCH: begin

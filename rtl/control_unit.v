@@ -44,11 +44,25 @@ module control_unit
                     LB_TYPE     = 6'b100000,
                     LH_TYPE     = 6'b100001,
                     BNE_TYPE    = 6'b000101,
-                    STLI_TYPE   = 6'b001010;
+                    STLI_TYPE   = 6'b001010,
+                    JR_TYPE     = 6'b001000,
+                    JARL_TYPE   = 6'b001001;
 
     reg r_jump, r_ALUSrc, r_branch, r_regDst, r_mem2Reg, r_regWrite, r_memRead, r_memWrite, r_immediate, r_sign_flag;
     reg [1:0] r_aluOP;
     reg [1:0] r_width;
+
+    JR_TYPE: begin
+        r_jump      = 1'b1      ;
+        r_regWrite  = 1'b1      ; // Save return address to rd
+
+    end
+    JARL_TYPE: begin
+        r_jump      = 1'b1      ;
+        r_regWrite  = 1'b1      ; // Save return address to rd
+        r_regDst    = 1'b1      ; // Destination register is rd
+    end
+
     always @(*) begin
         r_immediate = 1'b0;
         r_regDst    = 1'b0      ; 
@@ -68,12 +82,12 @@ module control_unit
             R_TYPE: begin
                 r_regDst    = 1'b1      ;
                 r_ALUSrc    = 1'b0      ;
-                r_mem2Reg   = 1'b0      ;
-                r_regWrite  = 1'b1      ;
+                r_mem2Reg   = ((i_funct == JARL_TYPE));
+                r_regWrite  = (i_funct == JR_TYPE) ? 1'b0 : 1'b1      ; //always asserted except for jr type
                 r_memRead   = 1'b0      ;
                 r_memWrite  = 1'b0      ;
                 r_branch    = 1'b0      ;
-                r_jump      = 1'b0      ;
+                r_jump      = ((i_funct == JR_TYPE) || (i_funct == JARL_TYPE));
                 r_aluOP     = 2'b10     ;
             end
             LW_TYPE: begin
@@ -244,6 +258,7 @@ module control_unit
                 r_jump      = 1'b1      ;
                 r_aluOP     = 2'b00     ; //x
             end
+
         endcase
     end
 
