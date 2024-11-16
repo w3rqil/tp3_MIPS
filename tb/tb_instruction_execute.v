@@ -107,7 +107,7 @@ module tb_instruction_execute;
         forever #5 clk = ~clk;  // 100 MHz clock
     end
 
-    // Test procedure
+    // Test procedure using @(posedge clk);
     initial begin
         // Initialize inputs
         i_rst_n = 0;
@@ -139,33 +139,31 @@ module tb_instruction_execute;
         i_fw_b = 2'b00;
 
         // Apply reset
-        #10 i_rst_n = 1;
-        // i_rst_n = 0;
-        
+        @(posedge clk);  // Wait for the first clock edge
+        i_rst_n = 1;     // Release reset
+        @(posedge clk);  // Wait for the next clock edge
+
         // Example stimulus
-        #10;
+        @(posedge clk);  // Wait for a clock edge
         i_reg_DA = 32'd10; // dato A
-        i_reg_DB = 32'd5; // dato B
+        i_reg_DB = 32'd5;  // dato B
         i_opcode = 6'b000000;  // R-type op-code
         i_func = 6'b100000;    // ADD function code for R-type
         i_aluOP = 2'b10;       // R-type operation
-        // i_rs = 5'd1;    
-        // i_rt = 5'd1;
-        // i_rd = 5'd1;
-        // i_regDst = 1;
-        // i_regWrite = 0;
+        @(posedge clk);  // Wait for another clock edge
 
-        #20;
-        #10;
+        // Next set of inputs
+        repeat(16) @(posedge clk);
         i_immediate_flag = 1;
         i_reg_DA = 32'h000000F0; // dato A
         i_reg_DB = 32'h00000001; // dato B
-        i_opcode = 6'b001000;  // ADDI op-code
+        i_opcode = 6'b001000;    // ADDI op-code
         i_immediate = 32'h0000000F; // immediate value
-        i_aluOP = 2'b11;       // I-type operation
+        i_aluOP = 2'b11;         // I-type operation
+
         // Further test cases can be added here
 
-        #100;
+        repeat(16) @(posedge clk);
         $stop;  // End simulation
     end
 

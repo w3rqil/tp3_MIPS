@@ -2,16 +2,17 @@ module instruction_fetch
 (
     input wire clk,
     input wire i_rst_n,
-    input wire i_valid,
+    input wire i_jump,
     input wire i_we,                 // Write enable for memory initialization only
     input wire [31:0] i_addr2jump,   // Address for jump
     input wire [31:0] i_instr_data,  // Data to write if i_we is high
     input wire i_halt,
     input wire i_stall,
     output wire [31:0] o_pcounter4,
-    output reg  [31:0] o_instruction
+    output reg  [31:0] o_instruction,
+    output  wire [31:0] o_pcounter 
 );
-    wire [31:0] pcounter;             // Current program counter
+    // wire [31:0] o_pcounter;             // Current program counter
     wire [31:0] instruction_data;     // Data fetched from memory
 
     // Instantiate program_counter module
@@ -19,8 +20,8 @@ module instruction_fetch
         .clk        (clk),
         .i_rst_n    (i_rst_n),
         .i_addr2jump(i_addr2jump),
-        .i_valid    (i_valid),
-        .o_pcounter (pcounter),
+        .i_jump    (i_jump),
+        .o_pcounter (o_pcounter),
         .o_pcounter4(o_pcounter4),
         .i_halt     (i_halt),
         .i_stall    (i_stall)
@@ -35,7 +36,7 @@ module instruction_fetch
         .i_rst_n    (i_rst_n),
         .i_we       (i_we),               // Controlled externally, should be 0 during fetch phase
         .i_data     (i_instr_data),
-        .i_addr_w   (pcounter[7:0]),      // Address from the program counter
+        .i_addr_w   (o_pcounter[7:0]),      // Address from the program counter
         .o_data     (instruction_data)
     );
 
