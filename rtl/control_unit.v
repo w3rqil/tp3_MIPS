@@ -13,16 +13,16 @@ module control_unit
     //output
     output wire         o_jump      , //! Controls whether a jump should be performed
     output wire [1:0]   o_aluSrc    , 
-    output wire [1:0]   o_aluOp     ,
+    output wire [1:0]   o_aluOp     , //! ALU operation to be performed (00: ADD | 01: OR | 10: SUB | 11: SLT)
     output wire         o_branch    ,
-    output wire         o_regDst    , //! dst reg for the wb stage
-    output wire         o_mem2Reg   , //! ctrl src of data to wb to register_file
-    output wire         o_regWrite  , //! write enable for register file
-    output wire         o_memRead   , //! enable reading
+    output wire         o_regDst    , //! dst reg for the wb stage (if 1 then rd else rt)
+    output wire         o_mem2Reg   , //! ctrl src of data to wb to register_file (1: Memory data is written to register file)
+    output wire         o_regWrite  , //! write enable for register file (1: Write to register file is enabled)
+    output wire         o_memRead   , //! enable reading from memory (1: Memory read is enabled)
     output wire         o_memWrite  , //! enable writinh to memory (1: Memory write is enabled (used for sw))
     output wire [1:0]   o_width     , //! width of the data to be written to memory. 11 = word | 01 = half word | 00 = byte
     output wire         o_sign_flag , //! sign flag for the load/store instructions || 0-Signed | 1-Unsigned
-    output wire         o_immediate
+    output wire         o_immediate   //! immediate flag for the immediate instructions || 0-Register | 1-Immediate
 );  
     
     localparam [5:0]
@@ -30,7 +30,7 @@ module control_unit
                     LW_TYPE     = 6'b100011,
                     SW_TYPE     = 6'b101011,
                     BEQ_TYPE    = 6'b000100,
-                    ADDI_TYPE   = 6'b000100,
+                    ADDI_TYPE   = 6'b001000,
                     J_TYPE      = 6'b000010,
                     JAL_TYPE    = 6'b000011,
                     LHU_TYPE    = 6'b100101,
@@ -128,7 +128,7 @@ module control_unit
                 r_branch    = 1'b0      ;
                 r_jump      = 1'b0      ;
                 r_aluOP     = 2'b00     ;
-                r_immediate = 1'b0      ;
+                r_immediate = 1'b1      ;
             end
             ORI_TYPE: begin // 
                 r_regDst    = 1'b0;
@@ -258,4 +258,5 @@ module control_unit
     assign o_regDst        = r_regDst           ;
     assign o_regWrite      = r_regWrite         ;
     assign o_width         = r_width            ;
+    assign o_sign_flag     = r_sign_flag        ;
 endmodule

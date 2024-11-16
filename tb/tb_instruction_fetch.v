@@ -27,7 +27,7 @@ module tb_instruction_fetch;
         .i_instr_data(i_instr_data),
         .i_halt      (i_halt),  
         .i_stall     (i_stall),
-        //.o_pcounter4 (o_pcounter4),
+        .o_pcounter4 (o_pcounter4),
         .o_instruction(o_instruction),
         .o_pcounter    (o_pcounter)
     );

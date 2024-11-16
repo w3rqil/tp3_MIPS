@@ -104,7 +104,7 @@ module tb_instruction_execute;
     // Clock generation
     initial begin
         clk = 0;
-        forever #5 clk = ~clk;  // 100 MHz clock
+        forever #10 clk = ~clk;  // 100 MHz clock
     end
 
     // Test procedure using @(posedge clk);
