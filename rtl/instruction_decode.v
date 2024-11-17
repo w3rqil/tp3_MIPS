@@ -4,15 +4,15 @@ module instruction_decode
     parameter NB_ADDR = 5,
     parameter NB_REG  = 1
 )(
-    input wire          clk                             ,
-    input wire          i_rst_n                         ,
+    input wire                 clk                      ,
+    input wire                 i_rst_n                  ,
     input wire [NB_DATA-1:0]   i_instruction            ,
     input wire [NB_DATA-1:0]   i_pcounter4              ,
-    input wire          i_we_wb                         ,
-    input wire          i_we                            ,
+    input wire                 i_we_wb                  ,
+    input wire                 i_we                     ,
     input wire [NB_ADDR-1:0]   i_wr_addr                ,
     input wire [NB_DATA-1:0]   i_wr_data_WB             ,
-    input wire          i_stall                         ,
+    input wire                 i_stall                  ,
     //      
     //      
     output reg [4:0]    o_rs                            ,
@@ -23,25 +23,25 @@ module instruction_decode
     output reg [NB_DATA-1:0]   o_reg_DB                 ,
 
     output reg [NB_DATA-1:0]   o_immediate              ,
-    output reg [5 :0]   o_opcode                        ,
-    output reg [4 :0]   o_shamt                         ,
-    output reg [5 :0]   o_func                          ,
-    output reg [15:0]   o_addr                          ,
-    output reg [32:0]   o_addr2jump                     ,
-    output reg [1: 0]   o_jump_cases                    ,
+    output reg [5 :0]           o_opcode                ,
+    output reg [4 :0]           o_shamt                 ,
+    output reg [5 :0]           o_func                  ,
+    output reg [15:0]           o_addr                  ,
+    output reg [32:0]           o_addr2jump             ,
+    output reg [1: 0]           o_jump_cases            ,
     //ctrl unit
-    output reg         o_jump                           , 
-    output reg         o_branch                         , 
-    output reg         o_regDst                         , 
-    output reg         o_mem2Reg                        , 
-    output reg         o_memRead                        , 
-    output reg         o_memWrite                       , 
-    output reg         o_immediate_flag                 , 
-    output reg         o_sign_flag                      ,
-    output reg         o_regWrite                       ,
-    output reg [1:0]   o_aluSrc                         ,
-    output reg [1:0]   o_width                          ,
-    output reg [1:0]   o_aluOp
+    output reg                  o_jump                  , 
+    output reg                  o_branch                , 
+    output reg                  o_regDst                , 
+    output reg                  o_mem2Reg               , 
+    output reg                  o_memRead               , 
+    output reg                  o_memWrite              , 
+    output reg                  o_immediate_flag        , 
+    output reg                  o_sign_flag             ,
+    output reg                  o_regWrite              ,
+    output reg [1:0]            o_aluSrc                ,
+    output reg [1:0]            o_width                 ,
+    output reg [1:0]            o_aluOp
 
 );
 
