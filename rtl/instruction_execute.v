@@ -37,6 +37,8 @@ module instruction_execute
     //fwd unit
     input wire [1:0]            i_fw_a                          ,
     input wire [1:0]            i_fw_b                          ,
+    input wire [NB_DATA-1:0]    i_output_MEMWB                  , //result wb stage
+    input wire [NB_DATA-1:0]    i_output_EXMEM                  , // o_result 
     
     
     // ctrl signals
@@ -56,7 +58,8 @@ module instruction_execute
 
 );
     localparam [5:0]
-                    ADD = 6'b000000                            ;
+                    ADD = 6'b000000                             ,
+                    IDLE= 6'b111111                             ;
 
     localparam [2:1]
                 ADDI    = 3'b000                                ,
@@ -81,12 +84,11 @@ module instruction_execute
     always @(*) begin: alu_ctrl
 
         case(aluOP)
-            LOAD_STORE: begin // load - store - j type
-                opcode = ADD                                    ; // to do
+            LOAD_STORE: begin // load - store - jalr - jal type
+                opcode = ADD                                    ; 
             end
             BRANCH: begin
-                // sub
-                // to do
+                opcode = IDLE                                   ;
             end
             R_TYPE: begin
                 // and
@@ -112,11 +114,11 @@ module instruction_execute
             end
             2'b10: begin
                 // datoA = datoB
-                //alu_datoA = i_output_MEMWB
+                alu_datoA = i_output_MEMWB
             end
             2'b11: begin
                 // datoA = datoB
-                //alu_datoA = i_output_EXMEM
+                alu_datoA = i_output_EXMEM
             end
             default: begin
                 // nop
@@ -135,11 +137,11 @@ module instruction_execute
             end
             2'b10: begin
                 // datoB = datoB
-                //alu_datoB = i_output_MEMWB
+                alu_datoB = i_output_MEMWB
             end
             2'b11: begin
                 // datoB = datoB
-                //alu_datoB = i_output_EXMEM
+                alu_datoB = i_output_EXMEM
             end
             default: begin
                 // nop
@@ -177,7 +179,7 @@ module instruction_execute
             o_width   <= 2'b11                                  ;
             o_sign_flag<= 1'b0                                  ;
         end else begin
-            aluOP   <= i_aluOP                                    ;
+            aluOP   <= i_aluOP                                  ;
             o_mem2reg   <= i_mem2Reg                            ;
             o_memRead   <= i_memRead                            ;
             o_memWrite  <= i_memWrite                           ;
@@ -192,15 +194,15 @@ module instruction_execute
     end
 
     alu #(
-        .NB_DATA(NB_DATA        ),
-        .NB_OP  (6              )
+        .NB_DATA    (NB_DATA        ),
+        .NB_OP      (6              )
     ) alu1
     (
-        .i_op   (opcode         ),
-        .i_datoA(alu_datoA      ),
-        .i_datoB(alu_datoB      ),
-        .i_shamt(i_shamt        ),
-        .o_resultALU(alu_result    )
+        .i_op       (opcode         ),
+        .i_datoA    (alu_datoA      ),
+        .i_datoB    (alu_datoB      ),
+        .i_shamt    (i_shamt        ),
+        .o_resultALU(alu_result     )
     );
 
 
