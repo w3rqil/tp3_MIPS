@@ -30,32 +30,32 @@ module instruction_decode
     output reg [32:0]   o_addr2jump                     ,
     output reg [1: 0]   o_jump_cases                    ,
     //ctrl unit
-    output reg         o_jump                          , 
-    output reg         o_branch                        , 
-    output reg         o_regDst                        , 
-    output reg         o_mem2Reg                       , 
-    output reg         o_memRead                       , 
-    output reg         o_memWrite                      , 
-    output reg         o_immediate_flag                , 
-    output reg         o_sign_flag                     ,
-    output reg         o_regWrite                      ,
-    output reg [1:0]   o_aluSrc                        ,
-    output reg [1:0]   o_width                         ,
+    output reg         o_jump                           , 
+    output reg         o_branch                         , 
+    output reg         o_regDst                         , 
+    output reg         o_mem2Reg                        , 
+    output reg         o_memRead                        , 
+    output reg         o_memWrite                       , 
+    output reg         o_immediate_flag                 , 
+    output reg         o_sign_flag                      ,
+    output reg         o_regWrite                       ,
+    output reg [1:0]   o_aluSrc                         ,
+    output reg [1:0]   o_width                          ,
     output reg [1:0]   o_aluOp
 
 );
 
-    wire [NB_DATA-1:0] wire_D1, wire_D2;
-    wire [4 :0] rs, rt, rd;
-    reg  [15:0] r_immediate;
+    wire [NB_DATA-1:0] wire_D1, wire_D2                 ;
+    wire [4 :0] rs, rt, rd                              ;
+    reg  [15:0] r_immediate                             ;
     parameter [5:0] 
-                    JR_TYPE     = 6'b001000,
-                    JARL_TYPE   = 6'b001001,
-                    R_TYPE      = 6'b000000,
-                    BEQ_TYPE    = 6'b000100,
-                    J_TYPE      = 6'b000010,
-                    JAL_TYPE    = 6'b000011,
-                    BNE_TYPE    = 6'b000101;
+                    JR_TYPE     = 6'b001000             ,
+                    JARL_TYPE   = 6'b001001             ,
+                    R_TYPE      = 6'b000000             ,
+                    BEQ_TYPE    = 6'b000100             ,
+                    J_TYPE      = 6'b000010             ,
+                    JAL_TYPE    = 6'b000011             ,
+                    BNE_TYPE    = 6'b000101             ;
 
     // ---- ctrl unit ----
     //reg [5:0] reg_opcode, reg_funct;
@@ -79,65 +79,65 @@ module instruction_decode
     control_unit #()
     controlU1
     (
-        .clk        (clk        ),
-        .i_rst_n    (i_rst_n    ),
-        .i_opcode   (o_opcode   ),
-        .i_funct    (o_func     ),
-        
-        .o_jump     (w_jump     ),
-        .o_aluSrc   (w_aluSrc   ),
-        .o_aluOp    (w_aluOp    ),
-        .o_branch   (w_branch   ),
-        .o_regDst   (w_regDst   ),
-        .o_mem2Reg  (w_mem2Reg  ),
-        .o_regWrite (w_regWrite ),
-        .o_memRead  (w_memRead  ),
-        .o_memWrite (w_memWrite ),
-        .o_width    (w_width    ),
-        .o_sign_flag(w_sign_flag),
+        .clk        (clk        )                       ,
+        .i_rst_n    (i_rst_n    )                       ,
+        .i_opcode   (o_opcode   )                       ,
+        .i_funct    (o_func     )                       ,
+
+        .o_jump     (w_jump     )                       ,
+        .o_aluSrc   (w_aluSrc   )                       ,
+        .o_aluOp    (w_aluOp    )                       ,
+        .o_branch   (w_branch   )                       ,
+        .o_regDst   (w_regDst   )                       ,
+        .o_mem2Reg  (w_mem2Reg  )                       ,
+        .o_regWrite (w_regWrite )                       ,
+        .o_memRead  (w_memRead  )                       ,
+        .o_memWrite (w_memWrite )                       ,
+        .o_width    (w_width    )                       ,
+        .o_sign_flag(w_sign_flag)                       ,
         .o_immediate(w_immediate)
     );
 
     sign_extension #()
     se1
     (
-        .i_immediate_flag   (w_immediate),
-        .i_immediate_value  (r_immediate),
+        .i_immediate_flag   (w_immediate)               ,
+        .i_immediate_value  (r_immediate)               ,
         .o_data             (w_immediat)
     );
 
 
     always @(*) begin : jumps
         if(w_jump || w_branch) begin // the following will execute only when a jump opcode is detected
-            o_jump = 1'b0;
+            o_jump = 1'b0                                                                   ;
             case (o_opcode) 
                 R_TYPE: begin //jr o jalr
                     
                     
-                    o_jump = 1'b1;
-                    o_addr2jump = wire_D1; //RA
+                    o_jump = 1'b1                                                           ;
+                    o_addr2jump = wire_D1                                                   ; //RA
                     
                     
                 end
                 BEQ_TYPE: begin
                     if(wire_D1 == wire_D2) begin
-                        o_jump = 1'b1;
-                        o_addr2jump = i_pcounter4 + (w_immediat << 2) + 4;
+                        o_jump = 1'b1                                                       ;
+                        o_addr2jump = i_pcounter4 + (w_immediat << 2) + 4                   ;
                     end
                 end
                 BNE_TYPE: begin
                     if(wire_D1 != wire_D2) begin
-                        o_jump = 1'b1;
-                        o_addr2jump = i_pcounter4 + (w_immediat << 2) + 4;
+                        o_jump = 1'b1                                                       ;
+                        o_addr2jump = i_pcounter4 + (w_immediat << 2) + 4                   ;
                     end
                 end
                 JAL_TYPE: begin
-                    o_jump = 1'b1;
-                    o_jump_addr = {i_pcounter4[31:28], i_instruction[25:0], 2'b00};
+                    o_jump = 1'b1                                                           ;
+                    o_jump_addr = {i_pcounter4[31:28], i_instruction[25:0], 2'b00}          ;
                 end
                 J_TYPE: begin
-                    o_jump = 1'b1;
-                    o_jump_addr = {i_pcounter4[31:28], i_instruction[25:0], 2'b00};
+                    o_jump = 1'b1                                                           ;
+                    o_jump_addr = {i_pcounter4[31:28], i_instruction[25:0], 2'b00}          ;
                 end
             endcase
         end
