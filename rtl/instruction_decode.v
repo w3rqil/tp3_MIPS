@@ -27,7 +27,7 @@ module instruction_decode
     output reg [4 :0]           o_shamt                 ,
     output reg [5 :0]           o_func                  ,
     output reg [15:0]           o_addr                  ,
-    output reg [32:0]           o_addr2jump             ,
+    output reg [31:0]           o_addr2jump             ,
     output reg [1: 0]           o_jump_cases            ,
     //ctrl unit
     output reg                  o_jump                  , 
