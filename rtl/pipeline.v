@@ -1,8 +1,14 @@
 module pipeline
 #()
 (
-    input wire clk,
-    input wire i_rst_n,
+    input wire          clk                 ,
+    input wire          i_rst_n             ,
+    input wire          i_we_IF             ,
+    input wire [31:0]   i_instruction_data  ,
+    input wire          i_halt              , //??????????????
+
+    //out
+
 
 
 );
@@ -91,12 +97,12 @@ module pipeline
         .i_rst_n        (i_rst_n            ),
         // ID
         .i_jump         (jumpID2EX          ),
-        .i_we           (),  
+        .i_we           (i_we_IF            ),  
         .i_addr2jump    (addr2jumpID2IF     ),  
         // uart
-        .i_instr_data   (),  
-        .i_halt         (),
-        .i_stall        (),
+        .i_instr_data   (i_instruction_data ),  
+        .i_halt         (i_halt             ),
+        .i_stall        (), // from HDU
         //out
         .o_pcounter4    (pcounterIF2ID      ),
         .o_instruction  (instructionIF2ID   ),
