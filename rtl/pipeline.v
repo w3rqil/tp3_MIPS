@@ -1,8 +1,304 @@
 module pipeline
 #()
 (
+    input wire clk,
+    input wire i_rst_n,
+
 
 );
+
+
+    // P A R A M S
+    localparam  NB_DATA = 32,
+                NB_ADDR = 5 ;
+
+
+    //---------------------------------------------
+    //---------------------------------------------
+    // V A R s
+    //---------------------------------------------
+    //---------------------------------------------
+
+    
+    // IF 2 ID
+    wire [31:0]
+                pcounterIF2ID       ,
+                instructionIF2ID    ;
+
+    wire [31:0]
+                addr2jumpID2IF;
+
+
+    
+    // ID 2 EX
+    wire [4:0]
+                rsID2EX,
+                rtID2EX,
+                rdID2EX;
+    wire [NB_DATA-1:0]
+                        datoAID2EX      ,
+                        datoBID2EX      ,
+                        immediateID2EX  ;
+    //ctrl out
+    wire jumpID2EX, branchID2EX, regDstID2EX, mem2RegID2EX  , 
+         memWriteID2EX, immediate_flagID2EX, sign_flagID2EX , 
+         regWriteID2EX, memReadID2EX                        ;
+
+    wire [5:0]
+                opcodeID2EX ,
+                funcID2EX   ;
+
+    wire [4:0]
+                shamtID2EX;
+    wire [1:0]
+                aluSrcID2EX , 
+                widthID2EX  , 
+                aluOpID2EX  ;
+        
+    // FU 2 EX
+                parameter NB_FW = 2;
+                wire [NB_FW-1 : 0]
+                                    fwB_FU2EX,
+                                    fwA_FU2EX;
+
+    // EX 2 MEM
+    //ctrl
+    wire [1:0]
+                aluSrcEX2MEM , 
+                widthEX2MEM  ;
+    
+    wire    jumpEX2MEM, branchEX2MEM, regDstEX2MEM, mem2RegEX2MEM   , 
+            memWriteEX2MEM, immediate_flagEX2MEM, sign_flagEX2MEM   , 
+            regWriteEX2MEM, memReadEX2MEM                           ;
+
+    wire [4:0] write_regEX2MEM;
+    wire [NB_DATA-1:0] data4MemEX2MEM, resultALUEX2MEM;
+
+
+    // MEM 2 WB
+    wire [NB_DATA-1:0] reg_readMEM2WB, resultALUMEM2WB;
+    wire [NB_ADDR-1:0] reg2writeMEM2WB;
+    //ctrl
+    wire mem2regMEM2WB, regWriteMEM2WB;
+
+    // WB2ID
+    wire [NB_DATA-1:0] write_dataWB2ID  ;
+    wire [NB_ADDR-1:0] reg2writeWB2ID   ;
+    wire               regWriteWB2ID    ; // write enable
+
+    instruction_fetch (
+        .clk            (clk                ),
+        .i_rst_n        (i_rst_n            ),
+        // ID
+        .i_jump         (jumpID2EX          ),
+        .i_we           (),  
+        .i_addr2jump    (addr2jumpID2IF     ),  
+        // uart
+        .i_instr_data   (),  
+        .i_halt         (),
+        .i_stall        (),
+        //out
+        .o_pcounter4    (pcounterIF2ID      ),
+        .o_instruction  (instructionIF2ID   ),
+        .o_pcounter     ()
+    );
+
+    instruction_decode #(
+        .NB_DATA        (NB_DATA),
+        .NB_ADDR        (NB_ADDR),
+        .NB_REG         ()
+    )(
+        .clk                      (clk              ),
+        .i_rst_n                  (i_rst_n          ),
+        // IF
+        .i_instruction            (instructionIF2ID ),
+        .i_pcounter4              (pcounterIF2ID    ),
+        // WB
+        .i_we_wb                  (    ),
+        .i_we                     (regWriteWB2ID    ),
+        .i_wr_addr                (reg2writeWB2ID   ),
+        .i_wr_data_WB             (write_dataWB2ID  ),
+
+        .i_stall                  (),
+        //------------------------------------
+        //out
+        .o_rs                     (rsID2EX),
+        .o_rt                     (rtID2EX),
+        .o_rd                     (rdID2EX),
+
+        .o_reg_DA                 (datoAID2EX),
+        .o_reg_DB                 (datoBID2EX),
+
+        .o_immediate              (immediateID2EX   ),
+        .o_opcode                 (opcodeID2EX      ),
+        .o_shamt                  (shamtID2EX       ),
+        .o_func                   (funcID2EX        ),
+        //id-if
+        .o_addr                   (),
+        .o_addr2jump              (addr2jumpID2IF   ),
+        .o_jump_cases             (),
+
+            //ctrl unit
+        .o_jump                   (jumpID2EX            ), 
+        .o_branch                 (branchID2EX          ), 
+        .o_regDst                 (regDstID2EX          ), 
+        .o_mem2Reg                (mem2RegID2EX         ), 
+        .o_memRead                (memReadID2EX         ), 
+        .o_memWrite               (memWriteID2EX        ), 
+        .o_immediate_flag         (immediate_flagID2EX  ), 
+        .o_sign_flag              (sign_flagID2EX       ),
+        .o_regWrite               (regWriteID2EX        ),
+        .o_aluSrc                 (aluSrcID2EX          ),
+        .o_width                  (widthID2EX           ),
+        .o_aluOp                  (aluOpID2EX           )
+
+    );
+
+
+    instruction_execute #(
+        .NB_DATA(NB_DATA)
+    )
+    (
+        .clk                             (clk       ),
+        .i_rst_n                         (i_rst_n   ),
+        // hzrd?
+        .i_stall                         (),
+        .i_halt                          (),
+    
+        .i_rs                            (rsID2EX               ),
+        .i_rt                            (rtID2EX               ),
+        .i_rd                            (rdID2EX               ),
+    
+        .i_reg_DA                        (datoAID2EX            ),
+        .i_reg_DB                        (datoBID2EX            ),
+    
+        .i_immediate                     (immediateID2EX        ),
+        .i_opcode                        (opcodeID2EX           ),
+        .i_shamt                         (shamtID2EX            ),
+        .i_func                          (funcID2EX             ),
+        .i_addr                          (),//jmp
+    
+        //ctrl unit
+        .i_jump                          (jumpID2EX             ), 
+        .i_branch                        (branchID2EX           ), 
+        .i_regDst                        (regDstID2EX           ), 
+        .i_mem2Reg                       (mem2RegID2EX          ), 
+        .i_memRead                       (memReadID2EX          ), 
+        .i_memWrite                      (memWriteID2EX         ), 
+        .i_immediate_flag                (immediate_flagID2EX   ), 
+        .i_regWrite                      (regWriteID2EX         ),
+        .i_aluSrc                        (aluSrcID2EX           ),
+        .i_aluOP                         (aluOpID2EX            ),
+        .i_width                         (widthID2EX            ),
+        .i_sign_flag                     (sign_flagID2EX        ),
+        //fwd unit
+        .i_fw_a                          (fwA_FU2EX             ),
+        .i_fw_b                          (fwB_FU2EX             ),
+        .i_output_MEMWB                  (write_dataWB2ID       ), //result wb stage
+        .i_output_EXMEM                  (resultALUEX2MEM       ), // o_result 
+        
+        
+        // ctrl signals
+        .o_mem2reg                       (mem2RegEX2MEM         ),
+        .o_memRead                       (memReadEX2MEM         ),
+        .o_memWrite                      (memWriteEX2MEM        ),
+        .o_regWrite                      (regWriteEX2MEM        ),
+        .o_aluSrc                        (aluSrcEX2MEM          ),
+        .o_jump                          (),
+    
+        .o_sign_flag                     (sign_flagEX2MEM       ),
+        .o_width                         (widthEX2MEM           ),
+        .o_write_reg                     (write_regEX2MEM       ), // EX/MEM.RegisterRd for control unit
+        .o_aluOP                         (),
+        .o_data4Mem                      (data4MemEX2MEM        ),
+        .o_result                        (resultALUEX2MEM       )
+    
+    );
+    
+
+    
+
+    forwarding_unit #(
+        .NB_ADDR(NB_ADDR),
+        .NB_FW  (NB_FW)
+
+    )( 
+        .clk        (clk    ),
+        .i_rst_n    (i_rst_n),
+
+        .i_stall    (),
+        .i_halt     (),
+
+        .i_rs_IFID       (rsID2EX),
+        .i_rt_IFID       (rtID2EX),
+
+        .i_rd_IDEX       (write_regEX2MEM), //rd out EX
+        .i_rd_EX_MEMWB   (reg2writeWB2ID), //rd out WB
+
+        .i_wr_WB         (regWriteWB2ID ),
+        .i_wr_MEM        (regWriteMEM2WB),
+        .o_fw_b          (fwB_FU2EX     ),
+        .o_fw_a          (fwA_FU2EX     )
+    );
+
+
+    memory_access #(
+        .NB_DATA(),
+        .NB_ADDR(),
+        .NB_REG ()
+    )(
+        .clk                             (clk),
+        .i_rst_n                         (i_rst_n),
+
+        .i_stall                         (),
+        .i_halt                          (),
+
+        .i_reg2write                     (write_regEX2MEM   ), //! o_write_reg from instruction_execute
+        .i_result                        (resultALUEX2MEM   ), //! o_result from instruction_execute
+        .i_aluOP                         (), //! opcode NO LO USO
+        .i_width                         (widthEX2MEM       ), //! width
+        .i_sign_flag                     (sign_flagEX2MEM   ), //! sign flag || 1 = signed, 0 = unsigned
+        .i_mem2reg                       (mem2RegEX2MEM     ),
+        .i_memRead                       (memReadEX2MEM     ),
+        .i_memWrite                      (memWriteEX2MEM    ), //! Si 1 -> STORE || escribo en memoria
+        .i_regWrite                      (regWriteEX2MEM    ),
+        .i_aluSrc                        (aluSrcEX2MEM      ),
+        .i_jump                          (),
+        .i_data4Mem                      (data4MemEX2MEM    ), //! src data for store ops
+    
+    
+    
+        .o_reg_read                      (reg_readMEM2WB    ), //! data from memory 
+        .o_ALUresult                     (resultALUMEM2WB   ), //! alu result
+        .o_reg2write                     (reg2writeMEM2WB   ), //! o_write_reg from execute (rd or rt)
+    
+        // ctrl signals
+        .o_mem2reg                       (mem2regMEM2WB     ), //! 0-> guardo el valor de leído || 1-> guardo valor de alu
+        .o_regWrite                      (regWriteMEM2WB    )  //! writes the value
+    );
+    
+    // WB2ID
+    wire [NB_DATA-1:0] write_dataWB2ID  ;
+    wire [NB_ADDR-1:0] reg2writeWB2ID   ;
+    wire               regWriteWB2ID    ; // write enable
+    write_back #(
+        .NB_DATA (NB_DATA),
+        .NB_ADDR (NB_ADDR),
+        .NB_REG  ()
+    )
+    (
+        .i_reg_read      (reg_readMEM2WB    ),//! data from memory 
+        .i_ALUresult     (resultALUMEM2WB   ),//! alu result
+        .i_reg2write     (reg2writeMEM2WB   ),//! o_write_reg from execute (rd or rt)
+
+        .i_mem2reg       (mem2regMEM2WB     ), //! 1-> guardo el valor de leído || 0-> guardo valor de alu
+        .i_regWrite      (regWriteMEM2WB    ), //! writes the value
+
+        .o_write_data    (write_dataWB2ID   ), //! data2write
+        .o_reg2write     (reg2writeWB2ID    ), //! dst reg
+        .o_regWrite      (regWriteWB2ID     )  //!ctrl signal
+    );
+
 
 
 endmodule
