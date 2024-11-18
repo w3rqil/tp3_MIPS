@@ -89,30 +89,30 @@ module pipeline
                 rtID2EX,
                 rdID2EX;
     wire [NB_DATA-1:0]
-                        datoAID2EX      ,
-                        datoBID2EX      ,
-                        immediateID2EX  ;
+                        datoAID2EX                          ,
+                        datoBID2EX                          ,
+                        immediateID2EX                      ;
     //ctrl out
     wire jumpID2EX, branchID2EX, regDstID2EX, mem2RegID2EX  , 
          memWriteID2EX, immediate_flagID2EX, sign_flagID2EX , 
          regWriteID2EX, memReadID2EX                        ;
 
     wire [5:0]
-                opcodeID2EX ,
-                funcID2EX   ;
+                opcodeID2EX                                 ,
+                funcID2EX                                   ;
 
     wire [4:0]
-                shamtID2EX;
+                shamtID2EX                                  ;
     wire [1:0]
-                aluSrcID2EX , 
-                widthID2EX  , 
-                aluOpID2EX  ;
+                aluSrcID2EX                                 , 
+                widthID2EX                                  , 
+                aluOpID2EX                                  ;
         
     // FU 2 EX
-                parameter NB_FW = 2;
-                wire [NB_FW-1 : 0]
-                                    fwB_FU2EX,
-                                    fwA_FU2EX;
+    parameter NB_FW = 2;
+    wire [NB_FW-1 : 0]
+                        fwB_FU2EX,
+                        fwA_FU2EX;
 
     // EX 2 MEM
     //ctrl
@@ -139,6 +139,35 @@ module pipeline
     wire [NB_ADDR-1:0] reg2writeWB2ID   ;
     wire               regWriteWB2ID    ; // write enable
 
+
+    // HDU
+    wire stall;
+    wire [4:0] rsIF2ID;
+    wire [4:0] rtIF2ID;
+
+    wire [1:0] jumpType;
+
+
+
+    hazard_detection_unit (
+            // Inputs
+        .i_ID_EX_RegisterRt (rtIF2ID),
+        .i_IF_ID_RegisterRs (rsIF2ID),
+        .i_IF_ID_RegisterRt (rtID2EX),
+        .i_ID_EX_MemRead    (memReadID2EX),
+
+        .i_jumpType         (jumpType),
+
+        .i_EX_RegisterRd    (write_regEX2MEM),
+        .i_MEM_RegisterRd   (reg2writeMEM2WB),
+        .i_WB_RegisterRd    (reg2writeWB2ID),
+        .i_EX_WB_Write      (regWriteEX2MEM),
+        .i_MEM_WB_Write     (regWriteMEM2WB),
+        .i_WB_WB_Write      (regWriteWB2ID),
+        // Output
+        .o_stall            (stall)     // Signal to stall the pipeline
+    )
+
     instruction_fetch (
         .clk            (clk                ),
         .i_rst_n        (i_rst_n            ),
@@ -155,7 +184,9 @@ module pipeline
         .o_instruction  (instructionIF2ID   ),
         .o_pcounter     ()
     );
-
+    
+    assign rsIF2ID = instructionIF2ID[25:21];
+    assign rtIF2ID = instructionIF2ID[20:16];
     instruction_decode #(
         .NB_DATA        (NB_DATA),
         .NB_ADDR        (NB_ADDR),
@@ -172,15 +203,15 @@ module pipeline
         .i_wr_addr                (reg2writeWB2ID   ),
         .i_wr_data_WB             (write_dataWB2ID  ),
 
-        .i_stall                  (),
+        .i_stall                  (stall),
         //------------------------------------
         //out
-        .o_rs                     (rsID2EX),
-        .o_rt                     (rtID2EX),
-        .o_rd                     (rdID2EX),
+        .o_rs                     (rsID2EX          ),
+        .o_rt                     (rtID2EX          ),
+        .o_rd                     (rdID2EX          ),
 
-        .o_reg_DA                 (datoAID2EX),
-        .o_reg_DB                 (datoBID2EX),
+        .o_reg_DA                 (datoAID2EX       ),
+        .o_reg_DB                 (datoBID2EX       ),
 
         .o_immediate              (immediateID2EX   ),
         .o_opcode                 (opcodeID2EX      ),
@@ -189,7 +220,7 @@ module pipeline
         //id-if
         .o_addr                   (),
         .o_addr2jump              (addr2jumpID2IF   ),
-        .o_jump_cases             (),
+        .o_jump_cases             (jumpType         ),
 
             //ctrl unit
         .o_jump                   (jumpID2EX            ), 
@@ -215,7 +246,7 @@ module pipeline
         .clk                             (clk       ),
         .i_rst_n                         (i_rst_n   ),
         // hzrd?
-        .i_stall                         (),
+        .i_stall                         (stall),
         .i_halt                          (),
     
         .i_rs                            (rsID2EX               ),
@@ -279,7 +310,7 @@ module pipeline
         .clk        (clk    ),
         .i_rst_n    (i_rst_n),
 
-        .i_stall    (),
+        .i_stall    (stall),
         .i_halt     (),
 
         .i_rs_IFID       (rsID2EX),
@@ -303,7 +334,7 @@ module pipeline
         .clk                             (clk),
         .i_rst_n                         (i_rst_n),
 
-        .i_stall                         (),
+        .i_stall                         (stall),
         .i_halt                          (),
 
         .i_reg2write                     (write_regEX2MEM   ), //! o_write_reg from instruction_execute
@@ -380,7 +411,7 @@ module pipeline
 
     // ID out
     assign o_addr2jump     = addr2jumpID2IF     ;//! ID 2 IF
-    
+
     assign o_reg_DA        = datoAID2EX         ;
     assign o_reg_DB        = datoBID2EX         ;
 
