@@ -64,7 +64,7 @@ module tb_memory_access;
     // Generador de reloj
     initial begin
         clk = 0;
-        forever #5 clk = ~clk;  // 100 MHz clock
+        forever #10 clk = ~clk;  // 100 MHz clock
     end
 
     // Procedimiento de prueba
@@ -85,6 +85,7 @@ module tb_memory_access;
         i_aluSrc = 2'b00;
         i_jump = 0;
         i_data4Mem = 32'd0;
+        #200
 
         // Aplicar reset
         @(posedge clk);
@@ -103,21 +104,21 @@ module tb_memory_access;
         i_memRead = 1;          // Habilitar lectura de memoria
         i_result = 8'd4;       // Dirección de lectura
 
-        // @(posedge clk);
-        // i_memRead = 0;          // Deshabilitar lectura
+        @(posedge clk);
+        i_memRead = 0;          // Deshabilitar lectura
 
         // Otros casos de prueba
-        // @(posedge clk);
-        // i_memWrite = 1;
-        // i_width = 2'b00;        // Escritura de byte
-        // i_sign_flag = 1;        // Signo habilitado
-        // i_data4Mem = 32'hFF;
-        // i_result = 32'd8;
+        @(posedge clk);
+        i_memWrite = 1;
+        i_width = 2'b00;        // Escritura de byte
+        i_sign_flag = 1;        // Signo habilitado
+        i_data4Mem = 32'hFF;
+        i_result = 32'd8;
 
-        // @(posedge clk);
-        // i_memWrite = 0;
-        // i_memRead = 1;
-        // i_result = 32'd8;
+        @(posedge clk);
+        i_memWrite = 0;
+        i_memRead = 1;
+        i_result = 32'd8;
 
         // Finalizar la simulación
         repeat(2) @(posedge clk);
