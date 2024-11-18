@@ -9,6 +9,53 @@ module pipeline
 
     //out
 
+    // IF
+
+
+    // ctrl unit flags (ID)
+    output wire                     o_jump          , // revisar
+    output wire                     o_branch        ,
+    output wire                     o_regDst        ,
+    output wire                     o_mem2reg       ,
+    output wire                     o_memRead       ,
+    output wire                     o_memWrite      ,
+    output wire                     o_immediate_flag,
+    output wire                     o_sign_flag     ,
+    output wire                     o_regWrite      ,
+    output wire [1:0]               o_aluSrc        ,
+    output wire [1:0]               o_width         ,
+    output wire [1:0]               o_aluOp         ,
+
+    // ID out
+    output wire [NB_DATA-1:0]       o_addr2jump     , //! ID 2 IF
+    output wire [NB_DATA-1:0]       o_reg_DA        ,
+    output wire [NB_DATA-1:0]       o_reg_DB        ,
+
+    output wire [5:0]               o_opcode        ,
+    output wire [5:0]               o_func          ,
+    output wire [4:0]               o_shamt         ,
+
+    output wire [NB_ADDR-1:0]       o_rs            ,
+    output wire [NB_ADDR-1:0]       o_rd            ,
+    output wire [NB_ADDR-1:0]       o_rt            ,
+
+    output wire [15:0]              o_immediate     ,
+
+    // EX 2 MEM
+
+    output wire [NB_DATA-1:0]       o_ALUresult     ,
+    // fu2ex
+    output wire [1:0]               o_fwA           ,
+    output wire [1:0]               o_fwB           ,
+
+    //MEM 2 WB
+    output wire [31:0]              o_data2mem      ,
+    output wire [7 :0]              o_dataAddr      , // 
+
+    // WB 2 ID
+    output wire [NB_DATA-1:0]       o_write_dataWB2ID,
+    output wire [NB_ADDR-1:0]       o_reg2writeWB2ID ,
+    output wire                     o_write_enable   
 
 
 );
@@ -280,7 +327,11 @@ module pipeline
     
         // ctrl signals
         .o_mem2reg                       (mem2regMEM2WB     ), //! 0-> guardo el valor de leído || 1-> guardo valor de alu
-        .o_regWrite                      (regWriteMEM2WB    )  //! writes the value
+        .o_regWrite                      (regWriteMEM2WB    ),  //! writes the value
+
+        //DU
+        .o_data2mem                      (o_data2mem        ),
+        .o_dataAddr                      (o_dataAddr        )
     );
     
     // WB2ID
@@ -306,5 +357,57 @@ module pipeline
     );
 
 
+
+
+
+    
+    // IF
+
+
+    // ctrl unit flags (ID)
+    assign o_jump          = jumpID2EX          ;// revisar
+    assign o_branch        = branchID2EX        ;
+    assign o_regDst        = regDstID2EX        ;
+    assign o_mem2reg       = mem2RegID2EX       ;
+    assign o_memRead       = memReadID2EX       ;
+    assign o_memWrite      = memWriteID2EX      ;
+    assign o_immediate_flag= immediate_flagID2EX;
+    assign o_sign_flag     = sign_flagID2EX     ;
+    assign o_regWrite      = regWriteID2EX      ;
+    assign o_aluSrc        = aluSrcID2EX        ;
+    assign o_width         = widthID2EX         ;
+    assign o_aluOp         = aluOpID2EX         ;
+
+    // ID out
+    assign o_addr2jump     = addr2jumpID2IF     ;//! ID 2 IF
+    
+    assign o_reg_DA        = datoAID2EX         ;
+    assign o_reg_DB        = datoBID2EX         ;
+
+    assign o_opcode        = opcodeID2EX        ;
+    assign o_func          = funcID2EX          ;
+    assign o_shamt         = shamtID2EX         ;
+
+    assign o_rs            = rsID2EX            ;
+    assign o_rd            = rdID2EX            ;
+    assign o_rt            = rtID2EX            ;
+
+    assign o_immediate     = immediateID2EX     ;
+
+    // EX 2 MEM
+
+    assign o_ALUresult     = resultALUEX2MEM    ;
+
+    // fu2ex
+    assign o_fwA           = fwA_FU2EX          ;
+    assign o_fwB           = fwB_FU2EX          ;
+
+    //MEM 2 WB -> resuelto en instancia
+    //assign o_data2mem      = data2mem
+    //assign o_dataAddr      = // 
+    // WB 2 ID
+    assign o_write_dataWB2ID= write_dataWB2ID   ;
+    assign o_reg2writeWB2ID = reg2writeWB2ID    ;
+    assign o_write_enable   = regWriteWB2ID     ;
 
 endmodule
