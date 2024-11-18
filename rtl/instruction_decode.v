@@ -162,7 +162,7 @@ module instruction_decode
             o_addr     <= 16'b0                                                             ;
 
         end else begin
-            if(!i_stall) begin
+            
                 o_reg_DA = ((o_opcode == JAL_TYPE) || (o_func == JARL_TYPE) )? 
                                                                     i_pcounter4             : 
                                                                     wire_D1                 ;
@@ -201,6 +201,20 @@ module instruction_decode
             // ctrl unit
             //reg_opcode <= i_instruction [31:25  ]       ;
             //reg_funct  <= i_instruction [5:0    ]       ;
+            
+            if(i_stall) begin
+
+                o_branch   <= 1'b0                                                    ;   
+                o_regDst   <= 1'b0                                                    ;
+                o_mem2Reg  <= 1'b0                                                    ;
+                o_memRead  <= 1'b0                                                    ;
+                o_memWrite <= 1'b0                                                    ;
+                o_immediate_flag<= 1'b0                                               ;
+                o_regWrite <= 1'b0                                                    ;
+                o_aluSrc   <= 2'b00                                                   ;
+                o_aluOp    <= 2'b00                                                   ;
+                o_width    <= 2'b00                                                   ;
+                o_sign_flag<= 1'b0                                                    ;
             end
         end
     end
