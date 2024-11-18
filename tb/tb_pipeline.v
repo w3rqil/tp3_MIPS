@@ -102,7 +102,7 @@ module pipeline_tb;
         @(posedge clk);
         i_rst_n = 1;
         @(posedge clk);
-        
+
         // Instrucción 1: ADDI R1, R0, 20 (Cargar el valor 20 en R1)
         i_instruction_data = 32'b001000_00000_00001_0000000000010100; // ADDI R1, R0, 20
         i_we_IF = 1;
@@ -119,6 +119,13 @@ module pipeline_tb;
         
         // Instrucción 3: ADDU R3, R1, R2 (Sumar R1 y R2, guardar el resultado en R3)
         i_instruction_data = 32'b000000_00001_00010_00011_00000_100001; // ADDU R3, R1, R2
+        i_we_IF = 1;
+        @(posedge clk);
+        i_we_IF = 0;
+        @(posedge clk);
+
+        // Instrucción 4: SW R3, 0(R0) (Almacenar el valor de R3 en la dirección de memoria 0)
+        i_instruction_data = 32'b101011_00000_00011_0000000000000000; // SW R3, 0(R0)
         i_we_IF = 1;
         @(posedge clk);
         i_we_IF = 0;
