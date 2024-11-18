@@ -38,7 +38,7 @@ module memory_access
 
     
 );
-    reg [NB_DATA-1:0] data2mem;
+    reg  [NB_DATA-1:0] data2mem;
     wire [NB_DATA-1:0] reg_read;
     wire writeEnable;
     //wire []
