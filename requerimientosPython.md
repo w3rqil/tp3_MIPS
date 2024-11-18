@@ -1,3 +1,26 @@
+## necesito una gui que haga las siguientes cosas:
+
+Tener en cuenta que quiero que tenga los coolores azul y amarillo pero combinarlos de alguna forma que no sea muy esteticamente invasiva y elegir tonalidades que no hagan que sea mucha informacion.
+
+1) Reciba informacion de baudrate y puerto para realizar una conexion como se puede ver a continuacion:
+```
+BAUDRATE = 19200
+PORT = '/dev/ttyUSB1'
+
+ser = serial.Serial(
+    port=PORT, 
+    baudrate=BAUDRATE,
+    parity=serial.PARITY_NONE,
+    stopbits=serial.STOPBITS_ONE,
+    bytesize=serial.EIGHTBITS,
+)
+```
+
+
+2) Se le pueda cargar un archivo .asm y llame al siguiente codigo asm_to_bin.py para que lo transforme a binario. Quiero que se pueda ver en pantalla el contenido del archivo .asm cargado:
+
+asm_to_bin.py:
+```
 #  To execute the program, run the following command: python3 asm_to_bin.py test.asm output.bin
 
 import logging as log
@@ -215,7 +238,7 @@ class Assembler:
                 inst_bin = self.set_rd(inst_bin, "31")
 
         elif i_name == "HALT":
-            inst_bin = "11111111111111111111111111111111"
+            inst_bin = "01000000000000000000000000000000"
         elif i_name == "NOP":
             inst_bin = inst_bin
         else:
@@ -280,3 +303,21 @@ try:
     out_file.write((''.join(chr(i) for i in num_byte)).encode('charmap'))
 finally:
     out_file.close()
+
+```
+
+3) Botones:
+Debe tener los siguientes botones que al apretarlos envien los siguientes bytes por uart.
+- LOAD PROGRAM = 8'b00000001
+
+    Cuando se apriete este boton se debe enviar primero su codigo y luego el archivo binario generado anteriormente de a 8 bits.
+- DEBUG MODE            = 8'b00000010
+- CONTINOUS MODE        = 8'b00000100
+- STEP                  = 8'b00001000
+- END DEBUG MODE        = 8'b00010000
+
+4) Campos donde se muestren los datos obtenidos por uart, por ahora abstraerse de esta etapa.
+
+
+
+En todos los casos, al apretar los botones o enviar informacion hacer console.lgs para poder ver lo que esta sucediendo.

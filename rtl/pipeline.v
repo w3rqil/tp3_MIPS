@@ -177,7 +177,7 @@ module pipeline
         // uart
         .i_instr_data   (i_instruction_data ),  
         .i_halt         (i_halt             ),
-        .i_stall        (), // from HDU
+        .i_stall        (stall), // from HDU
         //out
         .o_pcounter4    (pcounterIF2ID      ),
         .o_instruction  (instructionIF2ID   ),
