@@ -148,7 +148,7 @@ module pipeline
 
 
 
-    hazard_detection_unit (
+    hazard_detection_unit hdu_inst (
             // Inputs
         .i_ID_EX_RegisterRt (rtIF2ID),
         .i_IF_ID_RegisterRs (rsIF2ID),
@@ -167,7 +167,7 @@ module pipeline
         .o_stall            (stall)     // Signal to stall the pipeline
     );
 
-    instruction_fetch (
+    instruction_fetch if_inst (
         .clk            (clk                ),
         .i_rst_n        (i_rst_n            ),
         // ID
@@ -190,7 +190,7 @@ module pipeline
         .NB_DATA        (NB_DATA),
         .NB_ADDR        (NB_ADDR),
         .NB_REG         ()
-    )(
+    ) id_inst (
         .clk                      (clk              ),
         .i_rst_n                  (i_rst_n          ),
         // IF
@@ -240,7 +240,7 @@ module pipeline
 
     instruction_execute #(
         .NB_DATA(NB_DATA)
-    )
+    ) exe_inst
     (
         .clk                             (clk       ),
         .i_rst_n                         (i_rst_n   ),
@@ -305,7 +305,7 @@ module pipeline
         .NB_ADDR(NB_ADDR),
         .NB_FW  (NB_FW)
 
-    )( 
+    ) fu_inst ( 
         .clk        (clk    ),
         .i_rst_n    (i_rst_n),
 
@@ -329,7 +329,7 @@ module pipeline
         .NB_DATA(),
         .NB_ADDR(),
         .NB_REG ()
-    )(
+    ) mem_inst (
         .clk                             (clk),
         .i_rst_n                         (i_rst_n),
 
@@ -369,7 +369,7 @@ module pipeline
         .NB_DATA (NB_DATA),
         .NB_ADDR (NB_ADDR),
         .NB_REG  ()
-    )
+    ) wb_inst
     (
         .i_reg_read      (reg_readMEM2WB    ),//! data from memory 
         .i_ALUresult     (resultALUMEM2WB   ),//! alu result
