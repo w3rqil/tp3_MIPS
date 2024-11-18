@@ -114,11 +114,11 @@ module instruction_execute
             end
             2'b10: begin
                 // datoA = datoB
-                alu_datoA = i_output_MEMWB
+                alu_datoA = i_output_MEMWB                      ;
             end
             2'b11: begin
                 // datoA = datoB
-                alu_datoA = i_output_EXMEM
+                alu_datoA = i_output_EXMEM                      ;
             end
             default: begin
                 // nop
@@ -137,11 +137,11 @@ module instruction_execute
             end
             2'b10: begin
                 // datoB = datoB
-                alu_datoB = i_output_MEMWB
+                alu_datoB = i_output_MEMWB                      ;
             end
             2'b11: begin
                 // datoB = datoB
-                alu_datoB = i_output_EXMEM
+                alu_datoB = i_output_EXMEM                      ;
             end
             default: begin
                 // nop

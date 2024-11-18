@@ -1,5 +1,4 @@
 module pipeline
-#()
 (
     input wire          clk                 ,
     input wire          i_rst_n             ,
@@ -27,23 +26,23 @@ module pipeline
     output wire [1:0]               o_aluOp         ,
 
     // ID out
-    output wire [NB_DATA-1:0]       o_addr2jump     , //! ID 2 IF
-    output wire [NB_DATA-1:0]       o_reg_DA        ,
-    output wire [NB_DATA-1:0]       o_reg_DB        ,
+    output wire [32-1:0]       o_addr2jump          , //! ID 2 IF
+    output wire [32-1:0]       o_reg_DA             ,
+    output wire [32-1:0]       o_reg_DB             ,
 
     output wire [5:0]               o_opcode        ,
     output wire [5:0]               o_func          ,
     output wire [4:0]               o_shamt         ,
 
-    output wire [NB_ADDR-1:0]       o_rs            ,
-    output wire [NB_ADDR-1:0]       o_rd            ,
-    output wire [NB_ADDR-1:0]       o_rt            ,
+    output wire [5-1:0]       o_rs                  ,
+    output wire [5-1:0]       o_rd                  ,
+    output wire [5-1:0]       o_rt                  ,
 
     output wire [15:0]              o_immediate     ,
 
     // EX 2 MEM
 
-    output wire [NB_DATA-1:0]       o_ALUresult     ,
+    output wire [32-1:0]       o_ALUresult          ,
     // fu2ex
     output wire [1:0]               o_fwA           ,
     output wire [1:0]               o_fwB           ,
@@ -53,8 +52,8 @@ module pipeline
     output wire [7 :0]              o_dataAddr      , // 
 
     // WB 2 ID
-    output wire [NB_DATA-1:0]       o_write_dataWB2ID,
-    output wire [NB_ADDR-1:0]       o_reg2writeWB2ID ,
+    output wire [32-1:0]       o_write_dataWB2ID,
+    output wire [5-1:0]       o_reg2writeWB2ID ,
     output wire                     o_write_enable   
 
 
@@ -166,7 +165,7 @@ module pipeline
         .i_WB_WB_Write      (regWriteWB2ID),
         // Output
         .o_stall            (stall)     // Signal to stall the pipeline
-    )
+    );
 
     instruction_fetch (
         .clk            (clk                ),
@@ -365,10 +364,7 @@ module pipeline
         .o_dataAddr                      (o_dataAddr        )
     );
     
-    // WB2ID
-    wire [NB_DATA-1:0] write_dataWB2ID  ;
-    wire [NB_ADDR-1:0] reg2writeWB2ID   ;
-    wire               regWriteWB2ID    ; // write enable
+
     write_back #(
         .NB_DATA (NB_DATA),
         .NB_ADDR (NB_ADDR),

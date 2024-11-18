@@ -48,7 +48,7 @@ module instruction_decode
     wire [NB_DATA-1:0] wire_D1, wire_D2                 ;
     wire [4 :0] rs, rt, rd                              ;
     reg  [15:0] r_immediate                             ;
-    parameter [5:0] 
+    localparam [5:0] 
                     JR_TYPE     = 6'b001000             ,
                     JARL_TYPE   = 6'b001001             ,
                     R_TYPE      = 6'b000000             ,
@@ -137,12 +137,12 @@ module instruction_decode
                 end
                 JAL_TYPE: begin
                     o_jump = 1'b1                                                           ;
-                    o_jump_addr = {i_pcounter4[31:28], i_instruction[25:0], 2'b00}          ;
-                    o_jump_cases= 2'b10                                                 ;
+                    o_addr2jump = {i_pcounter4[31:28], i_instruction[25:0], 2'b00}          ;
+                    o_jump_cases= 2'b10                                                     ;
                 end
                 J_TYPE: begin
                     o_jump = 1'b1                                                           ;
-                    o_jump_addr = {i_pcounter4[31:28], i_instruction[25:0], 2'b00}          ;
+                    o_addr2jump = {i_pcounter4[31:28], i_instruction[25:0], 2'b00}          ;
                 end
             endcase
         end
