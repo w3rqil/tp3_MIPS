@@ -130,7 +130,7 @@ module control_unit
                 r_memWrite  = 1'b0                                              ;
                 r_branch    = 1'b0                                              ;
                 r_jump      = 1'b0                                              ;
-                r_aluOP     = 2'b00                                             ;
+                r_aluOP     = 2'b11                                             ;
                 r_immediate = 1'b1                                              ;
             end
             ORI_TYPE: begin // 
@@ -138,7 +138,7 @@ module control_unit
                 r_ALUSrc    = 1'b1                                              ;
                 r_mem2Reg   = 1'b0                                              ;
                 r_regWrite  = 1'b1                                              ;
-                r_aluOP     = 2'b01                                             ;  // Logical OR
+                r_aluOP     = 2'b11                                             ;  // Logical OR
                 r_immediate = 1'b1                                              ;
             end
             XORI_TYPE: begin
@@ -146,7 +146,7 @@ module control_unit
                 r_ALUSrc    = 1'b1                                              ;
                 r_mem2Reg   = 1'b0                                              ;
                 r_regWrite  = 1'b1                                              ;
-                r_aluOP     = 2'b01                                             ;  // Logical XOR
+                r_aluOP     = 2'b11                                             ;  // Logical XOR
                 r_immediate = 1'b1                                              ;
             end
 
@@ -157,6 +157,7 @@ module control_unit
                 r_regWrite  = 1'b1                                              ;
                 r_immediate = 1'b1                                              ;  // Load Upper Immediate
                 r_sign_flag = 1'b1                                              ;
+                r_aluOP     = 2'b11                                             ;
             end
 
             STLI_TYPE: begin //
