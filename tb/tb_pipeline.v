@@ -125,9 +125,13 @@ module pipeline_tb;
         // @(posedge clk);
 
         // Simulate halt signal
-        i_halt = 1;
+        // i_halt = 1;
+        // @(posedge clk);
+        // i_halt = 0;
+        i_rst_n = 0;
         @(posedge clk);
-        i_halt = 0;
+        i_rst_n = 1;
+        @(posedge clk);
 
         // Wait and observe outputs
         repeat (10) @(posedge clk);
