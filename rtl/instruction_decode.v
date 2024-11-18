@@ -28,7 +28,7 @@ module instruction_decode
     output reg [5 :0]           o_func                  ,
     output reg [15:0]           o_addr                  ,
     output reg [31:0]           o_addr2jump             ,
-    output reg [1: 0]           o_jump_cases            ,
+    output reg [1: 0]           o_jump_cases            , //! 00-> no | 01 -> branch | 10 -> jump
     //ctrl unit
     output reg                  o_jump                  , 
     output reg                  o_branch                , 
@@ -108,7 +108,8 @@ module instruction_decode
 
 
     always @(*) begin : jumps
-        o_jump = 1'b0                                                                   ;
+        o_jump       = 1'b0                                                                 ;
+        o_jump_cases = 2'b00                                                                ;
         if(w_jump || w_branch) begin // the following will execute only when a jump opcode is detected
             case (o_opcode) 
                 R_TYPE: begin //jr o jalr
@@ -116,6 +117,7 @@ module instruction_decode
                     
                     o_jump = 1'b1                                                           ;
                     o_addr2jump = wire_D1                                                   ; //RA
+                    if(o_func == JARL_TYPE) o_jump_cases= 2'b10                             ;
                     
                     
                 end
@@ -123,17 +125,20 @@ module instruction_decode
                     if(wire_D1 == wire_D2) begin
                         o_jump = 1'b1                                                       ;
                         o_addr2jump = i_pcounter4 + (w_immediat << 2) + 4                   ;
+                        o_jump_cases= 2'b01                                                 ;
                     end
                 end
                 BNE_TYPE: begin
                     if(wire_D1 != wire_D2) begin
                         o_jump = 1'b1                                                       ;
                         o_addr2jump = i_pcounter4 + (w_immediat << 2) + 4                   ;
+                        o_jump_cases= 2'b01                                                 ;
                     end
                 end
                 JAL_TYPE: begin
                     o_jump = 1'b1                                                           ;
                     o_jump_addr = {i_pcounter4[31:28], i_instruction[25:0], 2'b00}          ;
+                    o_jump_cases= 2'b10                                                 ;
                 end
                 J_TYPE: begin
                     o_jump = 1'b1                                                           ;
