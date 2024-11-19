@@ -90,6 +90,22 @@ module pipeline_tb;
         forever #10 clk = ~clk; // Clock with a period of 10ns
     end
 
+   // Helper task to check register values and print results
+    task check_register;
+        input [NB_ADDR-1:0] reg_addr;
+        input [NB_DATA-1:0] expected_value;
+        begin
+            @(posedge clk);
+            if (o_reg2writeWB2ID == reg_addr && o_write_enable) begin
+                if (o_write_dataWB2ID !== expected_value) begin
+                    $display("ERROR: Register R%d expected: 0x%h, got: 0x%h", reg_addr, expected_value, o_write_dataWB2ID);
+                end else begin
+                    $display("PASS: Register R%d = 0x%h", reg_addr, o_write_dataWB2ID);
+                end
+            end
+        end
+    endtask
+
     // Test sequence
     initial begin
         // Initialize inputs
@@ -98,49 +114,140 @@ module pipeline_tb;
         i_instruction_data = 32'b0;
         i_halt = 0;
 
-        // Apply reset
+        // Load instructions into memory
         @(posedge clk);
         i_rst_n = 1;
         @(posedge clk);
 
-        // Instrucción 1: ADDI R1, R0, 20 (Cargar el valor 20 en R1)
-        i_instruction_data = 32'b001000_00000_00001_0000000000010100; // ADDI R1, R0, 20
+        // Instruction 1: ADDI R1, R0, 15 (Load the value 15 into R1)
+        i_instruction_data = 32'b001000_00000_00001_0000000000001111; // ADDI R1, R0, 15
         i_we_IF = 1;
         @(posedge clk);
         i_we_IF = 0;
         @(posedge clk);
-        //
-        // Instrucción 2: ADDI R2, R0, 30 (Cargar el valor 30 en R2)
-        i_instruction_data = 32'b001000_00000_00010_0000000000011110; // ADDI R2, R0, 30
+
+        // Instruction 2: SB R1, 0(R0) (Store byte from R1 to memory address R0 + 0)
+        i_instruction_data = 32'b101000_00000_00001_0000000000000000; // SB R1, 0(R0)
         i_we_IF = 1;
         @(posedge clk);
         i_we_IF = 0;
         @(posedge clk);
-        //
-        //// Instrucción 3: ADDU R3, R1, R2 (Sumar R1 y R2, guardar el resultado en R3)
-        i_instruction_data = 32'b000000_00001_00010_00011_00000_100001; // ADDU R3, R1, R2
+
+        // Instruction 3: ADDI R2, R1, 7 (Load the value R1 + 7 into R2)
+        i_instruction_data = 32'b001000_00001_00010_0000000000000111; // ADDI R2, R1, 7
         i_we_IF = 1;
         @(posedge clk);
         i_we_IF = 0;
         @(posedge clk);
-//
-        //// Instrucción 4: SW R3, 0(R0) (Almacenar el valor de R3 en la dirección de memoria 0)
-        //i_instruction_data = 32'b101011_00000_00011_0000000000000000; // SW R3, 0(R0)
-        //i_we_IF = 1;
-        //@(posedge clk);
-        //i_we_IF = 0;
-        //@(posedge clk);
-        
 
+        // Instruction 4: SB R2, 8(R0) (Store byte from R2 to memory address R0 + 8)
+        i_instruction_data = 32'b101000_00000_00010_0000000000001000; // SB R2, 8(R0)
+        i_we_IF = 1;
+        @(posedge clk);
+        i_we_IF = 0;
+        @(posedge clk);
 
+        // Instruction 5: LB R3, 8(R0) (Load byte from memory address R0 + 8 into R3)
+        i_instruction_data = 32'b100000_00000_00011_0000000000001000; // LB R3, 8(R0)
+        i_we_IF = 1;
+        @(posedge clk);
+        i_we_IF = 0;
+        @(posedge clk);
 
+        // Instruction 6: ANDI R4, R3, 11 (R4 = R3 & 11)
+        i_instruction_data = 32'b001100_00011_00100_0000000000001011; // ANDI R4, R3, 11
+        i_we_IF = 1;
+        @(posedge clk);
+        i_we_IF = 0;
+        @(posedge clk);
+
+        // Instruction 7: ADDI R4, R4, 272 (R4 = R4 + 272)
+        i_instruction_data = 32'b001000_00100_00100_0000000100010000; // ADDI R4, R4, 272
+        i_we_IF = 1;
+        @(posedge clk);
+        i_we_IF = 0;
+        @(posedge clk);
+
+        // Instruction 8: SH R4, 12(R0) (Store halfword from R4 to memory address R0 + 12)
+        i_instruction_data = 32'b101001_00000_00100_0000000000001100; // SH R4, 12(R0)
+        i_we_IF = 1;
+        @(posedge clk);
+        i_we_IF = 0;
+        @(posedge clk);
+
+        // Instruction 9: ORI R5, R4, 10 (R5 = R4 | 10)
+        i_instruction_data = 32'b001101_00100_00101_0000000000001010; // ORI R5, R4, 10
+        i_we_IF = 1;
+        @(posedge clk);
+        i_we_IF = 0;
+        @(posedge clk);
+
+        // Instruction 10: SW R5, 24(R0) (Store word from R5 to memory address R0 + 24)
+        i_instruction_data = 32'b101011_00000_00101_0000000000011000; // SW R5, 24(R0)
+        i_we_IF = 1;
+        @(posedge clk);
+        i_we_IF = 0;
+        @(posedge clk);
+
+        // Instruction 11: BEQ R5, R4, 2 (Branch if R5 == R4, offset 2 instructions)
+        i_instruction_data = 32'b000100_00101_00100_0000000000000010; // BEQ R5, R4, 2
+        i_we_IF = 1;
+        @(posedge clk);
+        i_we_IF = 0;
+        @(posedge clk);
+
+        // Instruction 12: ADDI R6, R0, 20 (Load the value 20 into R6)
+        i_instruction_data = 32'b001000_00000_00110_0000000000010100; // ADDI R6, R0, 20
+        i_we_IF = 1;
+        @(posedge clk);
+        i_we_IF = 0;
+        @(posedge clk);
+
+        // Instruction 13: BNE R6, R2, 2 (Branch if R6 != R2, offset 2 instructions)
+        i_instruction_data = 32'b000101_00110_00010_0000000000000010; // BNE R6, R2, 2
+        i_we_IF = 1;
+        @(posedge clk);
+        i_we_IF = 0;
+        @(posedge clk);
+
+        // Instruction 14: ADDI R6, R0, 30 (Load the value 30 into R6)
+        i_instruction_data = 32'b001000_00000_00110_0000000000011110; // ADDI R6, R0, 30
+        i_we_IF = 1;
+        @(posedge clk);
+        i_we_IF = 0;
+        @(posedge clk);
+
+        // Apply second reset to execute instructions
         i_rst_n = 0;
         @(posedge clk);
         i_rst_n = 1;
         @(posedge clk);
+        $display("-----------------------------------------------------------------------------------------------");
+        $display(" START");
+        $display("-----------------------------------------------------------------------------------------------");
+        // Check expected values after instructions are executed
+        // Check if R1 = 15
+        check_register(5'd1, 32'd15);
+        // Check if R2 = 22
+        check_register(5'd2, 32'd22);
+        // Check if R3 = 22 (loaded from memory)
+        check_register(5'd3, 32'd22);
+        // Check if R4 = 2 (result of ANDI with 11)
+        check_register(5'd4, 32'd2);
+        // Check if R4 = 274 (result of adding 272)
+        check_register(5'd4, 32'd274);
+        // Check if R5 = 282 (result of ORI with 10)
+        check_register(5'd5, 32'd282);
+        // Check if R6 = 20 (result of ADDI with 20)
+        check_register(5'd6, 32'd20);
+        // Check if R6 = 30 (result of ADDI with 30)
+        check_register(5'd6, 32'd30);
 
         // Wait and observe outputs
-        repeat (10) @(posedge clk);
+        repeat (30) @(posedge clk);
+        $display("-----------------------------------------------------------------------------------------------");
+        $display(" C'EST FINI.");
+        $display("-----------------------------------------------------------------------------------------------");
         $stop;
     end
 
