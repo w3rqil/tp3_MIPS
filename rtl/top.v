@@ -41,41 +41,40 @@ module top (
     wire start;
 
     // Pipeline
-    wire                            i_end                       , //! End of the program HAY QUE VER COMO SALE DEL PIPELINE
+    wire                            i_end                     ; //! End of the program HAY QUE VER COMO SALE DEL PIPELINE
 
     //ID_EX
-    wire        [NB_DATA_32 -1 : 0] reg_DA                    , //! Register A
-    wire        [NB_DATA_32 -1 : 0] reg_DB                    , //! Register B
-    wire        [6     -1 : 0]      opcode                    , //! Opcode
-    wire        [NB_5  -1 : 0]      rs                        , //! rs
-    wire        [NB_5  -1 : 0]      rt                        , //! rt
-    wire        [NB_5  -1 : 0]      rd                        , //! rd
-    wire        [NB_5  -1 : 0]      shamt                     , //! shamt
-    wire        [6     -1 : 0]      funct                     , //! funct
-    wire        [16    -1 : 0]      immediate                 , //! immediate
-    wire        [NB_DATA_32 -1 : 0] addr2jump                 , //! jump address
-    wire        [NB_DATA_32 -1 : 0] ALUresult                 , //! ALU result                                      
-    wire        [NB_DATA_32 -1 : 0] data2mem                  , //! Memory data
-    wire        [NB_DATA-1: 0]      dataAddr                  , //! Memory address                                                                  
-    wire        [NB_DATA_32  -1: 0] write_dataWB2ID           , //! Write data
-    wire        [NB_5   -1: 0]      reg2writeWB2ID            , //! Register to write
-    wire                            write_enable              , //! Write enable                                                
-    wire                            jump                      , //! Jump
-    wire                            branch                    , //! Branch
-    wire                            regDst                    , //! RegDst
-    wire                            mem2Reg                   , //! MemToReg
-    wire                            memRead                   , //! MemRead
-    wire                            memWrite                  , //! MemWrite
-    wire                            inmediate_flag            , //! Inmediate flag
-    wire                            sign_flag                 , //! Sign flag
-    wire                            regWrite                  , //! RegWrite
-    wire        [2     -1 : 0]      aluSrc                    , //! ALU source
-    wire        [2     -1 : 0]      width                     , //! ALU operation
-    wire        [2     -1 : 0]      aluOp                     , //! ALU operation                                      
-    wire        [2     -1 : 0]      fwA                       , //! Forward A
-    wire        [2     -1 : 0]      fwB                       , //! Forward B
+    wire        [NB_DATA_32 -1 : 0] reg_DA                    ; //! Register A
+    wire        [NB_DATA_32 -1 : 0] reg_DB                    ; //! Register B
+    wire        [6     -1 : 0]      opcode                    ; //! Opcode
+    wire        [NB_5  -1 : 0]      rs                        ; //! rs
+    wire        [NB_5  -1 : 0]      rt                        ; //! rt
+    wire        [NB_5  -1 : 0]      rd                        ; //! rd
+    wire        [NB_5  -1 : 0]      shamt                     ; //! shamt
+    wire        [6     -1 : 0]      funct                     ; //! funct
+    wire        [16    -1 : 0]      immediate                 ; //! immediate
+    wire        [NB_DATA_32 -1 : 0] addr2jump                 ; //! jump address
+    wire        [NB_DATA_32 -1 : 0] ALUresult                 ; //! ALU result                                      
+    wire        [NB_DATA_32 -1 : 0] data2mem                  ; //! Memory data
+    wire        [NB_DATA_8-1: 0]      dataAddr                ; //! Memory address                                                                  
+    wire        [NB_DATA_32  -1: 0] write_dataWB2ID           ; //! Write data
+    wire        [NB_5   -1: 0]      reg2writeWB2ID            ; //! Register to write
+    wire                            write_enable              ; //! Write enable                                                
+    wire                            jump                      ; //! Jump
+    wire                            branch                    ; //! Branch
+    wire                            regDst                    ; //! RegDst
+    wire                            mem2Reg                   ; //! MemToReg
+    wire                            memRead                   ; //! MemRead
+    wire                            memWrite                  ; //! MemWrite
+    wire                            inmediate_flag            ; //! Inmediate flag
+    wire                            sign_flag                 ; //! Sign flag
+    wire                            regWrite                  ; //! RegWrite
+    wire        [2     -1 : 0]      aluSrc                    ; //! ALU source
+    wire        [2     -1 : 0]      width                     ; //! ALU operation
+    wire        [2     -1 : 0]      aluOp                     ; //! ALU operation                                      
+    wire        [2     -1 : 0]      fwA                       ; //! Forward A
+    wire        [2     -1 : 0]      fwB                       ; //! Forward B
     
-
     baudrate_generator #(
         .BAUD_RATE      (BAUD_RATE)                 ,
         .CLK_FREQ       (CLK_FREQ)                  ,
