@@ -150,9 +150,9 @@ module pipeline
 
     hazard_detection_unit hdu_inst (
             // Inputs
-        .i_ID_EX_RegisterRt (rtIF2ID),
-        .i_IF_ID_RegisterRs (rsIF2ID),
-        .i_IF_ID_RegisterRt (rtID2EX),
+        .i_ID_EX_RegisterRt (rtID2EX),//out decode
+        .i_IF_ID_RegisterRs (rsIF2ID),//inst en pipeline.v//
+        .i_IF_ID_RegisterRt (rtIF2ID),//inst en pipeline.v
         .i_ID_EX_MemRead    (memReadID2EX),
 
         .i_jumpType         (jumpType),
