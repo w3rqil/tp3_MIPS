@@ -10,6 +10,7 @@ CONTINOUS_MODE        = 0b00000100
 STEP_MODE             = 0b00001000
 END_DEBUG_MODE        = 0b00010000
 
+# Simular la conexión al puerto serie
 def connect_serial():
     global ser 
     selected_port = ports_combobox.get()  # Obtener el puerto seleccionado del Combobox
@@ -26,7 +27,6 @@ def connect_serial():
     except:
         messagebox.showerror("Connection", "Error connecting to " + selected_port)
         print("Error connecting to " + selected_port)
-
 
 def load_asm_file():
     filepath = filedialog.askopenfilename(filetypes=[("ASM files", "*.asm")])
@@ -51,11 +51,12 @@ def load_asm_file():
         messagebox.showerror("File", "Error converting file to .bin")
         print("Error converting file to .bin")
 
+# Simular el envío de datos por UART
 def send_uart(ser, data):
-    if ser and ser.is_open:
-        ser.write(data.to_bytes(1, byteorder='big'))
-        messagebox.showinfo("Data sent", f"Data sent: {data}")
-        print("Data sent", f"Data sent: {bin(data)}")
+    if ser == "Simulated Serial Port":  # Verificar que se esté usando el puerto simulado
+        print(f"Simulated sending: {bin(data)}")
+        messagebox.showinfo("Data sent", f"Simulated data sent: {bin(data)}")
+        receive_uart()  # Llamar a la función para actualizar con datos simulados
     else:
         messagebox.showerror("Connection", "Not connected to serial port")
         print("Not connected to serial port")
@@ -102,13 +103,13 @@ def receive_uart():
     if ex_mem_data == -1:
         print("Error receiving EX_MEM data")
         return
-    memory_data = receive_data("MEMORY", ser)
+    memory_data = receive_data("DATA", ser)
     if memory_data == -1:
-        print("Error receiving MEMORY data")
+        print("Error receiving DATA MEMORY")
         return
     registers_data = receive_data("REGISTERS", ser)
     if registers_data == -1:
-        print("Error receiving REGISTERS data")
+        print("Error receiving REGISTERS MEMORY")
         return
     control_data = receive_data("CONTROL", ser)
     if control_data == -1:
@@ -117,7 +118,7 @@ def receive_uart():
     
     id_ex_decoded = decode_data("ID_EX", id_ex_data)
     ex_mem_decoded = decode_data("EX_MEM", ex_mem_data)
-    memory_decoded = decode_data("MEMORY", memory_data)
+    memory_decoded = decode_data("DATA", memory_data)
     registers_decoded = decode_data("REGISTERS", registers_data)
     control_decoded = decode_data("CONTROL", control_data)
 
@@ -142,18 +143,22 @@ def receive_uart():
     data = memory_decoded["Data"]
     
     # Buscar la fila que corresponde a la dirección y actualizar el valor
+    updated = False  # Variable para verificar si se actualizó
     for item in data_table.get_children():
         item_values = data_table.item(item, "values")
         if int(item_values[0]) == address:  # Comparar la dirección
             data_table.item(item, values=(address, data))  # Actualizar el valor
+            updated = True
             break
 
+    if not updated:
+        print("No se encontró la dirección en la tabla de memoria de datos.")
     # Actualizar la tabla REGISTERS
     address = registers_decoded["Address"]
     register = registers_decoded["Register"]
     write_enable = registers_decoded["Write enable"]
 
-    if(write_enable):
+    if(write_enable==1):
         # Buscar la fila que corresponde al registro y actualizar el valor
         for item in registers_table.get_children():
             item_values = registers_table.item(item, "values")
@@ -165,22 +170,28 @@ def receive_uart():
 
     
     
+# Simular la recepción de datos desde el UART
 def receive_data(type, ser):
     if type == "ID_EX":
-        rcv = ser.read(18) # Lee los 18 bytes (144 bits) de la ID_EX
+        # Simular 18 bytes (144 bits) con todos los bits en 1
+        return bytes([0xFF] * 18)
     elif type == "EX_MEM":
-        rcv = ser.read(4) # Lee los 4 bytes (32 bits) de la EX_MEM
-    elif type == "MEMORY":
-        rcv = ser.read(6) # Lee los 6 bytes (48 bits) de la MEMORY
+        # Simular 4 bytes (32 bits) con todos los bits en 1
+        return bytes([0xFF] * 4)
+    elif type == "DATA":
+        # Simular 6 bytes (48 bits) con todos los bits en 1
+        return bytes([0xFF] * 6)
     elif type == "REGISTERS":
-        rcv = ser.read(5) # Lee los 5 bytes (40 bits) de los REGISTERS
+        # Simular 5 bytes (40 bits) con todos los bits en 1
+        return bytes([0xFF] * 5)
     elif type == "CONTROL":
-        rcv = ser.read(3) # Lee los 3 bytes (24 bits) de los CONTROL
+        # Simular 3 bytes (24 bits) con todos los bits en 1
+        return bytes([0xFF] * 3)
     else:
         print("Invalid type")
         return -1
-    
-    return rcv
+
+
 
 def decode_data(type, data):
     # Convertir los bytes en un solo entero
@@ -242,7 +253,7 @@ ventana = tk.Tk()
 ventana.title("DEBUG UNIT")
 
 baudrate = tk.IntVar(value=19200)
-port = tk.StringVar(value='/dev/ttyUSB1')
+port = tk.StringVar(value=" ")
 
 id_ex_registers = {
     "RA": 0,
