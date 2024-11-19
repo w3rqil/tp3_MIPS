@@ -69,15 +69,22 @@ module control_unit
         case (i_opcode)
 
             R_TYPE: begin
-                r_regDst    = 1'b1                                              ;
+                r_regDst    = 1'b0                                              ;
                 r_ALUSrc    = 1'b0                                              ;
-                r_mem2Reg   = ((i_funct == JARL_TYPE))                          ;
-                r_regWrite  = (i_funct == JR_TYPE) ? 1'b0 : 1'b1                ; //always asserted except for jr type
+                r_mem2Reg   = 1'b0                          ;
+                r_regWrite  = 1'b1                                              ; //always asserted except for jr type
                 r_memRead   = 1'b0                                              ;
                 r_memWrite  = 1'b0                                              ;
                 r_branch    = 1'b0                                              ;
-                r_jump      = ((i_funct == JR_TYPE) || (i_funct == JARL_TYPE))  ;
-                r_aluOP     = (i_funct == JARL_TYPE)? 2'b00 : 2'b10             ;
+                r_jump      = 1'b0                                              ;
+                r_aluOP     =  2'b10                                            ;
+
+                if((i_funct == JARL_TYPE)) begin
+                    r_mem2Reg = 1'b1;
+                    r_aluOP = 2'b00;
+                end
+                if((i_funct == JR_TYPE) || (i_funct == JARL_TYPE)) r_jump = 1'b1;
+                if(i_funct == JR_TYPE) r_regWrite = 1'b0                        ;
             end
             LW_TYPE: begin
                 r_regDst    = 1'b0                                              ;
@@ -122,7 +129,7 @@ module control_unit
                 r_aluOP     = 2'b01                                             ;
             end
             ADDI_TYPE: begin
-                r_regDst    = 1'b0                                              ;
+                r_regDst    = 1'b1                                              ;
                 r_ALUSrc    = 1'b1                                              ;
                 r_mem2Reg   = 1'b0                                              ;
                 r_regWrite  = 1'b1                                              ;

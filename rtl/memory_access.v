@@ -68,7 +68,7 @@ module memory_access
     end
 
     always @(posedge clk or negedge i_rst_n) begin
-        if(~i_rst_n) begin
+        if(!i_rst_n) begin
             // reset
             o_reg_read  <= 32'b0                                                    ;
             o_ALUresult <= 32'b0                                                    ;

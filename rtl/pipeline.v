@@ -316,9 +316,9 @@ module pipeline
         .i_rt_IFID       (rtID2EX),
 
         .i_rd_IDEX       (write_regEX2MEM), //rd out EX
-        .i_rd_EX_MEMWB   (reg2writeWB2ID), //rd out WB
+        .i_rd_EX_MEMWB   (reg2writeMEM2WB), //rd out WB
 
-        .i_wr_WB         (regWriteWB2ID ),
+        .i_wr_WB         (regWriteEX2MEM),
         .i_wr_MEM        (regWriteMEM2WB),
         .o_fw_b          (fwB_FU2EX     ),
         .o_fw_a          (fwA_FU2EX     )

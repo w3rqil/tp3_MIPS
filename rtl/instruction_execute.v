@@ -52,7 +52,7 @@ module instruction_execute
     output reg                  o_sign_flag                     ,
     output reg [1:0]            o_width                         ,
     output reg [4:0]            o_write_reg                     , // EX/MEM.RegisterRd for control unit
-    output reg [2:1]            o_aluOP                         ,
+    output reg [1:0]            o_aluOP                         ,
     output reg [NB_DATA-1:0]    o_data4Mem                      ,
     output reg [NB_DATA-1:0]    o_result                        
 
@@ -83,7 +83,7 @@ module instruction_execute
     // state machine for alu
     always @(*) begin: alu_ctrl
 
-        case(aluOP)
+        case(i_aluOP)
             LOAD_STORE: begin // load - store - jalr - jal type
                 opcode = ADD                                    ; 
             end
@@ -154,7 +154,7 @@ module instruction_execute
         data4Mem = alu_datoB                                    ;   
     end
     
-    always @(*) begin: mux3
+    always @(posedge clk) begin: mux3
         // when asserted The register destination number for the Write register 
         // comes from the rd field
         // when deasserted The register destination number for the Write register
@@ -179,7 +179,7 @@ module instruction_execute
             o_width   <= 2'b11                                  ;
             o_sign_flag<= 1'b0                                  ;
         end else begin
-            aluOP   <= i_aluOP                                  ;
+            //aluOP   <= i_aluOP                                  ;
             o_mem2reg   <= i_mem2Reg                            ;
             o_memRead   <= i_memRead                            ;
             o_memWrite  <= i_memWrite                           ;
@@ -187,7 +187,7 @@ module instruction_execute
             o_aluSrc    <= i_aluSrc                             ;
             o_width     <= i_width                              ;
             o_sign_flag <= i_sign_flag                          ;
-            o_aluOP     <= opcode                               ;
+            o_aluOP     <= 2'b00                               ;
             o_result    <= alu_result                           ;
             o_data4Mem  <= data4Mem                             ;
         end 

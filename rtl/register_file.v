@@ -29,7 +29,7 @@ module register_file
     begin
         if(~i_rst_n)
         begin
-            for( i = 0; i < 2**NB_ADDR; i= i+1)
+            for( i = 0; i < 2**NB_ADDR+1; i= i+1)
             begin
                 reg_file[i] <= 0                        ;
             end
@@ -43,21 +43,21 @@ module register_file
         end
     end
     //! reading block
-    always @(posedge clk or negedge i_rst_n)
-    begin
-        if(~i_rst_n)
-        begin
-            rd_data1 <= 0                               ;
-            rd_data2 <= 0                               ;
-        end
-        else
-        begin
-            rd_data1 <= reg_file[i_rd_addr1]            ;
-            rd_data2 <= reg_file[i_rd_addr2]            ;
-        end
-    end
+//    always @(posedge clk or negedge i_rst_n)
+//    begin
+//        if(~i_rst_n)
+//        begin
+//            rd_data1 <= 0                               ;
+//            rd_data2 <= 0                               ;
+//        end
+//        else
+//        begin
+//            rd_data1 <= reg_file[i_rd_addr1]            ;
+//            rd_data2 <= reg_file[i_rd_addr2]            ;
+//        end
+//    end
 
-    assign o_rd_data1 = rd_data1                        ;
-    assign o_rd_data2 = rd_data2                        ;
+    assign o_rd_data1 = reg_file[i_rd_addr1]            ;
+    assign o_rd_data2 = reg_file[i_rd_addr2]            ;
 
 endmodule
