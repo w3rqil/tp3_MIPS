@@ -241,10 +241,10 @@ module uart_interface
                     if (instruction_register == HALT_INSTR) begin
                         next_state = IDLE;
                     end else begin
-                        next_valid = 1; // se habilita para escribir
                         next_instruction_address = instruction_address + 4;                        
                     end
                     next_done_counter = 0;
+                    next_valid = 1; // se habilita para escribir
                 end
             end
 
