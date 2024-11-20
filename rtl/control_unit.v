@@ -98,6 +98,7 @@ module control_unit
                 r_aluOP     = 2'b00                                             ;
                 r_width     = 2'b11                                             ;   // word
                 r_sign_flag = 1'b0                                              ;   // signed
+                r_immediate = 1'b1                                              ;
             end                                     
             SW_TYPE: begin                                      
                 r_regDst    = 1'b0                                              ; //x
@@ -111,6 +112,7 @@ module control_unit
                 r_aluOP     = 2'b00                                             ;
                 r_width     = 2'b11                                             ;   // word
                 r_sign_flag = 1'b0                                              ;   // signed
+                r_immediate = 1'b1                                              ;
             end                                     
             BEQ_TYPE: begin                                     
                 r_regDst    = 1'b0                                              ; //x
@@ -122,11 +124,13 @@ module control_unit
                 r_branch    = 1'b1                                              ; //--
                 r_jump      = 1'b0                                              ;
                 r_aluOP     = 2'b01                                             ; //--
+                r_immediate = 1'b1                                              ;
             end                                     
             BNE_TYPE: begin //                                      
                 r_ALUSrc    = 1'b0                                              ;
                 r_branch    = 1'b1                                              ;
                 r_aluOP     = 2'b01                                             ;
+                r_immediate = 1'b1                                              ;
             end
             ADDI_TYPE: begin
                 r_regDst    = 1'b1                                              ;
@@ -190,6 +194,7 @@ module control_unit
                 r_memRead   = 1'b1                                              ;
                 r_width     = 2'b00                                             ;  // Byte
                 r_sign_flag = 1'b0                                              ;
+                r_immediate = 1'b1                                              ;
             end
 
             LH_TYPE: begin
@@ -200,6 +205,7 @@ module control_unit
                 r_memRead   = 1'b1                                              ;
                 r_width     = 2'b01                                             ;  // Half Word
                 r_sign_flag = 1'b0                                              ;
+                r_immediate = 1'b1                                              ;
             end
 
             LBU_TYPE: begin
@@ -210,6 +216,7 @@ module control_unit
                 r_memRead   = 1'b1                                              ;
                 r_width     = 2'b00                                             ;  // Byte (Unsigned)
                 r_sign_flag = 1'b1                                              ;
+                r_immediate = 1'b1                                              ;
             end
 
             LHU_TYPE: begin
@@ -220,6 +227,7 @@ module control_unit
                 r_memRead   = 1'b1                                              ;
                 r_width     = 2'b01                                             ;  // Half Word (Unsigned)
                 r_sign_flag = 1'b1                                              ;
+                r_immediate = 1'b1                                              ;
             end
 
             LWU_TYPE: begin
@@ -230,6 +238,7 @@ module control_unit
                 r_memRead   = 1'b1                                              ;
                 r_width     = 2'b11                                             ;  // Word (Unsigned)
                 r_sign_flag = 1'b1                                              ;
+                r_immediate = 1'b1                                              ;
             end
 
             SB_TYPE: begin
@@ -237,6 +246,7 @@ module control_unit
                 r_memWrite  = 1'b1                                              ;
                 r_width     = 2'b00                                             ;  // Byte
                 r_sign_flag = 1'b0                                              ;
+                r_immediate = 1'b1                                              ;
             end                                             
 
             SH_TYPE: begin                                              
@@ -244,6 +254,7 @@ module control_unit
                 r_memWrite  = 1'b1                                              ;
                 r_width     = 2'b01                                             ;  // Half Word
                 r_sign_flag = 1'b0                                              ;
+                r_immediate = 1'b1                                              ;
             end
             J_TYPE: begin
                 r_regDst    = 1'b0                                              ; //x
