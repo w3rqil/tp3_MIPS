@@ -265,12 +265,97 @@ module uart_interface
                             next_step = 0;
                         end
                     endcase
+
+                    next_concatenated_data_ID_EX = {
+                            i_reg_DA    , // 32 bits
+                            i_reg_DB    , // 32 bits
+                            i_opcode    , // 6 bits
+                            i_rs        , // 5 bits
+                            i_rt        , // 5 bits
+                            i_rd        , // 5 bits
+                            i_shamt     , // 5 bits
+                            i_funct     , // 6 bits
+                            i_immediate , // 16 bits
+                            i_addr2jump   // 32 bits
+                        }; // 144 bits
+                        next_concatenated_data_EX_MEM = {
+                            i_ALUresult // 32 bits
+                        }; // 32 bits
+                        next_concatenated_data_MEM_WB = {
+                            i_data2mem  , // 32 bits
+                            i_dataAddr    // 8 bits
+                        }; // 40 bits
+                        next_concatenated_data_WB_ID = {
+                            i_write_dataWB2ID   , // 32 bits
+                            i_reg2writeWB2ID    , // 5 bits
+                            i_write_enable      ,
+                            2'b00
+                        }; // 40 bits
+                        next_concatenated_data_CONTROL = {
+                            i_jump              , // 1 bit
+                            i_branch            , // 1 bit
+                            i_regDst            , // 1 bit
+                            i_mem2Reg           , // 1 bit
+                            i_memRead           , // 1 bit  
+                            i_memWrite          , // 1 bit
+                            i_inmediate_flag    , // 1 bit
+                            i_sign_flag         , // 1 bit
+                            i_regWrite          , // 1 bit
+                            i_aluSrc            , // 2 bits
+                            i_width             , // 2 bits
+                            i_aluOp             , // 2 bits
+                            i_fwA               , // 2 bits
+                            i_fwB               , // 2 bits
+                            5'b00000
+                        }; // 24 bits
                 end
             end
 
             CONTINOUS_STATE: begin
                 next_start = 1;
                 if(i_end) begin
+                    next_concatenated_data_ID_EX = {
+                        i_reg_DA    , // 32 bits
+                        i_reg_DB    , // 32 bits
+                        i_opcode    , // 6 bits
+                        i_rs        , // 5 bits
+                        i_rt        , // 5 bits
+                        i_rd        , // 5 bits
+                        i_shamt     , // 5 bits
+                        i_funct     , // 6 bits
+                        i_immediate , // 16 bits
+                        i_addr2jump   // 32 bits
+                    }; // 144 bits
+                    next_concatenated_data_EX_MEM = {
+                        i_ALUresult // 32 bits
+                    }; // 32 bits
+                    next_concatenated_data_MEM_WB = {
+                        i_data2mem  , // 32 bits
+                        i_dataAddr    // 8 bits
+                    }; // 40 bits
+                    next_concatenated_data_WB_ID = {
+                        i_write_dataWB2ID   , // 32 bits
+                        i_reg2writeWB2ID    , // 5 bits
+                        i_write_enable      ,
+                        2'b00
+                    }; // 40 bits
+                    next_concatenated_data_CONTROL = {
+                        i_jump              , // 1 bit
+                        i_branch            , // 1 bit
+                        i_regDst            , // 1 bit
+                        i_mem2Reg           , // 1 bit
+                        i_memRead           , // 1 bit  
+                        i_memWrite          , // 1 bit
+                        i_inmediate_flag    , // 1 bit
+                        i_sign_flag         , // 1 bit
+                        i_regWrite          , // 1 bit
+                        i_aluSrc            , // 2 bits
+                        i_width             , // 2 bits
+                        i_aluOp             , // 2 bits
+                        i_fwA               , // 2 bits
+                        i_fwB               , // 2 bits
+                        5'b00000
+                    }; // 24 bits
                     next_state = SEND_ID_EX_STATE;
                 end
             end
