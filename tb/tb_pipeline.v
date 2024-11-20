@@ -149,25 +149,33 @@ module pipeline_tb;
 
         // Instruction 5: LB R3, 8(R0) (Load byte from memory address R0 + 8 into R3)
         i_instruction_data = 32'b100000_00000_00011_0000000000001000; // LB R3, 8(R0)
-        i_we_IF = 1;
-        @(posedge clk);
-        i_we_IF = 0;
-        @(posedge clk);
+        i_we_IF = 1     ;
+        @(posedge clk)  ;
+        i_we_IF = 0     ;
+        @(posedge clk)  ;
 
         // Instruction 6: ANDI R4, R3, 11 (R4 = R3 & 11)
         i_instruction_data = 32'b001100_00011_00100_0000000000001011; // ANDI R4, R3, 11
+
+        // IF2ID -> rs = 00011
+        // IF2ID -> rt = 00100
+
+        // ID2EX -> rt = 00011
+        // ID2EX -> memRead = 1
+
         i_we_IF = 1;
         @(posedge clk);
         i_we_IF = 0;
         @(posedge clk);
 
-        // Instruction 7: ADDI R4, R4, 272 (R4 = R4 + 272)
-        i_instruction_data = 32'b001000_00100_00100_0000000100010000; // ADDI R4, R4, 272
-        i_we_IF = 1;
-        @(posedge clk);
-        i_we_IF = 0;
-        @(posedge clk);
+//        // Instruction 7: ADDI R4, R4, 272 (R4 = R4 + 272)
+//        i_instruction_data = 32'b001000_00100_00100_0000000100010000; // ADDI R4, R4, 272
+//        i_we_IF = 1     ;
+//        @(posedge clk)  ;
+//        i_we_IF = 0     ;
+//        @(posedge clk)  ;
 
+/*
         // Instruction 8: SH R4, 12(R0) (Store halfword from R4 to memory address R0 + 12)
         i_instruction_data = 32'b101001_00000_00100_0000000000001100; // SH R4, 12(R0)
         i_we_IF = 1;
@@ -216,7 +224,7 @@ module pipeline_tb;
         @(posedge clk);
         i_we_IF = 0;
         @(posedge clk);
-
+*/
         // Apply second reset to execute instructions
         i_rst_n = 0;
         @(posedge clk);
