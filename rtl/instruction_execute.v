@@ -162,7 +162,9 @@ module instruction_execute
         if(!i_rst_n) begin
             o_write_reg = 5'b0                                  ;
         end else begin
-            o_write_reg = i_regDst ? i_rt : i_rd                ;
+            if(!i_halt) begin
+                o_write_reg = i_regDst ? i_rt : i_rd                ;
+            end
         end
     end
     
@@ -179,17 +181,20 @@ module instruction_execute
             o_width   <= 2'b11                                  ;
             o_sign_flag<= 1'b0                                  ;
         end else begin
-            //aluOP   <= i_aluOP                                  ;
-            o_mem2reg   <= i_mem2Reg                            ;
-            o_memRead   <= i_memRead                            ;
-            o_memWrite  <= i_memWrite                           ;
-            o_regWrite  <= i_regWrite                           ;
-            o_aluSrc    <= i_aluSrc                             ;
-            o_width     <= i_width                              ;
-            o_sign_flag <= i_sign_flag                          ;
-            o_aluOP     <= 2'b00                               ;
-            o_result    <= alu_result                           ;
-            o_data4Mem  <= data4Mem                             ;
+            if(!i_halt) begin
+                //aluOP   <= i_aluOP                                  ;
+                o_mem2reg   <= i_mem2Reg                            ;
+                o_memRead   <= i_memRead                            ;
+                o_memWrite  <= i_memWrite                           ;
+                o_regWrite  <= i_regWrite                           ;
+                o_aluSrc    <= i_aluSrc                             ;
+                o_width     <= i_width                              ;
+                o_sign_flag <= i_sign_flag                          ;
+                o_aluOP     <= 2'b00                                ;
+                o_result    <= alu_result                           ;
+                o_data4Mem  <= data4Mem                             ;
+                //data4Mem <= alu_datoB                                    ; 
+            end 
         end 
     end
 

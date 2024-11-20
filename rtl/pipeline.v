@@ -52,9 +52,10 @@ module pipeline
     output wire [7 :0]              o_dataAddr      , // 
 
     // WB 2 ID
-    output wire [32-1:0]       o_write_dataWB2ID,
-    output wire [5-1:0]       o_reg2writeWB2ID ,
-    output wire                     o_write_enable   
+    output wire [32-1:0]        o_write_dataWB2ID,
+    output wire [5-1:0]         o_reg2writeWB2ID ,
+    output wire                 o_end           ,
+    output wire                 o_write_enable   
 
 
 );
@@ -71,6 +72,12 @@ module pipeline
     //---------------------------------------------
     //---------------------------------------------
 
+    // step by step
+
+    //wire halt;
+    //assign halt = i_halt;
+    wire haltIF;
+    assign haltIF = halt || stop;
     
     // IF 2 ID
     wire [31:0]
@@ -83,10 +90,15 @@ module pipeline
 
     
     // ID 2 EX
+
+    wire stop;
+
     wire [4:0]
                 rsID2EX,
                 rtID2EX,
                 rdID2EX;
+
+
     wire [NB_DATA-1:0]
                         datoAID2EX                          ,
                         datoBID2EX                          ,
@@ -176,7 +188,7 @@ module pipeline
         .i_addr2jump    (addr2jumpID2IF     ),  
         // uart
         .i_instr_data   (i_instruction_data ),  
-        .i_halt         (i_halt             ),
+        .i_halt         (haltIF             ),
         .i_stall        (stall), // from HDU
         //out
         .o_pcounter4    (pcounterIF2ID      ),
@@ -186,6 +198,7 @@ module pipeline
     
     assign rsIF2ID = instructionIF2ID[25:21];
     assign rtIF2ID = instructionIF2ID[20:16];
+    
     instruction_decode #(
         .NB_DATA        (NB_DATA),
         .NB_ADDR        (NB_ADDR),
@@ -203,6 +216,7 @@ module pipeline
         .i_wr_data_WB             (write_dataWB2ID  ),
 
         .i_stall                  (stall),
+        .i_halt                   (i_halt ),
         //------------------------------------
         //out
         .o_rs                     (rsID2EX          ),
@@ -233,10 +247,10 @@ module pipeline
         .o_regWrite               (regWriteID2EX        ),
         .o_aluSrc                 (aluSrcID2EX          ),
         .o_width                  (widthID2EX           ),
-        .o_aluOp                  (aluOpID2EX           )
+        .o_aluOp                  (aluOpID2EX           ),
+        .o_stop                   (stop                 )
 
     );
-
 
     instruction_execute #(
         .NB_DATA(NB_DATA)
@@ -246,7 +260,7 @@ module pipeline
         .i_rst_n                         (i_rst_n   ),
         // hzrd?
         .i_stall                         (stall),
-        .i_halt                          (),
+        .i_halt                          (i_halt),
     
         .i_rs                            (rsID2EX               ),
         .i_rt                            (rtID2EX               ),
@@ -334,7 +348,7 @@ module pipeline
         .i_rst_n                         (i_rst_n),
 
         .i_stall                         (stall),
-        .i_halt                          (),
+        .i_halt                          (i_halt),
 
         .i_reg2write                     (write_regEX2MEM   ), //! o_write_reg from instruction_execute
         .i_result                        (resultALUEX2MEM   ), //! o_result from instruction_execute
@@ -436,5 +450,11 @@ module pipeline
     assign o_write_dataWB2ID= write_dataWB2ID   ;
     assign o_reg2writeWB2ID = reg2writeWB2ID    ;
     assign o_write_enable   = regWriteWB2ID     ;
+
+
+    // program finish
+
+    assign o_end = stop;
+
 
 endmodule

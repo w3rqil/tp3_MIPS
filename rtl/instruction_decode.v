@@ -13,6 +13,7 @@ module instruction_decode
     input wire [NB_ADDR-1:0]   i_wr_addr                ,
     input wire [NB_DATA-1:0]   i_wr_data_WB             ,
     input wire                 i_stall                  ,
+    input wire                 i_halt                   ,
     //      
     //      
     output reg [4:0]    o_rs                            ,
@@ -41,9 +42,11 @@ module instruction_decode
     output reg                  o_regWrite              ,
     output reg [1:0]            o_aluSrc                ,
     output reg [1:0]            o_width                 ,
-    output reg [1:0]            o_aluOp
+    output reg [1:0]            o_aluOp                 ,
+    output wire                 o_stop
 
 );
+    localparam HALT = 32'hFFFFFFFF; // last instruction of the program
 
     wire [NB_DATA-1:0] wire_D1, wire_D2                 ;
     
@@ -177,64 +180,65 @@ module instruction_decode
 
         end else begin
 
-
-            if((o_opcode == JAL_TYPE) || (o_func == JARL_TYPE) ) o_rs <= 5'b0           ;
-            if((o_opcode == JAL_TYPE)) o_rt <= 5'b11111                                 ;
-        
-            o_reg_DA   <= wire_D1                                                       ;
-            o_reg_DB   <= wire_D1                                                       ;
-            o_rd       <= rd                                                            ;
-            o_rs       <= rs                                                            ;
-            o_rt       <= rt                                                            ; //register 31 reserved for jal
-            //r_immediate<= i_instruction [15:0   ]                                       ;
-            o_opcode   <= opcode                                                        ;
-            o_shamt    <= i_instruction [10:6   ]                                       ;
-            o_func     <= w_func                                                        ;
-            o_addr     <= i_instruction [15:0   ]                                       ;
+            if (!i_halt) begin
+                if((o_opcode == JAL_TYPE) || (o_func == JARL_TYPE) ) o_rs <= 5'b0           ;
+                if((o_opcode == JAL_TYPE)) o_rt <= 5'b11111                                 ;
             
-            o_immediate <= w_immediat                                                   ;
+                o_reg_DA   <= wire_D1                                                       ;
+                o_reg_DB   <= wire_D1                                                       ;
+                o_rd       <= rd                                                            ;
+                o_rs       <= rs                                                            ;
+                o_rt       <= rt                                                            ; //register 31 reserved for jal
+                //r_immediate<= i_instruction [15:0   ]                                       ;
+                o_opcode   <= opcode                                                        ;
+                o_shamt    <= i_instruction [10:6   ]                                       ;
+                o_func     <= w_func                                                        ;
+                o_addr     <= i_instruction [15:0   ]                                       ;
+                
+                o_immediate <= w_immediat                                                   ;
 
-            //o_jump     <= w_jump                                                        ;
-            o_branch   <= w_branch                                                      ;   
-            o_regDst   <= w_regDst                                                      ;
-            o_mem2Reg  <= w_mem2Reg                                                     ;
-            o_memRead  <= w_memRead                                                     ;
-            o_memWrite <= w_memWrite                                                    ;
-            o_immediate_flag<= w_immediate                                              ;
-            o_regWrite <= w_regWrite                                                    ;
-            o_aluSrc   <= w_aluSrc                                                      ;
-            o_aluOp    <= w_aluOp                                                       ;
-            o_width    <= w_width                                                       ;
-            o_sign_flag<= w_sign_flag                                                   ;
+                //o_jump     <= w_jump                                                        ;
+                o_branch   <= w_branch                                                      ;   
+                o_regDst   <= w_regDst                                                      ;
+                o_mem2Reg  <= w_mem2Reg                                                     ;
+                o_memRead  <= w_memRead                                                     ;
+                o_memWrite <= w_memWrite                                                    ;
+                o_immediate_flag<= w_immediate                                              ;
+                o_regWrite <= w_regWrite                                                    ;
+                o_aluSrc   <= w_aluSrc                                                      ;
+                o_aluOp    <= w_aluOp                                                       ;
+                o_width    <= w_width                                                       ;
+                o_sign_flag<= w_sign_flag                                                   ;
 
+                
+
+            // ctrl unit
+            //reg_opcode <= i_instruction [31:25  ]       ;
+            //reg_funct  <= i_instruction [5:0    ]       ;
             
+                if((o_opcode == JAL_TYPE) || (o_func == JARL_TYPE) ) o_reg_DA <= i_pcounter4;
+                if((o_opcode == JAL_TYPE) || (o_func == JARL_TYPE) ) o_rs <= 5'b0           ;
+                if((o_opcode == JAL_TYPE)) o_rt <= 5'b11111                                 ;
+                if(((o_opcode == JAL_TYPE) || (o_func == JARL_TYPE) )) o_reg_DB <= 32'd4    ;
+                if(i_stall) begin
 
-        // ctrl unit
-        //reg_opcode <= i_instruction [31:25  ]       ;
-        //reg_funct  <= i_instruction [5:0    ]       ;
-        
-            if((o_opcode == JAL_TYPE) || (o_func == JARL_TYPE) ) o_reg_DA <= i_pcounter4;
-            if((o_opcode == JAL_TYPE) || (o_func == JARL_TYPE) ) o_rs <= 5'b0           ;
-            if((o_opcode == JAL_TYPE)) o_rt <= 5'b11111                                 ;
-            if(((o_opcode == JAL_TYPE) || (o_func == JARL_TYPE) )) o_reg_DB <= 32'd4    ;
-            if(i_stall) begin
-
-                o_branch   <= 1'b0                                                      ;   
-                o_regDst   <= 1'b0                                                      ;
-                o_mem2Reg  <= 1'b0                                                      ;
-                o_memRead  <= 1'b0                                                      ;
-                o_memWrite <= 1'b0                                                      ;
-                o_immediate_flag<= 1'b0                                                 ;
-                o_regWrite <= 1'b0                                                      ;
-                o_aluSrc   <= 2'b00                                                     ;
-                o_aluOp    <= 2'b00                                                     ;
-                o_width    <= 2'b00                                                     ;
-                o_sign_flag<= 1'b0                                                      ;
+                    o_branch   <= 1'b0                                                      ;   
+                    o_regDst   <= 1'b0                                                      ;
+                    o_mem2Reg  <= 1'b0                                                      ;
+                    o_memRead  <= 1'b0                                                      ;
+                    o_memWrite <= 1'b0                                                      ;
+                    o_immediate_flag<= 1'b0                                                 ;
+                    o_regWrite <= 1'b0                                                      ;
+                    o_aluSrc   <= 2'b00                                                     ;
+                    o_aluOp    <= 2'b00                                                     ;
+                    o_width    <= 2'b00                                                     ;
+                    o_sign_flag<= 1'b0                                                      ;
+                end
             end
         end
     end
 
-    
+    assign o_stop = (i_instruction == HALT) ? 1'b1 : 1'b0;
 /*
     assign o_jump     = w_jump                              ;
     assign o_branch   = w_branch                            ;

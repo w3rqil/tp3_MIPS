@@ -77,12 +77,14 @@ module memory_access
             o_regWrite  <= 1'b0                                                     ;
             o_mem2reg   <= 1'b0                                                     ;
         end else begin
-            o_reg_read  <= reg_read                                                 ;
-            o_ALUresult <= i_result                                                 ;
-            o_reg2write <= i_reg2write                                              ;  
-            //ctrl
-            o_regWrite  <= i_regWrite                                               ;
-            o_mem2reg   <= i_mem2reg                                                ;
+            if(!i_halt) begin
+                o_reg_read  <= reg_read                                                 ;
+                o_ALUresult <= i_result                                                 ;
+                o_reg2write <= i_reg2write                                              ;  
+                //ctrl
+                o_regWrite  <= i_regWrite                                               ;
+                o_mem2reg   <= i_mem2reg                                                ;
+            end
             
         end
     end
