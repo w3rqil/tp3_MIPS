@@ -3,12 +3,14 @@ from tkinter import scrolledtext, messagebox, filedialog, ttk
 import serial
 import subprocess
 import serial.tools.list_ports
+import time
 
-SENDING_INSTRUCTIONS  = 0b00000001
-DEBUG_MODE            = 0b00000010
-CONTINOUS_MODE        = 0b00000100
-STEP_MODE             = 0b00001000
-END_DEBUG_MODE        = 0b00010000
+
+SENDING_INSTRUCTIONS  = bytes([0b00000001])
+DEBUG_MODE            = bytes([0b00000010])
+CONTINOUS_MODE        = bytes([0b00000100])
+STEP_MODE             = bytes([0b00001000])
+END_DEBUG_MODE        = bytes([0b00010000])
 
 def connect_serial():
     global ser 
@@ -16,19 +18,20 @@ def connect_serial():
     try:
         ser = serial.Serial(
             port=selected_port, 
-            baudrate=baudrate.get(),
+            baudrate=19200,
             parity=serial.PARITY_NONE,
             stopbits=serial.STOPBITS_ONE,
             bytesize=serial.EIGHTBITS,
         )
         messagebox.showinfo("Connection", "Connected to " + selected_port)
         print("Connected to " + selected_port)
-    except:
+    except Exception as e:
         messagebox.showerror("Connection", "Error connecting to " + selected_port)
-        print("Error connecting to " + selected_port)
+        print("Error connecting to " + selected_port + f" {str(e)} ")
 
 
 def load_asm_file():
+    global bin_file_path
     filepath = filedialog.askopenfilename(filetypes=[("ASM files", "*.asm")])
     if not filepath:
         return
@@ -53,9 +56,9 @@ def load_asm_file():
 
 def send_uart(ser, data):
     if ser and ser.is_open:
-        ser.write(data.to_bytes(1, byteorder='big'))
+        ser.write(data)
         messagebox.showinfo("Data sent", f"Data sent: {data}")
-        print("Data sent", f"Data sent: {bin(data)}")
+        print("Data sent", f"Data sent: {str(data)}")
     else:
         messagebox.showerror("Connection", "Not connected to serial port")
         print("Not connected to serial port")
@@ -73,24 +76,34 @@ def get_ports():
         messagebox.showinfo("Ports", "No ports available")
 
 def load_program():
+    # if not bin_file_path:
+    #     messagebox.showerror("File", "No .bin file loaded")
     if not bin_file_path:
         messagebox.showerror("File", "No .asm file loaded")
         print("No .asm file loaded")
         return
     # Enviar LOAD PROGRAM byte
-    send_uart(ser, SENDING_INSTRUCTIONS)
+    ser.write(SENDING_INSTRUCTIONS)
 
     try:
         with open(bin_file_path, "rb") as bin_file:
-            byte = bin_file.read(1)
-            while byte:
-                ser.write(byte)
-                byte = bin_file.read(1)
+            data = bin_file.read(1)
+            # print(f"data: {data}")
+            while data:
+                ser.write(data)
+                # print(f"data: {data}")
+                time.sleep(0.01)                        # Pausa de 10 ms
+                data = bin_file.read(1)
         messagebox.showinfo("File", "Program loaded")
         print("Program loaded")
     except Exception as e:
         messagebox.showerror("File", f"Error loading program: {str(e)}")
         print(f"Error loading program: {str(e)}")
+
+    # while(ser.in_waiting > 0):
+    #     rcv = ser.read(1)
+    #     print(f"Received: {rcv.hex()}")
+    # print("se termino de recibir data")
 
 def receive_uart():
     # recibe el dato A de 32 bits y actualiza la tabla de registros
@@ -171,7 +184,7 @@ def receive_data(type, ser):
     elif type == "EX_MEM":
         rcv = ser.read(4) # Lee los 4 bytes (32 bits) de la EX_MEM
     elif type == "MEMORY":
-        rcv = ser.read(6) # Lee los 6 bytes (48 bits) de la MEMORY
+        rcv = ser.read(5) # Lee los 5 bytes (40 bits) de la MEMORY
     elif type == "REGISTERS":
         rcv = ser.read(5) # Lee los 5 bytes (40 bits) de los REGISTERS
     elif type == "CONTROL":
@@ -397,6 +410,6 @@ control_frame.grid(row=1, column=7, rowspan=7, padx=5, pady=5, sticky="nsew")
 
 
 ser = None
-bin_file_path = None
+# bin_file_path = None
 
 ventana.mainloop()

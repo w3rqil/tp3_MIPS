@@ -1,6 +1,6 @@
 module top (
-    input   wire clk        ,
-    input   wire i_rst_n    , // CREO Q YA NO VAMOS A USAR UN BOTON PARA EL RESET
+    input   wire clk_100MHz ,
+    input   wire i_rst_n    , 
     input   wire i_rx       ,
     output  wire o_tx
 );
@@ -24,6 +24,9 @@ module top (
     localparam  CLK_FREQ        = 100_000_000       ; //! Frecuencia del reloj
     localparam  OVERSAMPLING    = 16                ; //! Oversampling
 
+    wire clk_50MHz;
+    wire clk;
+
     // Baudrate_generator 
     wire tick;  //! Tick signal for the UART
     // Rx
@@ -33,7 +36,8 @@ module top (
     wire [NB_DATA_8-1:0] data_Interface2Tx;
     wire txDone;
     wire tx_start;
-    wire [NB_DATA_8-1:0] tx;    
+    // wire [NB_DATA_8-1:0] tx;
+    wire tx;    
     // Uart Interface - pipeline
     wire we;
     wire [NB_DATA_32-1:0] instruction;
@@ -75,13 +79,23 @@ module top (
     wire        [2     -1 : 0]      fwA                       ; //! Forward A
     wire        [2     -1 : 0]      fwB                       ; //! Forward B
     
+
+    // assign clk = clk_50MHz;
+    assign clk = clk_100MHz;
+
+    clk_wz clk_wz_inst(
+        .reset_0(i_rst_n),
+        .clk_in1_0(clk_100MHz),
+        .clk_50MHz_0(clk_50MHz)
+    );
+
     baudrate_generator #(
         .BAUD_RATE      (BAUD_RATE)                 ,
         .CLK_FREQ       (CLK_FREQ)                  ,
         .OVERSAMPLING   (OVERSAMPLING)
     ) baudrate_generator_inst (
         .clk    (clk)                               ,
-        .rst_n  (i_rst_n)                           ,
+        .i_rst_n  (i_rst_n)                           ,
         .o_tick (tick)
     );
 
@@ -104,8 +118,8 @@ module top (
         .clk        (clk)                           ,
         .i_rst_n    (i_rst_n)                       ,
         .i_tick     (tick)                          ,
-        .i_start_tx (tx_start)                      ,
-        .i_data     (data_Interface2Tx)             ,
+        .i_start_tx (tx_start)                      , //tx_start (para probar uart rxDone)
+        .i_data     (data_Interface2Tx)             , //data_Interface2Tx (para testear uart: data_Rx2Interface)
         .o_txdone   (txDone)                        ,
         .o_data     (tx)
     );
@@ -161,7 +175,6 @@ module top (
         .i_fwA              (fwA            ),
         .i_fwB              (fwB            ),
         .o_instruction      (instruction),    
-        .o_instruction_address(), // creo que no hace falta
         .o_valid              (we),
         .o_step               (halt),
         .o_start              (start)
@@ -203,7 +216,8 @@ module top (
         .o_dataAddr             (dataAddr),
         .o_write_dataWB2ID      (write_dataWB2ID),
         .o_reg2writeWB2ID       (reg2writeWB2ID), 
-        .o_write_enable         (write_enable)
+        .o_write_enable         (write_enable),
+        .o_end                  (i_end)
     );
 
     assign o_tx = tx;
