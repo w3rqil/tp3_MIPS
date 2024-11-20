@@ -455,7 +455,7 @@ module pipeline
     // program finish
 
     assign o_end = stop;
-    assign haltIF = i_halt || stop;
+    assign haltIF = (i_halt || stop) ? 1 : 0;
 
 
 endmodule

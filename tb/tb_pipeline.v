@@ -106,7 +106,7 @@ module pipeline_tb;
         end
     endtask
 //    `define TEST_ITYPE
-   `define TEST_JTYPE
+ `define TEST_JTYPE
 //    `define TEST_RTYPE
     `ifdef TEST_ITYPE
     // Test sequence
@@ -115,7 +115,7 @@ module pipeline_tb;
             i_rst_n = 0;
             i_we_IF = 0;
             i_instruction_data = 32'b0;
-            i_halt = 0;
+            i_halt = 0'b0;
             #200
 
             // Load instructions into memory
@@ -212,11 +212,11 @@ module pipeline_tb;
             i_instruction_data = 32'b001000_00000_00110_0000000000011110; // ADDI R6, R0, 30
             i_we_IF = 1;
             @(posedge clk);
-
+*/
             // Se desactiva la escritura
             i_we_IF = 0;
             @(posedge clk);
-    */
+    
             // Apply second reset to execute instructions
             i_rst_n = 0;
             @(posedge clk);
@@ -256,7 +256,7 @@ module pipeline_tb;
             i_rst_n = 0;
             i_we_IF = 0;
             i_instruction_data = 32'b0;
-            i_halt = 0;
+            i_halt = 1'b0;
             #200
 
             // Load instructions into memory
