@@ -2,7 +2,9 @@ module top (
     input   wire clk_100MHz ,
     input   wire i_rst_n    , 
     input   wire i_rx       ,
-    output  wire o_tx
+    output  wire o_tx       ,
+    input   wire [7:0] i_data, //only for test
+    input wire i_rxDoneTest
 );
     // Pipeline parameters
     localparam  NB_DATA_32      = 32                ;
@@ -21,7 +23,7 @@ module top (
 
     // Baudrate parameters
     localparam  BAUD_RATE       = 19200             ;
-    localparam  CLK_FREQ        = 100_000_000       ; //! Frecuencia del reloj
+    localparam  CLK_FREQ        = 45_000_000       ; //! Frecuencia del reloj
     localparam  OVERSAMPLING    = 16                ; //! Oversampling
 
     wire clk_50MHz;
@@ -80,13 +82,14 @@ module top (
     wire        [2     -1 : 0]      fwB                       ; //! Forward B
     
 
-    // assign clk = clk_50MHz;
-    assign clk = clk_100MHz;
+    assign clk = clk_50MHz;
+    //assign clk = clk_100MHz;
 
-    clk_wz clk_wz_inst(
-        .reset_0(i_rst_n),
-        .clk_in1_0(clk_100MHz),
-        .clk_50MHz_0(clk_50MHz)
+    clk_wiz_0 clk_wz_inst(
+        .reset(!i_rst_n),
+        .locked(),
+        .clk_in1(clk_100MHz),
+        .clk_out1(clk_50MHz)
     );
 
     baudrate_generator #(
@@ -123,7 +126,7 @@ module top (
         .o_txdone   (txDone)                        ,
         .o_data     (tx)
     );
-
+    wire inst_addr_from_interface;
     uart_interface #(
         .NB_DATA(NB_DATA_8),
         .NB_STOP(NB_STOP),
@@ -137,8 +140,8 @@ module top (
         .NB_CONTROL(NB_CONTROL)
     ) uart_interface_inst (
         .clk                (clk),
-        .i_rx               (data_Rx2Interface),
-        .i_rxDone           (rxDone),
+        .i_rx               (i_data), // cambiado para testing, debe ser data_Rx2Interface
+        .i_rxDone           (i_rxDoneTest), // cambiado para testing, debe ser rxDone
         .i_txDone           (txDone),
         .i_rst_n            (i_rst_n),
         .o_tx_start         (tx_start),
@@ -174,19 +177,23 @@ module top (
         .i_aluOp            (aluOp          ),
         .i_fwA              (fwA            ),
         .i_fwB              (fwB            ),
-        .o_instruction      (instruction),    
+        .o_instruction      (instruction),   
+        .o_instruction_address(inst_addr_from_interface), 
         .o_valid              (we),
         .o_step               (halt),
         .o_start              (start)
         
     );
+    wire aux_halt;
+    assign aux_halt = ~halt;
 
     pipeline pipeline_inst (
         .clk                    (clk)                           ,
         .i_rst_n                (start)                     , // Aca entra el start de la interfaz que indica cuando el reset se tiene que poner en 1
         .i_we_IF                (we)                     , // Aca entra el o_valid de la interfaz
         .i_instruction_data     (instruction)          , // Aca entra el o_instruction de la interfaz
-        .i_halt                 (halt)                     , // Aca entra el o_step de la interfaz
+        .i_halt                 (aux_halt)                     , // Aca entra el o_step de la interfaz
+        .i_inst_addr            (inst_addr_from_interface),
         .o_jump                 (jump          ),
         .o_branch               (branch        ),
         .o_regDst               (regDst        ),

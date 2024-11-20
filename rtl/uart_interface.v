@@ -63,7 +63,7 @@ module uart_interface
    
     // Output
     output      wire        [NB_32 - 1 : 0]     o_instruction               , //! instruction received  
-    // output      wire        [NB_32 - 1 : 0]     o_instruction_address       , //! address where the instruction is going to be stored
+    output      wire        [NB_32 - 1 : 0]     o_instruction_address       , //! address where the instruction is going to be stored
     output      wire                            o_valid                     , //! enable to write
     output      wire                            o_step                      , //! Step for debug mode
     output      wire                            o_start                      //! Start program for continous mode
@@ -462,7 +462,7 @@ module uart_interface
 
         // assign
         assign o_instruction            = instruction_register          ; // Se pasa la instrucción que se recibe
-        // assign o_instruction_address    = instruction_address           ; // No entiendo bien xq se pasa el address
+        assign o_instruction_address    = instruction_address           ; // No entiendo bien xq se pasa el address
         assign o_valid                  = valid                         ; // Se habilita para que se escriba en el IF
         assign o_tx_start               = tx_start                      ;
         assign o_data                   = tx_data                       ;

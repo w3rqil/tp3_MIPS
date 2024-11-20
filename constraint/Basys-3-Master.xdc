@@ -7,7 +7,7 @@
 set_property -dict { PACKAGE_PIN W5   IOSTANDARD LVCMOS33 } [get_ports clk_100MHz]
 #create_clock -add -name sys_clk_pin -period 1.00  [get_ports clk]
 
-create_clock -add -name sys_clk_pin -period 10.00 -waveform {0 5} [get_ports { clk_100MHz }];
+#create_clock -add -name sys_clk_pin -period 10.00 -waveform {0 5} [get_ports { clk_100MHz }];
 
 #set_input_delay -clock sys_clk_pin -min 0 -max 1 [get_ports i_operationSwitches]
 #set_input_delay -clock sys_clk_pin -min 0 -max 1 [get_ports i_operandSwitches]

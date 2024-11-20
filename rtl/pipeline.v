@@ -5,6 +5,7 @@ module pipeline
     input wire          i_we_IF             ,
     input wire [31:0]   i_instruction_data  ,
     input wire          i_halt              , //??????????????
+    input wire [31:0]   i_inst_addr         ,
 
     //out
 
@@ -158,7 +159,8 @@ module pipeline
 
     wire [1:0] jumpType;
 
-
+    wire [31:0] inst_addr_from_interface;
+    assign inst_addr_from_interface = i_inst_addr;
 
     hazard_detection_unit hdu_inst (
             // Inputs
@@ -182,12 +184,14 @@ module pipeline
     instruction_fetch if_inst (
         .clk            (clk                ),
         .i_rst_n        (i_rst_n            ),
+        
         // ID
         .i_jump         (jumpID2EX          ),
         .i_we           (i_we_IF            ),  
         .i_addr2jump    (addr2jumpID2IF     ),  
         // uart
         .i_instr_data   (i_instruction_data ),  
+        .i_inst_addr    (inst_addr_from_interface),
         .i_halt         (haltIF             ),
         .i_stall        (stall), // from HDU
         //out

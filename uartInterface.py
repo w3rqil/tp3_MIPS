@@ -11,7 +11,7 @@ DEBUG_MODE            = bytes([0b00000010])
 CONTINOUS_MODE        = bytes([0b00000100])
 STEP_MODE             = bytes([0b00001000])
 END_DEBUG_MODE        = bytes([0b00010000])
-
+PORT = '/dev/ttyUSB1'
 def connect_serial():
     global ser 
     selected_port = ports_combobox.get()  # Obtener el puerto seleccionado del Combobox
@@ -329,7 +329,7 @@ asm_text.grid(row=5, column=0, columnspan=2, padx=5, pady=5)
 load_button = tk.Button(ventana, text="LOAD", command=(load_program))
 load_button.grid(row=6,column=0, columnspan=2, pady=10, padx=5, sticky="ew")
 
-continous_button = tk.Button(ventana, text="CONTINOUS", command=lambda: ser.write(CONTINOUS_MODE))
+continous_button = tk.Button(ventana, text="CONTINOUS", command=lambda: send_uart(ser, CONTINOUS_MODE))
 continous_button.grid(row=0,column=3, pady=10, padx=5, sticky="ew")
 
 debug_button = tk.Button(ventana, text="DEBUG", command=lambda: ser.write(DEBUG_MODE))
