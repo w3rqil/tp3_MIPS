@@ -77,7 +77,7 @@ module pipeline
     //wire halt;
     //assign halt = i_halt;
     wire haltIF;
-    assign haltIF = halt || stop;
+
     
     // IF 2 ID
     wire [31:0]
@@ -455,6 +455,7 @@ module pipeline
     // program finish
 
     assign o_end = stop;
+    assign haltIF = i_halt || stop;
 
 
 endmodule
