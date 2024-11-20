@@ -232,6 +232,7 @@ module uart_interface
             end
 
             PARSE: begin
+                next_start = 1;
                 if (i_rxDone) begin // Recibe la instrucción de 32 bits, un byte a la vez
                     next_done_counter = done_counter + 1;
                     next_instruction_register = {instruction_register[24:0], i_rx}; // Se van concatenando los datos

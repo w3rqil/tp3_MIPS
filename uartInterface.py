@@ -180,14 +180,19 @@ def receive_uart():
     
 def receive_data(type, ser):
     if type == "ID_EX":
+        print("receiving ID_EX...")
         rcv = ser.read(18) # Lee los 18 bytes (144 bits) de la ID_EX
     elif type == "EX_MEM":
+        print("receiving EX_MEM...")
         rcv = ser.read(4) # Lee los 4 bytes (32 bits) de la EX_MEM
     elif type == "MEMORY":
+        print("receiving Data memory...")
         rcv = ser.read(5) # Lee los 5 bytes (40 bits) de la MEMORY
     elif type == "REGISTERS":
+        print("receiving register...")
         rcv = ser.read(5) # Lee los 5 bytes (40 bits) de los REGISTERS
     elif type == "CONTROL":
+        print("receiving control...")
         rcv = ser.read(3) # Lee los 3 bytes (24 bits) de los CONTROL
     else:
         print("Invalid type")
@@ -324,10 +329,10 @@ asm_text.grid(row=5, column=0, columnspan=2, padx=5, pady=5)
 load_button = tk.Button(ventana, text="LOAD", command=(load_program))
 load_button.grid(row=6,column=0, columnspan=2, pady=10, padx=5, sticky="ew")
 
-continous_button = tk.Button(ventana, text="CONTINOUS", command=lambda: send_uart(ser, CONTINOUS_MODE))
+continous_button = tk.Button(ventana, text="CONTINOUS", command=lambda: ser.write(CONTINOUS_MODE))
 continous_button.grid(row=0,column=3, pady=10, padx=5, sticky="ew")
 
-debug_button = tk.Button(ventana, text="DEBUG", command=lambda: send_uart(ser, DEBUG_MODE))
+debug_button = tk.Button(ventana, text="DEBUG", command=lambda: ser.write(DEBUG_MODE))
 debug_button.grid(row=1,column=3, pady=10, padx=5, sticky="ew")
 
 step_button = tk.Button(ventana, text="STEP", command=lambda: send_uart(ser, STEP_MODE))
