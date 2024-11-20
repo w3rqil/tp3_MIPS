@@ -113,6 +113,7 @@ module pipeline_tb;
         i_we_IF = 0;
         i_instruction_data = 32'b0;
         i_halt = 0;
+        #200
 
         // Load instructions into memory
         @(posedge clk);
@@ -123,97 +124,84 @@ module pipeline_tb;
         i_instruction_data = 32'b001000_00000_00001_0000000000001111; // ADDI R1, R0, 15
         i_we_IF = 1;
         @(posedge clk);
-        i_we_IF = 0;
-        @(posedge clk);
+
 
         // Instruction 2: SB R1, 0(R0) (Store byte from R1 to memory address R0 + 0)
         i_instruction_data = 32'b101000_00000_00001_0000000000000000; // SB R1, 0(R0)
         i_we_IF = 1;
         @(posedge clk);
-        i_we_IF = 0;
-        @(posedge clk);
+
 
         // Instruction 3: ADDI R2, R1, 7 (Load the value R1 + 7 into R2)
         i_instruction_data = 32'b001000_00001_00010_0000000000000111; // ADDI R2, R1, 7
         i_we_IF = 1;
         @(posedge clk);
-        i_we_IF = 0;
-        @(posedge clk);
+
 
         // Instruction 4: SB R2, 8(R0) (Store byte from R2 to memory address R0 + 8)
         i_instruction_data = 32'b101000_00000_00010_0000000000001000; // SB R2, 8(R0)
         i_we_IF = 1;
         @(posedge clk);
-        i_we_IF = 0;
-        @(posedge clk);
+ 
 
         // Instruction 5: LB R3, 8(R0) (Load byte from memory address R0 + 8 into R3)
         i_instruction_data = 32'b100000_00000_00011_0000000000001000; // LB R3, 8(R0)
         i_we_IF = 1;
         @(posedge clk);
-        i_we_IF = 0;
-        @(posedge clk);
+  
 
         // Instruction 6: ANDI R4, R3, 11 (R4 = R3 & 11)
         i_instruction_data = 32'b001100_00011_00100_0000000000001011; // ANDI R4, R3, 11
         i_we_IF = 1;
         @(posedge clk);
-        i_we_IF = 0;
-        @(posedge clk);
+
 
         // Instruction 7: ADDI R4, R4, 272 (R4 = R4 + 272)
         i_instruction_data = 32'b001000_00100_00100_0000000100010000; // ADDI R4, R4, 272
         i_we_IF = 1;
-        @(posedge clk);
-        i_we_IF = 0;
         @(posedge clk);
 
         // Instruction 8: SH R4, 12(R0) (Store halfword from R4 to memory address R0 + 12)
         i_instruction_data = 32'b101001_00000_00100_0000000000001100; // SH R4, 12(R0)
         i_we_IF = 1;
         @(posedge clk);
-        i_we_IF = 0;
-        @(posedge clk);
+
 
         // Instruction 9: ORI R5, R4, 10 (R5 = R4 | 10)
         i_instruction_data = 32'b001101_00100_00101_0000000000001010; // ORI R5, R4, 10
         i_we_IF = 1;
         @(posedge clk);
-        i_we_IF = 0;
-        @(posedge clk);
+
 
         // Instruction 10: SW R5, 24(R0) (Store word from R5 to memory address R0 + 24)
         i_instruction_data = 32'b101011_00000_00101_0000000000011000; // SW R5, 24(R0)
         i_we_IF = 1;
         @(posedge clk);
-        i_we_IF = 0;
-        @(posedge clk);
+
 
         // Instruction 11: BEQ R5, R4, 2 (Branch if R5 == R4, offset 2 instructions)
         i_instruction_data = 32'b000100_00101_00100_0000000000000010; // BEQ R5, R4, 2
         i_we_IF = 1;
         @(posedge clk);
-        i_we_IF = 0;
-        @(posedge clk);
+
 
         // Instruction 12: ADDI R6, R0, 20 (Load the value 20 into R6)
         i_instruction_data = 32'b001000_00000_00110_0000000000010100; // ADDI R6, R0, 20
         i_we_IF = 1;
         @(posedge clk);
-        i_we_IF = 0;
-        @(posedge clk);
+
 
         // Instruction 13: BNE R6, R2, 2 (Branch if R6 != R2, offset 2 instructions)
         i_instruction_data = 32'b000101_00110_00010_0000000000000010; // BNE R6, R2, 2
         i_we_IF = 1;
-        @(posedge clk);
-        i_we_IF = 0;
         @(posedge clk);
 
         // Instruction 14: ADDI R6, R0, 30 (Load the value 30 into R6)
         i_instruction_data = 32'b001000_00000_00110_0000000000011110; // ADDI R6, R0, 30
         i_we_IF = 1;
         @(posedge clk);
+
+        // Se desactiva la escritura
         i_we_IF = 0;
         @(posedge clk);
 
@@ -244,7 +232,7 @@ module pipeline_tb;
         check_register(5'd6, 32'd30);
 
         // Wait and observe outputs
-        repeat (30) @(posedge clk);
+        repeat (5) @(posedge clk);
         $display("-----------------------------------------------------------------------------------------------");
         $display(" C'EST FINI.");
         $display("-----------------------------------------------------------------------------------------------");
