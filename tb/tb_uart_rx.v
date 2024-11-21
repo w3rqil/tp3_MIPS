@@ -41,14 +41,26 @@ module tb_uart_rx;
     );
 
     // Clock generation
-    initial begin
-        clk = 0;
-        forever #5 clk = ~clk; // 100MHz clock
-    end
+    always #10 clk = ~clk; // 100MHz clock
+   
+    task uart_send(input [7:0] data);
+        integer i;
+        begin
+        i_rx = 0; // Start bit
+        repeat(16) #3270;
+        for (i = 0; i < 8; i = i + 1) begin
+            i_rx = data[i]; // Enviar bit por bit
+            repeat(16) #3270;  // Cada bit tarda 16 ticks
+        end
+        i_rx = 1; // Stop bit
+        repeat(100) #3270; 
+        end
+    endtask
 
     // Test sequence
     initial begin
         // Initialize signals
+        clk = 0;
         i_rst_n = 0;
         i_data = 1;
 

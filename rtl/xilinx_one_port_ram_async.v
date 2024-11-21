@@ -12,7 +12,7 @@ module xilinx_one_port_ram_async
 );
 
     // Memory array with 8-bit chunks
-    reg [7:0] memory [(2**NB_ADDR)-1:0];
+    reg [7:0] memory [0:(2**NB_ADDR)-1];
 
     // Writing 32-bit data in 8-bit chunks
     always @(posedge clk) begin
