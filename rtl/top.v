@@ -80,6 +80,12 @@ module top (
     wire        [2     -1 : 0]      aluOp                     ; //! ALU operation                                      
     wire        [2     -1 : 0]      fwA                       ; //! Forward A
     wire        [2     -1 : 0]      fwB                       ; //! Forward B
+
+    wire [NB_ID_EX   -1 : 0] concatenated_data_ID_EX    ; 
+    wire [NB_EX_MEM  -1 : 0] concatenated_data_EX_MEM   ;
+    wire [NB_MEM_WB  -1 : 0] concatenated_data_MEM_WB   ;
+    wire [NB_WB_ID   -1 : 0] concatenated_data_WB_ID    ; 
+    wire [NB_CONTROL -1 : 0] concatenated_data_CONTROL  ;
     
 
     assign clk = clk_50MHz;
@@ -147,41 +153,46 @@ module top (
         .o_tx_start         (tx_start),
         .o_data             (data_Interface2Tx),
         .i_end              (i_end), // hay que ver como le avisa en modo continuo que termino
-        .i_reg_DA           (reg_DA), 
-        .i_reg_DB           (reg_DB), 
-        .i_opcode           (opcode), 
-        .i_rs               (rs), 
-        .i_rt               (rt), 
-        .i_rd               (rd), 
-        .i_shamt            (shamt), 
-        .i_funct            (funct), 
-        .i_immediate        (immediate      ),
-        .i_addr2jump        (addr2jump      ),
-        .i_ALUresult        (ALUresult      ),
-        .i_data2mem         (data2mem       ),
-        .i_dataAddr         (dataAddr       ),
-        .i_write_dataWB2ID  (write_dataWB2ID),
-        .i_reg2writeWB2ID   (reg2writeWB2ID ),
-        .i_write_enable     (write_enable   ),
-        .i_jump             (jump           ),
-        .i_branch           (branch         ),
-        .i_regDst           (regDst         ),
-        .i_mem2Reg          (mem2Reg        ),
-        .i_memRead          (memRead        ),
-        .i_memWrite         (memWrite       ),
-        .i_inmediate_flag   (inmediate_flag ),
-        .i_sign_flag        (sign_flag      ),
-        .i_regWrite         (regWrite       ),
-        .i_aluSrc           (aluSrc         ),
-        .i_width            (width          ),
-        .i_aluOp            (aluOp          ),
-        .i_fwA              (fwA            ),
-        .i_fwB              (fwB            ),
+        // .i_reg_DA           (reg_DA), 
+        // .i_reg_DB           (reg_DB), 
+        // .i_opcode           (opcode), 
+        // .i_rs               (rs), 
+        // .i_rt               (rt), 
+        // .i_rd               (rd), 
+        // .i_shamt            (shamt), 
+        // .i_funct            (funct), 
+        // .i_immediate        (immediate      ),
+        // .i_addr2jump        (addr2jump      ),
+        // .i_ALUresult        (ALUresult      ),
+        // .i_data2mem         (data2mem       ),
+        // .i_dataAddr         (dataAddr       ),
+        // .i_write_dataWB2ID  (write_dataWB2ID),
+        // .i_reg2writeWB2ID   (reg2writeWB2ID ),
+        // .i_write_enable     (write_enable   ),
+        // .i_jump             (jump           ),
+        // .i_branch           (branch         ),
+        // .i_regDst           (regDst         ),
+        // .i_mem2Reg          (mem2Reg        ),
+        // .i_memRead          (memRead        ),
+        // .i_memWrite         (memWrite       ),
+        // .i_inmediate_flag   (inmediate_flag ),
+        // .i_sign_flag        (sign_flag      ),
+        // .i_regWrite         (regWrite       ),
+        // .i_aluSrc           (aluSrc         ),
+        // .i_width            (width          ),
+        // .i_aluOp            (aluOp          ),
+        // .i_fwA              (fwA            ),
+        // .i_fwB              (fwB            ),
         .o_instruction      (instruction),   
         .o_instruction_address(inst_addr_from_interface), 
         .o_valid              (we),
         .o_step               (halt),
-        .o_start              (start)
+        .o_start              (start),
+        .i_concatenated_data_ID_EX  (concatenated_data_ID_EX  ), 
+        .i_concatenated_data_EX_MEM (concatenated_data_EX_MEM ),
+        .i_concatenated_data_MEM_WB (concatenated_data_MEM_WB ),
+        .i_concatenated_data_WB_ID  (concatenated_data_WB_ID  ), 
+        .i_concatenated_data_CONTROL(concatenated_data_CONTROL)
         
     );
     wire aux_halt;
@@ -228,6 +239,49 @@ module top (
     );
 
     assign o_tx = tx;
+
+    assign concatenated_data_ID_EX = {
+        reg_DA    , // 32 bits
+        reg_DB    , // 32 bits
+        opcode    , // 6 bits
+        rs        , // 5 bits
+        rt        , // 5 bits
+        rd        , // 5 bits
+        shamt     , // 5 bits
+        funct     , // 6 bits
+        immediate , // 16 bits
+        addr2jump   // 32 bits
+    }; // 144 bits
+    assign concatenated_data_EX_MEM = {
+        ALUresult // 32 bits
+    }; // 32 bits
+    assign concatenated_data_MEM_WB = {
+        data2mem  , // 32 bits
+        dataAddr    // 8 bits
+    }; // 40 bits
+    assign concatenated_data_WB_ID = {
+        write_dataWB2ID   , // 32 bits
+        reg2writeWB2ID    , // 5 bits
+        write_enable      ,
+        2'b00
+    }; // 40 bits
+    assign concatenated_data_CONTROL = {
+        jump              , // 1 bit
+        branch            , // 1 bit
+        regDst            , // 1 bit
+        mem2Reg           , // 1 bit
+        memRead           , // 1 bit  
+        memWrite          , // 1 bit
+        inmediate_flag    , // 1 bit
+        sign_flag         , // 1 bit
+        regWrite          , // 1 bit
+        aluSrc            , // 2 bits
+        width             , // 2 bits
+        aluOp             , // 2 bits
+        fwA               , // 2 bits
+        fwB               , // 2 bits
+        5'b00000
+    }; // 24 bits
 
 
 endmodule
