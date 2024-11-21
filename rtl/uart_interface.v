@@ -240,9 +240,8 @@ module uart_interface
                 if (done_counter == 4) begin
                     if (instruction_register == HALT_INSTR) begin
                         next_state = IDLE;
-                    end else begin
-                        next_instruction_address = instruction_address + 4;                        
-                    end
+                    end 
+                    next_instruction_address = instruction_address + 4;  
                     next_done_counter = 0;
                     next_valid = 1; // se habilita para escribir
                 end
@@ -312,6 +311,7 @@ module uart_interface
             end
 
             CONTINOUS_STATE: begin
+                next_step = 1;
                 next_start = 1;
                 if(i_end) begin
                     next_concatenated_data_ID_EX = {
