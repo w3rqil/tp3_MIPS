@@ -2,9 +2,9 @@ module top (
     input   wire clk_100MHz ,
     input   wire i_rst_n    , 
     input   wire i_rx       ,
-    output  wire o_tx       ,
-    input   wire [7:0] i_data, //only for test
-    input wire i_rxDoneTest
+    output  wire o_tx       
+    //input   wire [7:0] i_data, //only for test
+    //input wire i_rxDoneTest
 );
     // Pipeline parameters
     localparam  NB_DATA_32      = 32                ;
@@ -126,7 +126,7 @@ module top (
         .o_txdone   (txDone)                        ,
         .o_data     (tx)
     );
-    wire inst_addr_from_interface;
+    wire [31:0] inst_addr_from_interface;
     uart_interface #(
         .NB_DATA(NB_DATA_8),
         .NB_STOP(NB_STOP),
@@ -140,8 +140,8 @@ module top (
         .NB_CONTROL(NB_CONTROL)
     ) uart_interface_inst (
         .clk                (clk),
-        .i_rx               (i_data), // cambiado para testing, debe ser data_Rx2Interface
-        .i_rxDone           (i_rxDoneTest), // cambiado para testing, debe ser rxDone
+        .i_rx               (data_Rx2Interface), // cambiado para testing, debe ser data_Rx2Interface
+        .i_rxDone           (rxDone), // cambiado para testing, debe ser rxDone
         .i_txDone           (txDone),
         .i_rst_n            (i_rst_n),
         .o_tx_start         (tx_start),
