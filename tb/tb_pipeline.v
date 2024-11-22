@@ -175,7 +175,7 @@ module pipeline_tb;
 
             // Instruction 7: ADDI R4, R4, 272 (R4 = R4 + 272)
             i_instruction_data = 32'b001000_00100_00100_0000000100010000; // ADDI R4, R4, 272
-            i_inst_addr = 32'h0006;
+            i_inst_addr = 32'h001c;
             i_we_IF = 1;
             @(posedge clk);
             
