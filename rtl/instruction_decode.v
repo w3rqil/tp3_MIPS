@@ -178,6 +178,7 @@ module instruction_decode
             o_func     <= 6'b0                                                              ;
             o_addr     <= 16'b0                                                             ;
             o_stop     <= 1'b0                                                              ;
+            o_width    <= 2'b00                                                             ; 
 
         end else begin
 

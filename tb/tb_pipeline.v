@@ -115,20 +115,19 @@ module pipeline_tb;
             // Initialize inputs
             i_rst_n = 0;
             i_we_IF = 0;
-            i_instruction_data = 32'b0;
-            i_inst_addr = 31'b0;
-            i_halt = 0'b0;
+            i_instruction_data = 32'h0000;
+            i_inst_addr = 32'h0000;
+            i_halt = 1'b1;
             #200
 
             // Load instructions into memory
             @(posedge clk);
-            i_rst_n = 1;
-            @(posedge clk);
-
+            i_we_IF = 1;
+            repeat(3) @(posedge clk);
+            
             // Instruction 1: ADDI R1, R0, 15 (Load the value 15 into R1)
             i_instruction_data = 32'b001000_00000_00001_0000000000001111; // ADDI R1, R0, 15
             i_inst_addr = 32'h0004;
-            i_we_IF = 1;
             @(posedge clk);
 
 
@@ -139,45 +138,45 @@ module pipeline_tb;
             @(posedge clk);
 
 
-            // Instruction 3: ADDI R2, R1, 7 (Load the value R1 + 7 into R2)
-            i_instruction_data = 32'b001000_00001_00010_0000000000000111; // ADDI R2, R1, 7
-            i_inst_addr = 32'h000c;
-            i_we_IF = 1;
-            @(posedge clk);
+            // // Instruction 3: ADDI R2, R1, 7 (Load the value R1 + 7 into R2)
+            // i_instruction_data = 32'b001000_00001_00010_0000000000000111; // ADDI R2, R1, 7
+            // i_inst_addr = 32'h000c;
+            // i_we_IF = 1;
+            // @(posedge clk);
 
 
-            // Instruction 4: SB R2, 8(R0) (Store byte from R2 to memory address R0 + 8)
-            i_instruction_data = 32'b101000_00000_00010_0000000000001000; // SB R2, 8(R0)
-            i_inst_addr = 32'h0010;
-            i_we_IF = 1;
-            @(posedge clk);
+            // // Instruction 4: SB R2, 8(R0) (Store byte from R2 to memory address R0 + 8)
+            // i_instruction_data = 32'b101000_00000_00010_0000000000001000; // SB R2, 8(R0)
+            // i_inst_addr = 32'h0010;
+            // i_we_IF = 1;
+            // @(posedge clk);
     
 
-            // Instruction 5: LB R3, 8(R0) (Load byte from memory address R0 + 8 into R3)
-            i_instruction_data = 32'b100000_00000_00011_0000000000001000; // LB R3, 8(R0)
-            i_inst_addr = 32'h0014;
-            i_we_IF = 1;
-            @(posedge clk);
+            // // Instruction 5: LB R3, 8(R0) (Load byte from memory address R0 + 8 into R3)
+            // i_instruction_data = 32'b100000_00000_00011_0000000000001000; // LB R3, 8(R0)
+            // i_inst_addr = 32'h0014;
+            // i_we_IF = 1;
+            // @(posedge clk);
             
 
-            // Instruction 6: ANDI R4, R3, 11 (R4 = R3 & 11)
-            i_instruction_data = 32'b001100_00011_00100_0000000000001011; // ANDI R4, R3, 11
-            i_inst_addr = 32'h0018;
-            // IF2ID -> rs = 00011
-            // IF2ID -> rt = 00100
+            // // Instruction 6: ANDI R4, R3, 11 (R4 = R3 & 11)
+            // i_instruction_data = 32'b001100_00011_00100_0000000000001011; // ANDI R4, R3, 11
+            // i_inst_addr = 32'h0018;
+            // // IF2ID -> rs = 00011
+            // // IF2ID -> rt = 00100
 
-            // ID2EX -> rt = 00011
-            // ID2EX -> memRead = 1
+            // // ID2EX -> rt = 00011
+            // // ID2EX -> memRead = 1
 
-            i_we_IF = 1;
-            @(posedge clk);
+            // i_we_IF = 1;
+            // @(posedge clk);
 
 
-            // Instruction 7: ADDI R4, R4, 272 (R4 = R4 + 272)
-            i_instruction_data = 32'b001000_00100_00100_0000000100010000; // ADDI R4, R4, 272
-            i_inst_addr = 32'h001c;
-            i_we_IF = 1;
-            @(posedge clk);
+            // // Instruction 7: ADDI R4, R4, 272 (R4 = R4 + 272)
+            // i_instruction_data = 32'b001000_00100_00100_0000000100010000; // ADDI R4, R4, 272
+            // i_inst_addr = 32'h001c;
+            // i_we_IF = 1;
+            // @(posedge clk);
             
 
     /*
@@ -229,6 +228,7 @@ module pipeline_tb;
             i_rst_n = 0;
             @(posedge clk);
             i_rst_n = 1;
+            i_halt = 0;
             @(posedge clk);
             $display("-----------------------------------------------------------------------------------------------");
             $display(" START");
