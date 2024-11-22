@@ -43,8 +43,22 @@ module tb_top;
         integer i;
         begin
         i_rx = 0; // Start bit
-        repeat(16) #6534;
+        repeat(16) @(posedge tick);
         for (i = 0; i < 8; i = i + 1) begin
+            i_rx = data[i]; // Enviar bit por bit
+            repeat(16) @(posedge tick);  // Cada bit tarda 16 ticks
+        end
+        i_rx = 1; // Stop bit
+        repeat(100) @(posedge tick);
+        end
+    endtask
+
+    task uart_send_instruction(input [31:0] data);
+        integer i;
+        begin
+        i_rx = 0; // Start bit
+        repeat(16) #6534;
+        for (i = 0; i < 31; i = i + 1) begin
             i_rx = data[i]; // Enviar bit por bit
             repeat(16) @(posedge tick);  // Cada bit tarda 16 ticks
         end
@@ -52,12 +66,12 @@ module tb_top;
         repeat(100) #6534; 
         end
     endtask
+
     // Testbench logic
     initial begin
         // Initialization
         i_rst_n = 1'b0; // Start with reset active
         i_rx = 1'b0;    // Idle state for UART receiver
-        #2000;
         // Apply reset
         @(posedge clk_100MHz);
         #5; // Small delay
@@ -67,75 +81,37 @@ module tb_top;
         @(posedge clk_100MHz);
         //uart_send(8'b00000100);
         @(posedge clk_100MHz);
-
-
+        uart_send(8'h01);//start receiving
+        // Instruction 1: ADDI R1, R0, 15 (Load the value 15 into R1)
         uart_send(8'b00100000);
         uart_send(8'b00000001);
         uart_send(8'b00000000);
         uart_send(8'b00001111);
         
+        //addi 8
+        uart_send(8'b00100000);
+        uart_send(8'b00000010);
+        uart_send(8'b00000000);
+        uart_send(8'b00001000);
+        
 
-        uart_send(8'hd5);
-        uart_send(8'hc4);
-        uart_send(8'h55);
-        uart_send(8'hee);
-        /* //////////////////////////////////////////////////////////////
-                SE ENVIA RECEIVING_INSTRUCTION
-        */ //////////////////////////////////////////////////////////////
-        //@(posedge clk_100MHz);
-        //data = 8'b00000001;
-        //rxDone = 1'b1;
-//
-        //@(posedge clk_100MHz);
-        //rxDone = 1'b0;
-        ///* //////////////////////////////////////////////////////////////
-        //        SE ENVIA LA INSTRUCCION ADDI R1, R0, 15
-        //*/ //////////////////////////////////////////////////////////////
-        //@(posedge clk_100MHz);
-        //data = 8'b00100000;
-        //rxDone = 1'b1;
-        //@(posedge clk_100MHz);
-        //rxDone = 1'b0;
-//
-        //@(posedge clk_100MHz);
-        //data = 8'b00000000;
-        //rxDone = 1'b1;
-        //@(posedge clk_100MHz);
-        //rxDone = 1'b0;
-//
-        //@(posedge clk_100MHz);
-        //data = 8'b01000000;
-        //rxDone = 1'b1;
-        //@(posedge clk_100MHz);
-        //rxDone = 1'b0;
-//
-        //@(posedge clk_100MHz);
-        //data = 8'b00001111;
-        //rxDone = 1'b1;
-        //@(posedge clk_100MHz);
-        //rxDone = 1'b0;
-//
-        //@(posedge clk_100MHz);
-        //data = 8'b11111111;
-        //rxDone = 1'b1;
-        //@(posedge clk_100MHz);
-        //rxDone = 1'b0;
-        //@(posedge clk_100MHz);
-        //data = 8'b11111111;
-        //rxDone = 1'b1;
-        //@(posedge clk_100MHz);
-        //rxDone = 1'b0;
-        //@(posedge clk_100MHz);
-        //data = 8'b11111111;
-        //rxDone = 1'b1;
-        //@(posedge clk_100MHz);
-        //rxDone = 1'b0;
-        //@(posedge clk_100MHz);
-        //data = 8'b11111111;
-        //rxDone = 1'b1;
-        //@(posedge clk_100MHz);
-        //rxDone = 1'b0;
-//
+        // Instrucción 3: ADDU R3, R1, R2 (Sumar R1 y R2, guardar el resultado en R3)
+        // ADDU R3, R1, R2
+        uart_send(8'h00);
+        uart_send(8'b00100010);
+        uart_send(8'b00011000);
+        uart_send(8'b00100001);
+
+        // HALT instruction
+
+        uart_send(8'hFF);
+        uart_send(8'hFF);
+        uart_send(8'hFF);
+        uart_send(8'hFF);
+
+        uart_send(8'h04); //continuous mode
+
+        #5000000;
         /* //////////////////////////////////////////////////////////////
                 SE TESTEA EL MODO CONTINUO
         */ //////////////////////////////////////////////////////////////
@@ -152,7 +128,7 @@ module tb_top;
         // rxDone = 1'b1;
 
 
-        repeat(16) @(posedge clk_100MHz);
+        //repeat(20000) @(posedge clk_100MHz);
         // Finish simulation
         $finish;
     end

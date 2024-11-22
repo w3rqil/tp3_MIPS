@@ -31,41 +31,7 @@ module uart_interface
     input wire [NB_WB_ID   -1 : 0] i_concatenated_data_WB_ID    ,
     input wire [NB_CONTROL -1 : 0] i_concatenated_data_CONTROL  ,
 
-    // //ID_EX
-    // input       wire        [NB_32 -1 : 0]      i_reg_DA                    , //! Register A
-    // input       wire        [NB_32 -1 : 0]      i_reg_DB                    , //! Register B
-    // input       wire        [6     -1 : 0]      i_opcode                    , //! Opcode
-    // input       wire        [NB_5  -1 : 0]      i_rs                        , //! rs
-    // input       wire        [NB_5  -1 : 0]      i_rt                        , //! rt
-    // input       wire        [NB_5  -1 : 0]      i_rd                        , //! rd
-    // input       wire        [NB_5  -1 : 0]      i_shamt                     , //! shamt
-    // input       wire        [6     -1 : 0]      i_funct                     , //! funct
-    // input       wire        [16    -1 : 0]      i_immediate                 , //! immediate
-    // input       wire        [NB_32 -1 : 0]      i_addr2jump                 , //! jump address
-    // //EX_MEM
-    // input       wire        [NB_32 -1 : 0]      i_ALUresult                 , //! ALU result
-    // //MEM_WB
-    // input       wire        [NB_32 -1 : 0]      i_data2mem                  , //! Memory data
-    // input       wire        [NB_DATA-1: 0]      i_dataAddr                  , //! Memory address
-    // //WB_ID
-    // input       wire        [NB_32  -1: 0]      i_write_dataWB2ID           , //! Write data
-    // input       wire        [NB_5   -1: 0]      i_reg2writeWB2ID            , //! Register to write
-    // input       wire                            i_write_enable              , //! Write enable
-    // //Control & Foward unit
-    // input       wire                            i_jump                      , //! Jump
-    // input       wire                            i_branch                    , //! Branch
-    // input       wire                            i_regDst                    , //! RegDst
-    // input       wire                            i_mem2Reg                   , //! MemToReg
-    // input       wire                            i_memRead                   , //! MemRead
-    // input       wire                            i_memWrite                  , //! MemWrite
-    // input       wire                            i_inmediate_flag            , //! Inmediate flag
-    // input       wire                            i_sign_flag                 , //! Sign flag
-    // input       wire                            i_regWrite                  , //! RegWrite
-    // input       wire        [2     -1 : 0]      i_aluSrc                    , //! ALU source
-    // input       wire        [2     -1 : 0]      i_width                     , //! ALU operation
-    // input       wire        [2     -1 : 0]      i_aluOp                     , //! ALU operation                                      
-    // input       wire        [2     -1 : 0]      i_fwA                       , //! Forward A
-    // input       wire        [2     -1 : 0]      i_fwB                       , //! Forward B
+
    
     // Output
     output      wire        [NB_32 - 1 : 0]     o_instruction               , //! instruction received  
@@ -108,11 +74,7 @@ module uart_interface
     reg                     step, next_step                                             ;
     reg                     debug_flag, next_debug_flag                                 ;
     reg                     start, next_start                                           ; 
-    // reg [NB_ID_EX   -1 : 0] concatenated_data_ID_EX, next_concatenated_data_ID_EX       ;
-    // reg [NB_EX_MEM  -1 : 0] concatenated_data_EX_MEM, next_concatenated_data_EX_MEM     ;
-    // reg [NB_MEM_WB  -1 : 0] concatenated_data_MEM_WB, next_concatenated_data_MEM_WB     ;
-    // reg [NB_WB_ID   -1 : 0] concatenated_data_WB_ID, next_concatenated_data_WB_ID       ;
-    // reg [NB_CONTROL -1 : 0] concatenated_data_CONTROL, next_concatenated_data_CONTROL   ;  
+
     reg [NB_DATA    -1 : 0] tx_data, next_tx_data                                       ; //! data to be sent 
 
     // wire signed [NB_DATA - 1 : 0]  leds_reg                                 ;
@@ -128,11 +90,7 @@ module uart_interface
             step <= 0                                                       ;
             debug_flag <= 0                                                 ;
             start <= 0                                                      ;
-            // concatenated_data_ID_EX <= 0                                    ;
-            // concatenated_data_EX_MEM <= 0                                   ;
-            // concatenated_data_MEM_WB <= 0                                   ;
-            // concatenated_data_WB_ID <= 0                                    ;
-            // concatenated_data_CONTROL <= 0                                  ;
+
             tx_data <= 0                                                    ;
         end else begin              
             state <= next_state                                             ;
@@ -144,11 +102,7 @@ module uart_interface
             step <= next_step                                               ;
             debug_flag <= next_debug_flag                                   ;
             start <= next_start                                             ;
-            // concatenated_data_ID_EX <= next_concatenated_data_ID_EX         ;
-            // concatenated_data_EX_MEM <= next_concatenated_data_EX_MEM       ;
-            // concatenated_data_MEM_WB <= next_concatenated_data_MEM_WB       ;
-            // concatenated_data_WB_ID <= next_concatenated_data_WB_ID         ;
-            // concatenated_data_CONTROL <= next_concatenated_data_CONTROL     ;
+
             tx_data <= next_tx_data                                         ;
         end
     end
@@ -163,11 +117,7 @@ module uart_interface
         next_step = step                                            ;
         next_debug_flag = debug_flag                                ;
         next_start = start                                          ; 
-        // next_concatenated_data_ID_EX = concatenated_data_ID_EX      ;
-        // next_concatenated_data_EX_MEM = concatenated_data_EX_MEM    ;
-        // next_concatenated_data_MEM_WB = concatenated_data_MEM_WB    ;
-        // next_concatenated_data_WB_ID = concatenated_data_WB_ID      ;
-        // next_concatenated_data_CONTROL = concatenated_data_CONTROL  ;
+
         next_tx_data = tx_data                                      ;
 
         case (state)
@@ -191,48 +141,6 @@ module uart_interface
                     next_step = 0                                           ;
                     next_debug_flag = 0                                     ;
                     next_start = 0                                          ;
-                    // next_concatenated_data_ID_EX = {
-                    //     i_reg_DA    , // 32 bits
-                    //     i_reg_DB    , // 32 bits
-                    //     i_opcode    , // 6 bits
-                    //     i_rs        , // 5 bits
-                    //     i_rt        , // 5 bits
-                    //     i_rd        , // 5 bits
-                    //     i_shamt     , // 5 bits
-                    //     i_funct     , // 6 bits
-                    //     i_immediate , // 16 bits
-                    //     i_addr2jump   // 32 bits
-                    // }; // 144 bits
-                    // next_concatenated_data_EX_MEM = {
-                    //     i_ALUresult // 32 bits
-                    // }; // 32 bits
-                    // next_concatenated_data_MEM_WB = {
-                    //     i_data2mem  , // 32 bits
-                    //     i_dataAddr    // 8 bits
-                    // }; // 40 bits
-                    // next_concatenated_data_WB_ID = {
-                    //     i_write_dataWB2ID   , // 32 bits
-                    //     i_reg2writeWB2ID    , // 5 bits
-                    //     i_write_enable      ,
-                    //     2'b00
-                    // }; // 40 bits
-                    // next_concatenated_data_CONTROL = {
-                    //     i_jump              , // 1 bit
-                    //     i_branch            , // 1 bit
-                    //     i_regDst            , // 1 bit
-                    //     i_mem2Reg           , // 1 bit
-                    //     i_memRead           , // 1 bit  
-                    //     i_memWrite          , // 1 bit
-                    //     i_inmediate_flag    , // 1 bit
-                    //     i_sign_flag         , // 1 bit
-                    //     i_regWrite          , // 1 bit
-                    //     i_aluSrc            , // 2 bits
-                    //     i_width             , // 2 bits
-                    //     i_aluOp             , // 2 bits
-                    //     i_fwA               , // 2 bits
-                    //     i_fwB               , // 2 bits
-                    //     5'b00000
-                    // }; // 24 bits
                     next_tx_data = 0                                        ;
                 end
             end
@@ -271,48 +179,6 @@ module uart_interface
                         end
                     endcase
 
-                    // next_concatenated_data_ID_EX = {
-                    //         i_reg_DA    , // 32 bits
-                    //         i_reg_DB    , // 32 bits
-                    //         i_opcode    , // 6 bits
-                    //         i_rs        , // 5 bits
-                    //         i_rt        , // 5 bits
-                    //         i_rd        , // 5 bits
-                    //         i_shamt     , // 5 bits
-                    //         i_funct     , // 6 bits
-                    //         i_immediate , // 16 bits
-                    //         i_addr2jump   // 32 bits
-                    //     }; // 144 bits
-                    //     next_concatenated_data_EX_MEM = {
-                    //         i_ALUresult // 32 bits
-                    //     }; // 32 bits
-                    //     next_concatenated_data_MEM_WB = {
-                    //         i_data2mem  , // 32 bits
-                    //         i_dataAddr    // 8 bits
-                    //     }; // 40 bits
-                    //     next_concatenated_data_WB_ID = {
-                    //         i_write_dataWB2ID   , // 32 bits
-                    //         i_reg2writeWB2ID    , // 5 bits
-                    //         i_write_enable      ,
-                    //         2'b00
-                    //     }; // 40 bits
-                    //     next_concatenated_data_CONTROL = {
-                    //         i_jump              , // 1 bit
-                    //         i_branch            , // 1 bit
-                    //         i_regDst            , // 1 bit
-                    //         i_mem2Reg           , // 1 bit
-                    //         i_memRead           , // 1 bit  
-                    //         i_memWrite          , // 1 bit
-                    //         i_inmediate_flag    , // 1 bit
-                    //         i_sign_flag         , // 1 bit
-                    //         i_regWrite          , // 1 bit
-                    //         i_aluSrc            , // 2 bits
-                    //         i_width             , // 2 bits
-                    //         i_aluOp             , // 2 bits
-                    //         i_fwA               , // 2 bits
-                    //         i_fwB               , // 2 bits
-                    //         5'b00000
-                    //     }; // 24 bits
                 end
             end
 
@@ -320,48 +186,7 @@ module uart_interface
                 next_step = 1;
                 next_start = 1;
                 if(i_end) begin
-                    // next_concatenated_data_ID_EX = {
-                    //     i_reg_DA    , // 32 bits
-                    //     i_reg_DB    , // 32 bits
-                    //     i_opcode    , // 6 bits
-                    //     i_rs        , // 5 bits
-                    //     i_rt        , // 5 bits
-                    //     i_rd        , // 5 bits
-                    //     i_shamt     , // 5 bits
-                    //     i_funct     , // 6 bits
-                    //     i_immediate , // 16 bits
-                    //     i_addr2jump   // 32 bits
-                    // }; // 144 bits
-                    // next_concatenated_data_EX_MEM = {
-                    //     i_ALUresult // 32 bits
-                    // }; // 32 bits
-                    // next_concatenated_data_MEM_WB = {
-                    //     i_data2mem  , // 32 bits
-                    //     i_dataAddr    // 8 bits
-                    // }; // 40 bits
-                    // next_concatenated_data_WB_ID = {
-                    //     i_write_dataWB2ID   , // 32 bits
-                    //     i_reg2writeWB2ID    , // 5 bits
-                    //     i_write_enable      ,
-                    //     2'b00
-                    // }; // 40 bits
-                    // next_concatenated_data_CONTROL = {
-                    //     i_jump              , // 1 bit
-                    //     i_branch            , // 1 bit
-                    //     i_regDst            , // 1 bit
-                    //     i_mem2Reg           , // 1 bit
-                    //     i_memRead           , // 1 bit  
-                    //     i_memWrite          , // 1 bit
-                    //     i_inmediate_flag    , // 1 bit
-                    //     i_sign_flag         , // 1 bit
-                    //     i_regWrite          , // 1 bit
-                    //     i_aluSrc            , // 2 bits
-                    //     i_width             , // 2 bits
-                    //     i_aluOp             , // 2 bits
-                    //     i_fwA               , // 2 bits
-                    //     i_fwB               , // 2 bits
-                    //     5'b00000
-                    // }; // 24 bits
+
                     next_state = SEND_ID_EX_STATE;
                 end
             end
@@ -468,11 +293,7 @@ module uart_interface
                 next_step                      = next_step                      ;
                 next_debug_flag                = next_debug_flag                ;
                 next_start                     = next_start                     ;
-                // next_concatenated_data_ID_EX   = next_concatenated_data_ID_EX   ;
-                // next_concatenated_data_EX_MEM  = next_concatenated_data_EX_MEM  ;
-                // next_concatenated_data_MEM_WB  = next_concatenated_data_MEM_WB  ;
-                // next_concatenated_data_WB_ID   = next_concatenated_data_WB_ID   ;
-                // next_concatenated_data_CONTROL = next_concatenated_data_CONTROL ;
+
                 next_tx_data                   = next_tx_data                   ;
             end
         endcase

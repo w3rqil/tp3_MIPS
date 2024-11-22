@@ -116,13 +116,15 @@ module pipeline_tb;
             i_rst_n = 0;
             i_we_IF = 0;
             i_instruction_data = 32'b0;
-            i_inst_addr = 31'b0;
+            i_inst_addr = 31'h0000;
             i_halt = 0'b0;
-            #200
+            #200;
 
             // Load instructions into memory
             @(posedge clk);
             i_rst_n = 1;
+            @(posedge clk);
+            #2000;
             @(posedge clk);
 
             // Instruction 1: ADDI R1, R0, 15 (Load the value 15 into R1)
