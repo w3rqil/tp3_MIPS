@@ -20,8 +20,8 @@ module write_back
 
 
     assign o_write_data = (i_mem2reg) ? 
-                                        i_ALUresult :
-                                        i_reg_read  ;
+                                        i_reg_read  :
+                                        i_ALUresult ;
                                     
     assign o_reg2write = i_reg2write                ;
     assign o_regWrite  = i_regWrite                 ; //ctrl signal
