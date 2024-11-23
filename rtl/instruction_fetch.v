@@ -51,6 +51,6 @@ module instruction_fetch
         end
     end
 
-    assign instruction_addr = i_we ? i_inst_addr[7:0] : o_pcounter [7:0];
+    assign instruction_addr = o_pcounter [7:0];
 
 endmodule

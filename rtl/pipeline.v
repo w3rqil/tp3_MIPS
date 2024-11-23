@@ -159,8 +159,8 @@ module pipeline
 
     wire [1:0] jumpType;
 
-    //wire [31:0] inst_addr_from_interface;
-    //assign inst_addr_from_interface = i_inst_addr;
+    wire [31:0] inst_addr_from_interface;
+    assign inst_addr_from_interface = i_inst_addr;
 
     hazard_detection_unit hdu_inst (
             // Inputs
@@ -191,7 +191,7 @@ module pipeline
         .i_addr2jump    (addr2jumpID2IF     ),  
         // uart
         .i_instr_data   (i_instruction_data ),  
-        .i_inst_addr    (i_inst_addr),
+        .i_inst_addr    (inst_addr_from_interface),
         .i_halt         (haltIF             ),
         .i_stall        (stall), // from HDU
         //out
