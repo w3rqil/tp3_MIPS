@@ -81,7 +81,7 @@ module instruction_execute
                     I_TYPE     = 2'b11                          ;
 
     reg  [5:0]           opcode                                  ;
-    reg  [NB_DATA-1:0]   alu_datoA, alu_datoB, data4Mem          ;
+    reg  [NB_DATA-1:0]   alu_datoA, alu_datoB, data4Mem          ; //data4Mem_aux
     reg  [1:0]           aluOP                                   ;
     wire [NB_DATA-1:0]   alu_result                              ;
 
@@ -156,6 +156,7 @@ module instruction_execute
                 alu_datoB = 8'b0                                ;
             end
         endcase
+        data4Mem = alu_datoB;
 
         if((i_opcode == JAL_TYPE) || ((i_opcode== R_TYPE_OP) && (i_func == JARL_TYPE))) begin
             alu_datoB = i_reg_DB;
@@ -194,7 +195,7 @@ module instruction_execute
         end else begin
             if(!i_halt) begin
                 //aluOP   <= i_aluOP                                  ;
-                data4Mem <= alu_datoB                                    ;
+                //data4Mem <= data4Mem_aux                                    ;
                 o_mem2reg   <= i_mem2Reg                            ;
                 o_memRead   <= i_memRead                            ;
                 o_memWrite  <= i_memWrite                           ;
@@ -205,7 +206,7 @@ module instruction_execute
                 o_aluOP     <= 2'b00                                ;
                 o_result    <= alu_result                           ;
                 o_data4Mem  <= data4Mem                             ;
-                //data4Mem <= alu_datoB                                    ; 
+                 
             end 
         end 
     end
