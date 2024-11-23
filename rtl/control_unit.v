@@ -187,7 +187,7 @@ module control_unit
             end
 
             LB_TYPE: begin
-                r_regDst    = 1'b0                                              ;
+                r_regDst    = 1'b0                                              ; 
                 r_ALUSrc    = 1'b1                                              ;
                 r_mem2Reg   = 1'b1                                              ;
                 r_regWrite  = 1'b1                                              ;
@@ -241,7 +241,7 @@ module control_unit
                 r_immediate = 1'b1                                              ;
             end
 
-            SB_TYPE: begin
+            SB_TYPE: begin // rs para mem access - rt dirección del dato a guardar
                 r_ALUSrc    = 1'b1                                              ;
                 r_memWrite  = 1'b1                                              ;
                 r_width     = 2'b00                                             ;  // Byte

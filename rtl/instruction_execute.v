@@ -93,7 +93,6 @@ module instruction_execute
             R_TYPE: begin
                 // and
                 opcode = i_func                                 ;
-    
             end
             I_TYPE: begin
                 // or
@@ -151,7 +150,7 @@ module instruction_execute
 
         if(i_immediate_flag) alu_datoB = i_immediate            ;
 
-        data4Mem = alu_datoB                                    ;   
+           
     end
     
     always @(posedge clk) begin: mux3
@@ -163,7 +162,7 @@ module instruction_execute
             o_write_reg = 5'b0                                  ;
         end else begin
             if(!i_halt) begin
-                o_write_reg = i_regDst ? i_rt : i_rd                ;
+                o_write_reg = i_regDst ? i_rt : i_rd            ; 
             end
         end
     end
@@ -183,6 +182,7 @@ module instruction_execute
         end else begin
             if(!i_halt) begin
                 //aluOP   <= i_aluOP                                  ;
+                data4Mem <= alu_datoB                                    ;
                 o_mem2reg   <= i_mem2Reg                            ;
                 o_memRead   <= i_memRead                            ;
                 o_memWrite  <= i_memWrite                           ;
