@@ -71,7 +71,7 @@ module instruction_execute
 
     localparam [5:0] 
                 JARL_TYPE   = 6'b001001             ,
-                R_TYPE      = 6'b000000             ,
+                R_TYPE_OP   = 6'b000000             ,
                 JAL_TYPE    = 6'b000011             ;
 
     localparam [1:0]
@@ -130,7 +130,7 @@ module instruction_execute
             end
         endcase
     
-        if((i_opcode == JAL_TYPE) || ((i_opcode== R_TYPE) && (i_func == JARL_TYPE))) begin
+        if((i_opcode == JAL_TYPE) || ((i_opcode== R_TYPE_OP) && (i_func == JARL_TYPE))) begin
             alu_datoA = i_reg_DA;
         end
     end
@@ -157,7 +157,7 @@ module instruction_execute
             end
         endcase
 
-        if((i_opcode == JAL_TYPE) || ((i_opcode== R_TYPE) && (i_func == JARL_TYPE))) begin
+        if((i_opcode == JAL_TYPE) || ((i_opcode== R_TYPE_OP) && (i_func == JARL_TYPE))) begin
             alu_datoB = i_reg_DB;
         end
 

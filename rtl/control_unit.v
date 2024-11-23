@@ -15,12 +15,12 @@ module control_unit
     output wire [1:0]   o_aluSrc    , 
     output wire [1:0]   o_aluOp     , //! ALU operation to be performed (00: ADD | 01: OR | 10: SUB | 11: SLT)
     output wire         o_branch    ,
-    output wire         o_regDst    , //! dst reg for the wb stage (if 1 then rd else rt)
+    output wire         o_regDst    , //! dst reg for the wb stage (if 1 then rt if 0 then rd)
     output wire         o_mem2Reg   , //! ctrl src of data to wb to register_file (1: Memory data is written to register file)
     output wire         o_regWrite  , //! write enable for register file (1: Write to register file is enabled)
     output wire         o_memRead   , //! enable reading from memory (1: Memory read is enabled)
     output wire         o_memWrite  , //! enable writinh to memory (1: Memory write is enabled (used for sw))
-    output wire [1:0]   o_width     , //! width of the data to be written to memory. 11 = word | 01 = half word | 00 = byte
+    output wire [1:0]   o_width     , //! width of the data to be written to memory. 10 = word | 01 = half word | 00 = byte
     output wire         o_sign_flag , //! sign flag for the load/store instructions || 0-Signed | 1-Unsigned
     output wire         o_immediate   //! immediate flag for the immediate instructions || 0-Register | 1-Immediate
 );  
@@ -96,7 +96,7 @@ module control_unit
                 r_branch    = 1'b0                                              ;
                 r_jump      = 1'b0                                              ;
                 r_aluOP     = 2'b00                                             ;
-                r_width     = 2'b11                                             ;   // word
+                r_width     = 2'b10                                             ;   // word
                 r_sign_flag = 1'b0                                              ;   // signed
                 r_immediate = 1'b1                                              ;
             end                                     
@@ -110,7 +110,7 @@ module control_unit
                 r_branch    = 1'b0                                              ;
                 r_jump      = 1'b0                                              ;
                 r_aluOP     = 2'b00                                             ;
-                r_width     = 2'b11                                             ;   // word
+                r_width     = 2'b10                                             ;   // word
                 r_sign_flag = 1'b0                                              ;   // signed
                 r_immediate = 1'b1                                              ;
             end                                     
@@ -162,7 +162,7 @@ module control_unit
             end
 
             LUI_TYPE: begin 
-                r_regDst    = 1'b0                                              ;
+                r_regDst    = 1'b1                                              ;
                 r_ALUSrc    = 1'b1                                              ;
                 r_mem2Reg   = 1'b0                                              ;
                 r_regWrite  = 1'b1                                              ;
@@ -187,7 +187,7 @@ module control_unit
             end
 
             LB_TYPE: begin
-                r_regDst    = 1'b0                                              ; 
+                r_regDst    = 1'b1                                              ; 
                 r_ALUSrc    = 1'b1                                              ;
                 r_mem2Reg   = 1'b1                                              ;
                 r_regWrite  = 1'b1                                              ;
@@ -198,7 +198,7 @@ module control_unit
             end
 
             LH_TYPE: begin
-                r_regDst    = 1'b0                                              ;
+                r_regDst    = 1'b1                                              ;
                 r_ALUSrc    = 1'b1                                              ;
                 r_mem2Reg   = 1'b1                                              ;
                 r_regWrite  = 1'b1                                              ;
@@ -209,7 +209,7 @@ module control_unit
             end
 
             LBU_TYPE: begin
-                r_regDst    = 1'b0                                              ;
+                r_regDst    = 1'b1                                              ;
                 r_ALUSrc    = 1'b1                                              ;
                 r_mem2Reg   = 1'b1                                              ;
                 r_regWrite  = 1'b1                                              ;
@@ -220,7 +220,7 @@ module control_unit
             end
 
             LHU_TYPE: begin
-                r_regDst    = 1'b0                                              ;
+                r_regDst    = 1'b1                                              ;
                 r_ALUSrc    = 1'b1                                              ;
                 r_mem2Reg   = 1'b1                                              ;
                 r_regWrite  = 1'b1                                              ;
@@ -231,12 +231,12 @@ module control_unit
             end
 
             LWU_TYPE: begin
-                r_regDst    = 1'b0                                              ;
+                r_regDst    = 1'b1                                              ;
                 r_ALUSrc    = 1'b1                                              ;
                 r_mem2Reg   = 1'b1                                              ;
                 r_regWrite  = 1'b1                                              ;
                 r_memRead   = 1'b1                                              ;
-                r_width     = 2'b11                                             ;  // Word (Unsigned)
+                r_width     = 2'b10                                             ;  // Word (Unsigned)
                 r_sign_flag = 1'b1                                              ;
                 r_immediate = 1'b1                                              ;
             end
