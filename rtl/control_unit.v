@@ -87,7 +87,7 @@ module control_unit
                 if(i_funct == JR_TYPE) r_regWrite = 1'b0                        ;
             end
             LW_TYPE: begin
-                r_regDst    = 1'b0                                              ;
+                r_regDst    = 1'b1                                              ;
                 r_ALUSrc    = 1'b1                                              ;
                 r_mem2Reg   = 1'b1                                              ;
                 r_regWrite  = 1'b1                                              ;
@@ -101,7 +101,7 @@ module control_unit
                 r_immediate = 1'b1                                              ;
             end                                     
             SW_TYPE: begin                                      
-                r_regDst    = 1'b0                                              ; //x
+                r_regDst    = 1'b1                                              ; //x
                 r_ALUSrc    = 1'b1                                              ;
                 r_mem2Reg   = 1'b0                                              ; //x
                 r_regWrite  = 1'b0                                              ;
@@ -145,7 +145,7 @@ module control_unit
                 r_immediate = 1'b1                                              ;
             end
             ORI_TYPE: begin // 
-                r_regDst    = 1'b0                                              ;
+                r_regDst    = 1'b1                                              ;
                 r_ALUSrc    = 1'b1                                              ;
                 r_mem2Reg   = 1'b0                                              ;
                 r_regWrite  = 1'b1                                              ;
@@ -153,7 +153,7 @@ module control_unit
                 r_immediate = 1'b1                                              ;
             end
             XORI_TYPE: begin
-                r_regDst    = 1'b0                                              ;
+                r_regDst    = 1'b1                                              ;
                 r_ALUSrc    = 1'b1                                              ;
                 r_mem2Reg   = 1'b0                                              ;
                 r_regWrite  = 1'b1                                              ;
@@ -172,7 +172,7 @@ module control_unit
             end
 
             STLI_TYPE: begin //
-                r_regDst    = 1'b0                                              ;
+                r_regDst    = 1'b1                                              ;
                 r_ALUSrc    = 1'b1                                              ;
                 r_mem2Reg   = 1'b0                                              ;
                 r_regWrite  = 1'b1                                              ;
