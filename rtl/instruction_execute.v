@@ -69,6 +69,11 @@ module instruction_execute
                 SLTI    = 3'b010                                ,
                 LUI     = 3'b111                                ;
 
+    localparam [5:0] 
+                JARL_TYPE   = 6'b001001             ,
+                R_TYPE      = 6'b000000             ,
+                JAL_TYPE    = 6'b000011             ;
+
     localparam [1:0]
                     LOAD_STORE = 2'b00                          ,
                     BRANCH     = 2'b01                          ,
@@ -93,7 +98,6 @@ module instruction_execute
             R_TYPE: begin
                 // and
                 opcode = i_func                                 ;
-    
             end
             I_TYPE: begin
                 // or
@@ -125,6 +129,10 @@ module instruction_execute
                 alu_datoA = 8'b0                                ;
             end
         endcase
+    
+        if((i_opcode == JAL_TYPE) || ((i_opcode== R_TYPE) && (i_func == JARL_TYPE))) begin
+            alu_datoA = i_reg_DA;
+        end
     end
 
 
@@ -149,9 +157,12 @@ module instruction_execute
             end
         endcase
 
+        if((i_opcode == JAL_TYPE) || ((i_opcode== R_TYPE) && (i_func == JARL_TYPE))) begin
+            alu_datoB = i_reg_DB;
+        end
+
         if(i_immediate_flag) alu_datoB = i_immediate            ;
 
-        data4Mem = alu_datoB                                    ;   
     end
     
     always @(posedge clk) begin: mux3
@@ -163,7 +174,7 @@ module instruction_execute
             o_write_reg = 5'b0                                  ;
         end else begin
             if(!i_halt) begin
-                o_write_reg = i_regDst ? i_rt : i_rd                ;
+                o_write_reg = i_regDst ? i_rt : i_rd            ; 
             end
         end
     end
@@ -183,6 +194,7 @@ module instruction_execute
         end else begin
             if(!i_halt) begin
                 //aluOP   <= i_aluOP                                  ;
+                data4Mem <= alu_datoB                                    ;
                 o_mem2reg   <= i_mem2Reg                            ;
                 o_memRead   <= i_memRead                            ;
                 o_memWrite  <= i_memWrite                           ;

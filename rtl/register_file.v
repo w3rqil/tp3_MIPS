@@ -20,7 +20,7 @@ module register_file
     output wire [NB_DATA-1:0] o_rd_data2
 );
 
-    reg [NB_DATA-1:0] reg_file[2**NB_ADDR:0]            ;
+    reg [NB_DATA-1:0] reg_file[2**NB_ADDR-1:0]            ;
     reg [NB_DATA-1:0] rd_data1, rd_data2                ;
     integer i;
 

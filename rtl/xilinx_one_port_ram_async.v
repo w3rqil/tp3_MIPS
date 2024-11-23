@@ -21,6 +21,7 @@ module xilinx_one_port_ram_async
             memory[i_addr_w +1] <= i_data[23:16]       ;
             memory[i_addr_w +2] <= i_data[15 :8]       ;
             memory[i_addr_w +3] <= i_data[7  :0]       ;   // LSB
+
         end
     end
 
