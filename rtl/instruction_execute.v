@@ -69,6 +69,11 @@ module instruction_execute
                 SLTI    = 3'b010                                ,
                 LUI     = 3'b111                                ;
 
+    localparam [5:0] 
+                JARL_TYPE   = 6'b001001             ,
+                R_TYPE      = 6'b000000             ,
+                JAL_TYPE    = 6'b000011             ;
+
     localparam [1:0]
                     LOAD_STORE = 2'b00                          ,
                     BRANCH     = 2'b01                          ,
@@ -124,6 +129,10 @@ module instruction_execute
                 alu_datoA = 8'b0                                ;
             end
         endcase
+    
+        if((i_opcode == JAL_TYPE) || ((i_opcode== R_TYPE) && (i_func == JARL_TYPE))) begin
+            alu_datoA = i_reg_DA;
+        end
     end
 
 
@@ -148,9 +157,12 @@ module instruction_execute
             end
         endcase
 
+        if((i_opcode == JAL_TYPE) || ((i_opcode== R_TYPE) && (i_func == JARL_TYPE))) begin
+            alu_datoB = i_reg_DB;
+        end
+
         if(i_immediate_flag) alu_datoB = i_immediate            ;
 
-           
     end
     
     always @(posedge clk) begin: mux3
