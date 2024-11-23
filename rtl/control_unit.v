@@ -31,6 +31,7 @@ module control_unit
                     SW_TYPE     = 6'b101011,
                     BEQ_TYPE    = 6'b000100,
                     ADDI_TYPE   = 6'b001000,
+                    ADDIU_TYPE  = 6'b001001,//
                     J_TYPE      = 6'b000010,
                     JAL_TYPE    = 6'b000011,
                     LHU_TYPE    = 6'b100101,
@@ -44,7 +45,9 @@ module control_unit
                     LB_TYPE     = 6'b100000,
                     LH_TYPE     = 6'b100001,
                     BNE_TYPE    = 6'b000101,
+                    ANDI_TYPE   = 6'b001100,
                     STLI_TYPE   = 6'b001010,
+                    STLIU_TYPE  = 6'b001011,//
                     JR_TYPE     = 6'b001000,
                     JARL_TYPE   = 6'b001001;
 
@@ -151,6 +154,37 @@ module control_unit
                 r_regWrite  = 1'b1                                              ;
                 r_aluOP     = 2'b11                                             ;  // Logical OR
                 r_immediate = 1'b1                                              ;
+            end
+            ANDI_TYPE: begin
+                r_regDst    = 1'b1                                              ;
+                r_ALUSrc    = 1'b1                                              ;
+                r_mem2Reg   = 1'b0                                              ;
+                r_regWrite  = 1'b1                                              ;
+                r_aluOP     = 2'b11                                             ;  // Logical OR
+                r_immediate = 1'b1                                              ;
+
+            end
+            ADDIU_TYPE: begin
+                r_regDst    = 1'b1                                              ;
+                r_ALUSrc    = 1'b1                                              ;
+                r_mem2Reg   = 1'b0                                              ;
+                r_regWrite  = 1'b1                                              ;
+                r_memRead   = 1'b0                                              ;
+                r_memWrite  = 1'b0                                              ;
+                r_branch    = 1'b0                                              ;
+                r_jump      = 1'b0                                              ;
+                r_aluOP     = 2'b11                                             ;
+                r_immediate = 1'b1                                              ;
+                r_sign_flag = 1'b1                                              ;
+            end
+            STLIU_TYPE: begin
+                r_regDst    = 1'b1                                              ;
+                r_ALUSrc    = 1'b1                                              ;
+                r_mem2Reg   = 1'b0                                              ;
+                r_regWrite  = 1'b1                                              ;
+                r_aluOP     = 2'b11                                             ;  // Set Less Than Immediate
+                r_immediate = 1'b1                                              ;
+                r_sign_flag = 1'b1                                              ;
             end
             XORI_TYPE: begin
                 r_regDst    = 1'b1                                              ;
