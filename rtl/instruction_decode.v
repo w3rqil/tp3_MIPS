@@ -187,7 +187,7 @@ module instruction_decode
                 // if((opcode == JAL_TYPE)) o_rt <= 5'b11111                                 ;
             
                 o_reg_DA   <= wire_D1                                                       ;
-                o_reg_DB   <= wire_D1                                                       ;
+                o_reg_DB   <= wire_D2                                                       ;
                 o_rd       <= rd                                                            ;
                 o_rs       <= rs                                                            ;
                 o_rt       <= rt                                                            ; //register 31 reserved for jal

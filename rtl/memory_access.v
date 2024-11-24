@@ -53,8 +53,8 @@ module memory_access
             end
             2'b01: begin
                 // half word
-                data2mem = i_sign_flag ?    {{16{i_data4Mem[7]}}, i_data4Mem[7:0]} : //unsigned
-                                            {{16{1'b0}}         , i_data4Mem[7:0]} ; //signed
+                data2mem = i_sign_flag ?    {{16{i_data4Mem[15]}}, i_data4Mem[15:0]} : //unsigned
+                                            {{16{1'b0}}         , i_data4Mem[15:0]} ; //signed
             end
             2'b10: begin
                 // word
