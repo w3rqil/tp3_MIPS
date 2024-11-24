@@ -83,11 +83,13 @@ module control_unit
                 r_aluOP     =  2'b10                                            ;
 
                 if((i_funct == JARL_TYPE)) begin
-                    r_mem2Reg = 1'b1;
                     r_aluOP = 2'b00;
                 end
                 if((i_funct == JR_TYPE) || (i_funct == JARL_TYPE)) r_jump = 1'b1;
-                if(i_funct == JR_TYPE) r_regWrite = 1'b0                        ;
+                if(i_funct == JR_TYPE) begin 
+                    r_regWrite = 1'b0                                           ;
+                    r_mem2Reg  = 1'b1                                           ;
+                end
             end
             LW_TYPE: begin
                 r_regDst    = 1'b1                                              ;

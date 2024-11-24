@@ -221,7 +221,7 @@ module instruction_decode
             
                 if((opcode == JAL_TYPE) || ((opcode == R_TYPE) && (w_func == JARL_TYPE)) ) o_reg_DA <= i_pcounter4;
                 if((opcode == JAL_TYPE) || ((opcode == R_TYPE) && (w_func == JARL_TYPE)) ) o_rs <= 5'b0           ;
-                if((opcode == JAL_TYPE)) o_rt <= 5'b11111                                ;
+                if((opcode == JAL_TYPE)) o_rt <= 5'b11111                                 ;
                 if((opcode == JAL_TYPE) || ((opcode == R_TYPE) && (w_func == JARL_TYPE)) ) o_reg_DB <= 32'd4      ;
                 if(i_stall) begin
 

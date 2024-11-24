@@ -58,7 +58,7 @@ module instruction_execute
 
 );
     localparam [5:0]
-                    ADD = 6'b000000                             ,
+                    ADD = 6'b100000                             ,
                     IDLE= 6'b111111                             ;
 
     localparam [2:1]
