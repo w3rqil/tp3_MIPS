@@ -39,7 +39,8 @@ module memory_access
     
 );
     reg  [NB_DATA-1:0] data2mem;
-    wire [NB_DATA-1:0] reg_read;
+    wire [NB_DATA-1:0] reg_read, masked_reg_read;
+    
     wire writeEnable;
     //wire []
 
@@ -48,17 +49,27 @@ module memory_access
         case (i_width)
             2'b00: begin
                 // byte
-                data2mem = i_sign_flag ?    {{24{i_data4Mem[7]}}, i_data4Mem[7:0]} : //unsigned
-                                            {{24{1'b0}}         , i_data4Mem[7:0]} ; //signed
+                data2mem = i_sign_flag ?    {{24{i_data4Mem[7]}}    , i_data4Mem[7:0]} : //unsigned
+                                            {{24{1'b0}}             , i_data4Mem[7:0]} ; //signed
+
+                masked_reg_read = i_sign_flag ?     
+                                                    {{24{reg_read[7]}}    , reg_read[7:0]} : //unsigned
+                                                    {{24{1'b0}}           , reg_read[7:0]} ; //signed
             end
             2'b01: begin
                 // half word
-                data2mem = i_sign_flag ?    {{16{i_data4Mem[15]}}, i_data4Mem[15:0]} : //unsigned
-                                            {{16{1'b0}}         , i_data4Mem[15:0]} ; //signed
+                data2mem = i_sign_flag ?    {{16{i_data4Mem[15]}}   , i_data4Mem[15:0]} : //unsigned
+                                            {{16{1'b0}}             , i_data4Mem[15:0]} ; //signed
+
+                masked_reg_read = i_sign_flag ?     
+                                            {{24{reg_read[7]}}    , reg_read[15:0]} : //unsigned
+                                            {{24{1'b0}}           , reg_read[15:0]} ; //signed
             end
             2'b10: begin
                 // word
                 data2mem = i_data4Mem[31:0]; //signed
+
+                masked_reg_read = reg_read;
             end
             default: begin
                 // error
@@ -78,7 +89,7 @@ module memory_access
             o_mem2reg   <= 1'b0                                                     ;
         end else begin
             if(!i_halt) begin
-                o_reg_read  <= reg_read                                                 ;
+                o_reg_read  <= masked_reg_read                                                 ;
                 o_ALUresult <= i_result                                                 ;
                 o_reg2write <= i_reg2write                                              ;  
                 //ctrl
