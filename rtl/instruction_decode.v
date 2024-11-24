@@ -99,7 +99,7 @@ module instruction_decode
         .clk        (clk        )                       ,
         .i_rst_n    (i_rst_n    )                       ,
         .i_opcode   (opcode     )                       ,
-        .i_funct    (o_func     )                       ,
+        .i_funct    (w_func     )                       ,
 
         .o_jump     (w_jump     )                       ,
         .o_aluSrc   (w_aluSrc   )                       ,
@@ -128,13 +128,13 @@ module instruction_decode
         o_jump       = 1'b0                                                                 ;
         o_jump_cases = 2'b00                                                                ;
         if(w_jump || w_branch) begin // the following will execute only when a jump opcode is detected
-            case (o_opcode) 
+            case (opcode) 
                 R_TYPE: begin //jr o jalr
                     
                     
                     o_jump = 1'b1                                                           ;
                     o_addr2jump = wire_D1                                                   ; //RA
-                    if(o_func == JARL_TYPE) o_jump_cases= 2'b10                             ;
+                    if(w_func == JARL_TYPE) o_jump_cases= 2'b10                             ;
                     
                     
                 end
@@ -258,6 +258,6 @@ module instruction_decode
     assign rs = i_instruction[25:21]                        ;
     assign rt = i_instruction[20:16]                        ;
     assign rd = i_instruction[15:11]                        ;
-    */
+*/
 
 endmodule

@@ -160,8 +160,9 @@ module pipeline
     wire [1:0] jumpType;
 
     wire [31:0] inst_addr_from_interface;
+    wire [4 :0] aux_rdEX;
     assign inst_addr_from_interface = i_inst_addr;
-
+    assign aux_rdEX = regDstID2EX ? rtID2EX : rdID2EX;
     hazard_detection_unit hdu_inst (
             // Inputs
         .i_ID_EX_RegisterRt (rtID2EX),//out decode
@@ -171,12 +172,12 @@ module pipeline
 
         .i_jumpType         (jumpType),
 
-        .i_EX_RegisterRd    (write_regEX2MEM),
-        .i_MEM_RegisterRd   (reg2writeMEM2WB),
-        .i_WB_RegisterRd    (reg2writeWB2ID),
+        .i_EX_RegisterRd    (aux_rdEX       ),
+        .i_MEM_RegisterRd   (write_regEX2MEM),
+        .i_WB_RegisterRd    (reg2writeMEM2WB),
         .i_EX_WB_Write      (regWriteEX2MEM),
-        .i_MEM_WB_Write     (regWriteMEM2WB),
-        .i_WB_WB_Write      (regWriteWB2ID),
+        .i_MEM_WB_Write     (regWriteEX2MEM),
+        .i_WB_WB_Write      (regWriteMEM2WB),
         // Output
         .o_stall            (stall)     // Signal to stall the pipeline
     );

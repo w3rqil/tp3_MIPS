@@ -42,11 +42,14 @@ module hazard_detection_unit (
             begin
                 o_stall = 1'b1;
             end
-        end else if (i_jumpType == 2'b10) begin
+        end if (i_jumpType == 2'b10) begin
             // Branch using Rs only (JR, JALR)
-            if ((i_IF_ID_RegisterRs == i_EX_RegisterRd  && i_EX_WB_Write    )   ||
-                (i_IF_ID_RegisterRs == i_MEM_RegisterRd && i_MEM_WB_Write   )   ||
-                (i_IF_ID_RegisterRs == i_WB_RegisterRd  && i_WB_WB_Write    )   ) 
+            if (
+            (i_IF_ID_RegisterRs == i_EX_RegisterRd  && i_EX_WB_Write    )   ||
+            (i_IF_ID_RegisterRs == i_MEM_RegisterRd && i_MEM_WB_Write   )   ||
+            (i_IF_ID_RegisterRs == i_WB_RegisterRd  && i_WB_WB_Write    )   ||
+            (i_IF_ID_RegisterRs != 0 && i_ID_EX_MemRead) // Load-use hazard
+                )
             begin
                 o_stall = 1'b1;
             end
