@@ -184,7 +184,7 @@ module instruction_decode
 
             if (!i_halt) begin
                // if((o_opcode == JAL_TYPE) || (o_func == JARL_TYPE) ) o_rs <= 5'b0           ;
-                if((opcode == JAL_TYPE)) o_rt <= 5'b11111                                 ;
+                // if((opcode == JAL_TYPE)) o_rt <= 5'b11111                                 ;
             
                 o_reg_DA   <= wire_D1                                                       ;
                 o_reg_DB   <= wire_D1                                                       ;
