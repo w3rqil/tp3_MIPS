@@ -183,8 +183,8 @@ module instruction_decode
         end else begin
 
             if (!i_halt) begin
-                if((o_opcode == JAL_TYPE) || (o_func == JARL_TYPE) ) o_rs <= 5'b0           ;
-                if((o_opcode == JAL_TYPE)) o_rt <= 5'b11111                                 ;
+               // if((o_opcode == JAL_TYPE) || (o_func == JARL_TYPE) ) o_rs <= 5'b0           ;
+                if((opcode == JAL_TYPE)) o_rt <= 5'b11111                                 ;
             
                 o_reg_DA   <= wire_D1                                                       ;
                 o_reg_DB   <= wire_D1                                                       ;
@@ -219,10 +219,10 @@ module instruction_decode
             //reg_funct  <= i_instruction [5:0    ]       ;
                 if(i_instruction == HALT ) o_stop = 1'b1;
             
-                if((opcode == JAL_TYPE) || ((opcode == R_TYPE) && (func == JARL_TYPE)) ) o_reg_DA <= i_pcounter4;
-                if((opcode == JAL_TYPE) || ((opcode == R_TYPE) && (func == JARL_TYPE)) ) o_rs <= 5'b0           ;
-                if((opcode == JAL_TYPE)) o_rt <= 5'b11111                                 ;
-                if((opcode == JAL_TYPE) || ((opcode == R_TYPE) && (func == JARL_TYPE)) ) o_reg_DB <= 32'd4      ;
+                if((opcode == JAL_TYPE) || ((opcode == R_TYPE) && (w_func == JARL_TYPE)) ) o_reg_DA <= i_pcounter4;
+                if((opcode == JAL_TYPE) || ((opcode == R_TYPE) && (w_func == JARL_TYPE)) ) o_rs <= 5'b0           ;
+                if((opcode == JAL_TYPE)) o_rt <= 5'b11111                                ;
+                if((opcode == JAL_TYPE) || ((opcode == R_TYPE) && (w_func == JARL_TYPE)) ) o_reg_DB <= 32'd4      ;
                 if(i_stall) begin
 
                     o_branch   <= 1'b0                                                      ;   
