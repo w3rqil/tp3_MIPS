@@ -175,7 +175,11 @@ module instruction_execute
             o_write_reg = 5'b0                                  ;
         end else begin
             if(!i_halt) begin
-                o_write_reg = i_regDst ? i_rt : i_rd            ; 
+                if(i_opcode == JAL_TYPE) begin
+                    o_write_reg = 5'b11111;
+                end else begin
+                    o_write_reg = i_regDst ? i_rt : i_rd            ; 
+                end
             end
         end
     end
