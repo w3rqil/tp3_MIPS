@@ -118,7 +118,7 @@ module instruction_decode
     sign_extension #()
     se1
     (
-        .i_immediate_flag   (w_immediate)               ,
+        .i_immediate_flag   (w_immediate)                   ,
         .i_immediate_value  (wire_immediate)               ,
         .o_data             (w_immediat)
     );
@@ -154,12 +154,12 @@ module instruction_decode
                 end
                 JAL_TYPE: begin
                     o_jump = 1'b1                                                           ;
-                    o_addr2jump = {i_pcounter4[31:28], i_instruction[25:0], 2'b00}          ;
+                    o_addr2jump = {i_pcounter4[NB_DATA-1:NB_DATA-4], i_instruction[25:0], 2'b00}          ;
                     o_jump_cases= 2'b10                                                     ;
                 end
                 J_TYPE: begin
                     o_jump = 1'b1                                                           ;
-                    o_addr2jump = {i_pcounter4[31:28], i_instruction[25:0], 2'b00}          ;
+                    o_addr2jump = {i_pcounter4[NB_DATA-1:NB_DATA-4], i_instruction[25:0], 2'b00}          ;
                 end
             endcase
         end
@@ -219,10 +219,10 @@ module instruction_decode
             //reg_funct  <= i_instruction [5:0    ]       ;
                 if(i_instruction == HALT ) o_stop = 1'b1;
             
-                if((o_opcode == JAL_TYPE) || (o_func == JARL_TYPE) ) o_reg_DA <= i_pcounter4;
-                if((o_opcode == JAL_TYPE) || (o_func == JARL_TYPE) ) o_rs <= 5'b0           ;
-                if((o_opcode == JAL_TYPE)) o_rt <= 5'b11111                                 ;
-                if(((o_opcode == JAL_TYPE) || (o_func == JARL_TYPE) )) o_reg_DB <= 32'd4    ;
+                if((opcode == JAL_TYPE) || ((opcode == R_TYPE) && (func == JARL_TYPE)) ) o_reg_DA <= i_pcounter4;
+                if((opcode == JAL_TYPE) || ((opcode == R_TYPE) && (func == JARL_TYPE)) ) o_rs <= 5'b0           ;
+                if((opcode == JAL_TYPE)) o_rt <= 5'b11111                                 ;
+                if((opcode == JAL_TYPE) || ((opcode == R_TYPE) && (func == JARL_TYPE)) ) o_reg_DB <= 32'd4      ;
                 if(i_stall) begin
 
                     o_branch   <= 1'b0                                                      ;   
