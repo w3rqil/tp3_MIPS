@@ -217,6 +217,7 @@ module control_unit
 
             end
             JAL_TYPE: begin
+                r_regDst    = 1'b1                                              ;
                 r_jump      = 1'b1                                              ;
                 r_regWrite  = 1'b1                                              ;
                 r_aluOP     = 2'b00                                             ;
