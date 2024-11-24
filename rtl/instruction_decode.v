@@ -139,17 +139,17 @@ module instruction_decode
                     
                 end
                 BEQ_TYPE: begin
+                    o_jump_cases= 2'b01                                                 ;
                     if(wire_D1 == wire_D2) begin
                         o_jump = 1'b1                                                       ;
                         o_addr2jump = i_pcounter4 + (w_immediat << 2) + 4                   ;
-                        o_jump_cases= 2'b01                                                 ;
                     end
                 end
                 BNE_TYPE: begin
+                    o_jump_cases= 2'b01                                                 ;
                     if(wire_D1 != wire_D2) begin
                         o_jump = 1'b1                                                       ;
                         o_addr2jump = i_pcounter4 + (w_immediat << 2) + 4                   ;
-                        o_jump_cases= 2'b01                                                 ;
                     end
                 end
                 JAL_TYPE: begin
