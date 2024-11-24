@@ -38,8 +38,8 @@ module memory_access
 
     
 );
-    reg  [NB_DATA-1:0] data2mem;
-    wire [NB_DATA-1:0] reg_read, masked_reg_read;
+    reg  [NB_DATA-1:0] data2mem, masked_reg_read;
+    wire [NB_DATA-1:0] reg_read;
     
     wire writeEnable;
     //wire []
@@ -49,20 +49,20 @@ module memory_access
         case (i_width)
             2'b00: begin
                 // byte
-                data2mem = i_sign_flag ?    {{24{i_data4Mem[7]}}    , i_data4Mem[7:0]} : //unsigned
+                data2mem = !i_sign_flag ?    {{24{i_data4Mem[7]}}    , i_data4Mem[7:0]} : //unsigned
                                             {{24{1'b0}}             , i_data4Mem[7:0]} ; //signed
 
-                masked_reg_read = i_sign_flag ?     
+                masked_reg_read = !i_sign_flag ?     
                                                     {{24{reg_read[7]}}    , reg_read[7:0]} : //unsigned
                                                     {{24{1'b0}}           , reg_read[7:0]} ; //signed
             end
             2'b01: begin
                 // half word
-                data2mem = i_sign_flag ?    {{16{i_data4Mem[15]}}   , i_data4Mem[15:0]} : //unsigned
+                data2mem = !i_sign_flag ?    {{16{i_data4Mem[15]}}   , i_data4Mem[15:0]} : //unsigned
                                             {{16{1'b0}}             , i_data4Mem[15:0]} ; //signed
 
-                masked_reg_read = i_sign_flag ?     
-                                            {{24{reg_read[7]}}    , reg_read[15:0]} : //unsigned
+                masked_reg_read = !i_sign_flag ?     
+                                            {{24{reg_read[15]}}    , reg_read[15:0]} : //unsigned
                                             {{24{1'b0}}           , reg_read[15:0]} ; //signed
             end
             2'b10: begin
