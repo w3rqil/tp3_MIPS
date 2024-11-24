@@ -196,9 +196,9 @@ module pipeline
         .i_halt         (haltIF             ),
         .i_stall        (stall), // from HDU
         //out
-        .o_pcounter4    (pcounterIF2ID      ),
+        .o_pcounter4    (      ),
         .o_instruction  (instructionIF2ID   ),
-        .o_pcounter     ()
+        .o_pcounter     (pcounterIF2ID)
     );
     
     assign rsIF2ID = instructionIF2ID[25:21];
