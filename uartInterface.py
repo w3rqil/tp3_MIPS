@@ -92,7 +92,7 @@ def load_program():
             while data:
                 ser.write(data)
                 # print(f"data: {data}")
-                time.sleep(0.01)                        # Pausa de 10 ms
+                # time.sleep(0.01)                        # Pausa de 10 ms
                 data = bin_file.read(1)
         messagebox.showinfo("File", "Program loaded")
         print("Program loaded")
@@ -123,16 +123,16 @@ def receive_uart():
     if registers_data == -1:
         print("Error receiving REGISTERS data")
         return
-    control_data = receive_data("CONTROL", ser)
-    if control_data == -1:
-        print("Error receiving CONTROL data")
-        return
+    # control_data = receive_data("CONTROL", ser)
+    # if control_data == -1:
+    #     print("Error receiving CONTROL data")
+    #     return
     
     id_ex_decoded = decode_data("ID_EX", id_ex_data)
     ex_mem_decoded = decode_data("EX_MEM", ex_mem_data)
-    memory_decoded = decode_data("MEMORY", memory_data)
+    data_decoded = decode_data("DATA", memory_data)
     registers_decoded = decode_data("REGISTERS", registers_data)
-    control_decoded = decode_data("CONTROL", control_data)
+    # control_decoded = decode_data("CONTROL", control_data)
 
     #  Actualizar las tablas con los datos recibidos
         # Actualizar la tabla ID_EX
@@ -145,14 +145,14 @@ def receive_uart():
     for key, value in ex_mem_decoded.items():
         ex_mem_table.insert("", "end", values=(key, value))
 
-    # Actualizar la tabla CONTROL
-    control_table.delete(*control_table.get_children())  # Limpiar la tabla
-    for key, value in control_decoded.items():
-        control_table.insert("", "end", values=(key, value))
+    # # Actualizar la tabla CONTROL
+    # control_table.delete(*control_table.get_children())  # Limpiar la tabla
+    # for key, value in control_decoded.items():
+    #     control_table.insert("", "end", values=(key, value))
 
     # Actualizar la tabla DATA MEMORY
-    address = memory_decoded["Address"]
-    data = memory_decoded["Data"]
+    address = data_decoded["Address"]
+    data = data_decoded["Data"]
     
     # Buscar la fila que corresponde a la dirección y actualizar el valor
     for item in data_table.get_children():
@@ -193,7 +193,7 @@ def receive_data(type, ser):
         rcv = ser.read(5) # Lee los 5 bytes (40 bits) de los REGISTERS
     elif type == "CONTROL":
         print("receiving control...")
-        rcv = ser.read(3) # Lee los 3 bytes (24 bits) de los CONTROL
+        # rcv = ser.read(3) # Lee los 3 bytes (24 bits) de los CONTROL
     else:
         print("Invalid type")
         return -1

@@ -167,13 +167,14 @@ module uart_interface
             end
 
             DEBUG_STATE: begin
+                next_step = 0;
                 if(i_rxDone) begin
                     next_debug_flag = 1;
                     next_start = 1;
                     case(i_rx)
                         STEP_MODE: begin
                             next_step = 1;
-                            next_state = SEND_ID_EX_STATE;
+                            next_state = DEBUG_STATE; // SEND_ID_EX_STATE
                         end
                         END_DEBUG_MODE: begin
                             next_debug_flag = 0;
