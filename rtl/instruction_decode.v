@@ -43,7 +43,7 @@ module instruction_decode
     output reg [1:0]            o_aluSrc                ,
     output reg [1:0]            o_width                 ,
     output reg [1:0]            o_aluOp                 ,
-    output reg                 o_stop
+    output wire                 o_stop
 
 );
     localparam HALT = 32'hFFFFFFFF; // last instruction of the program
@@ -177,9 +177,11 @@ module instruction_decode
             o_shamt    <= 5'b0                                                              ;
             o_func     <= 6'b0                                                              ;
             o_addr     <= 16'b0                                                             ;
-            o_stop     <= 1'b0                                                              ;
+            //o_stop     <= 1'b0                                                              ;
             o_width    <= 2'b00                                                             ; 
-
+            o_addr2jump<= 0;
+            o_immediate <= 0;
+            o_immediate_flag <= 1'b0;
         end else begin
 
             if (!i_halt) begin
@@ -217,7 +219,7 @@ module instruction_decode
             // ctrl unit
             //reg_opcode <= i_instruction [31:25  ]       ;
             //reg_funct  <= i_instruction [5:0    ]       ;
-                if(i_instruction == HALT ) o_stop = 1'b1;
+                //if(i_instruction == HALT ) o_stop = 1'b1;
             
                 if((opcode == JAL_TYPE) || ((opcode == R_TYPE) && (w_func == JARL_TYPE)) ) o_reg_DA <= i_pcounter4;
                 if((opcode == JAL_TYPE) || ((opcode == R_TYPE) && (w_func == JARL_TYPE)) ) o_rs <= 5'b0           ;
@@ -241,6 +243,7 @@ module instruction_decode
         end
     end
 
+    assign o_stop = (i_instruction == HALT )? 1'b1: 1'b0;
     //assign o_stop = (i_instruction == HALT) ? 1'b1 : 1'b0;
 /*
     assign o_jump     = w_jump                              ;

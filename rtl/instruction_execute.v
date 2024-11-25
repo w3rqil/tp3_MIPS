@@ -192,6 +192,7 @@ module instruction_execute
             o_data4Mem<= 8'b0                                   ;
             o_width   <= 2'b11                                  ;
             o_sign_flag<= 1'b0                                  ;
+        
         end else begin
             if(!i_halt) begin
                 //aluOP   <= i_aluOP                                  ;

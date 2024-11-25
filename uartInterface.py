@@ -123,16 +123,16 @@ def receive_uart():
     if registers_data == -1:
         print("Error receiving REGISTERS data")
         return
-    # control_data = receive_data("CONTROL", ser)
-    # if control_data == -1:
-    #     print("Error receiving CONTROL data")
-    #     return
+    control_data = receive_data("CONTROL", ser)
+    if control_data == -1:
+        print("Error receiving CONTROL data")
+        return
     
     id_ex_decoded = decode_data("ID_EX", id_ex_data)
     ex_mem_decoded = decode_data("EX_MEM", ex_mem_data)
     data_decoded = decode_data("DATA", memory_data)
     registers_decoded = decode_data("REGISTERS", registers_data)
-    # control_decoded = decode_data("CONTROL", control_data)
+    control_decoded = decode_data("CONTROL", control_data)
 
     #  Actualizar las tablas con los datos recibidos
         # Actualizar la tabla ID_EX
@@ -145,10 +145,10 @@ def receive_uart():
     for key, value in ex_mem_decoded.items():
         ex_mem_table.insert("", "end", values=(key, value))
 
-    # # Actualizar la tabla CONTROL
-    # control_table.delete(*control_table.get_children())  # Limpiar la tabla
-    # for key, value in control_decoded.items():
-    #     control_table.insert("", "end", values=(key, value))
+    # Actualizar la tabla CONTROL
+    control_table.delete(*control_table.get_children())  # Limpiar la tabla
+    for key, value in control_decoded.items():
+        control_table.insert("", "end", values=(key, value))
 
     # Actualizar la tabla DATA MEMORY
     address = data_decoded["Address"]
@@ -193,7 +193,7 @@ def receive_data(type, ser):
         rcv = ser.read(5) # Lee los 5 bytes (40 bits) de los REGISTERS
     elif type == "CONTROL":
         print("receiving control...")
-        # rcv = ser.read(3) # Lee los 3 bytes (24 bits) de los CONTROL
+        rcv = ser.read(2) # Lee los 3 bytes (24 bits) de los CONTROL
     else:
         print("Invalid type")
         return -1

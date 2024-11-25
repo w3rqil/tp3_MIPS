@@ -174,7 +174,7 @@ module uart_interface
                     case(i_rx)
                         STEP_MODE: begin
                             next_step = 1;
-                            next_state = DEBUG_STATE; // SEND_ID_EX_STATE
+                            next_state = SEND_ID_EX_STATE; // SEND_ID_EX_STATE
                         end
                         END_DEBUG_MODE: begin
                             next_debug_flag = 0;
@@ -196,6 +196,7 @@ module uart_interface
             end
             
             SEND_ID_EX_STATE: begin
+                next_step = 0;
                 if(done_counter == 0) begin
                     next_tx_start = 1;
                     next_tx_data = i_concatenated_data_ID_EX[done_counter * 8 +: 8];
@@ -210,7 +211,7 @@ module uart_interface
                     next_done_counter = done_counter + 1;
                     next_state = SEND_ID_EX_STATE;
             
-                    if (done_counter == (NB_ID_EX/8)) begin
+                    if (done_counter == ((NB_ID_EX/8) - 1)) begin
                         next_state = SEND_EX_MEM_STATE;
                         next_done_counter = 0;
                         next_tx_start = 0;
@@ -226,7 +227,7 @@ module uart_interface
                     next_done_counter = done_counter + 1;
                     next_state = SEND_EX_MEM_STATE;
             
-                    if (done_counter == (NB_EX_MEM/8)) begin
+                    if (done_counter == ((NB_EX_MEM/8) - 1)) begin
                         next_state = SEND_MEM_WB_STATE;
                         next_done_counter = 0;
                         next_tx_start = 0;
@@ -242,7 +243,7 @@ module uart_interface
                     next_done_counter = done_counter + 1;
                     next_state = SEND_MEM_WB_STATE;
             
-                    if (done_counter == (NB_MEM_WB/8)) begin
+                    if (done_counter == ((NB_MEM_WB/8) - 1)) begin
                         next_state = SEND_CONTROL_STATE;
                         next_done_counter = 0;
                         next_tx_start = 0;
@@ -258,7 +259,7 @@ module uart_interface
                     next_done_counter = done_counter + 1;
                     next_state = SEND_WB_ID_STATE;
             
-                    if (done_counter == (NB_WB_ID/8)) begin
+                    if (done_counter == ((NB_WB_ID/8) - 1)) begin
                         next_state = SEND_CONTROL_STATE;
                         next_done_counter = 0;
                         next_tx_start = 0;
@@ -274,7 +275,7 @@ module uart_interface
                     next_done_counter = done_counter + 1;
                     next_state = SEND_CONTROL_STATE;
             
-                    if (done_counter == (NB_CONTROL/8)) begin
+                    if (done_counter == ((NB_CONTROL/8) - 1)) begin
                         if (debug_flag) begin
                             next_state = DEBUG_STATE;
                         end else begin

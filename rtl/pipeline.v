@@ -220,7 +220,7 @@ module pipeline
         .i_wr_addr                (reg2writeWB2ID   ),
         .i_wr_data_WB             (write_dataWB2ID  ),
 
-        .i_stall                  (stall),
+        .i_stall                  (stall || stop),
         .i_halt                   (i_halt ),
         //------------------------------------
         //out
