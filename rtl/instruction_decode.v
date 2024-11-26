@@ -127,6 +127,7 @@ module instruction_decode
     always @(*) begin : jumps
         o_jump       = 1'b0                                                                 ;
         o_jump_cases = 2'b00                                                                ;
+        o_addr2jump  = 0                                                                    ;
         if(w_jump || w_branch) begin // the following will execute only when a jump opcode is detected
             case (opcode) 
                 R_TYPE: begin //jr o jalr
@@ -179,7 +180,7 @@ module instruction_decode
             o_addr     <= 16'b0                                                             ;
             //o_stop     <= 1'b0                                                              ;
             o_width    <= 2'b00                                                             ; 
-            o_addr2jump<= 0;
+            //o_addr2jump<= 0;
             o_immediate <= 0;
             o_immediate_flag <= 1'b0;
         end else begin
