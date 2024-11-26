@@ -190,7 +190,7 @@ module uart_interface
             CONTINOUS_STATE: begin
                 next_step = 1;
                 next_start = 1;
-                if(i_end) begin
+                if(i_end) begin 
                     next_state = SEND_ID_EX_STATE;
                 end
             end
@@ -199,74 +199,99 @@ module uart_interface
                 next_step = 0;
                 if(done_counter == 0) begin
                     next_tx_start = 1;
-                    next_tx_data = i_concatenated_data_ID_EX[done_counter * 8 +: 8];
+                    next_tx_data =  i_concatenated_data_ID_EX[(NB_ID_EX) - 1 - done_counter * 8 -: 8];
                     next_done_counter = done_counter + 1;
                     next_state = SEND_ID_EX_STATE;                    
                 end
 
                 if (i_txDone) begin
-                    next_done_counter = done_counter + 1;
-                    if (done_counter == ((NB_ID_EX/8)-1)) begin
+                    if (done_counter == ((NB_ID_EX/8))) begin
                         next_state = SEND_EX_MEM_STATE;
                         next_done_counter = 0;
                         next_tx_start = 0;
                     end else begin
                         next_tx_start = 1;
-                        next_tx_data = i_concatenated_data_ID_EX[done_counter * 8 +: 8];
+                        next_tx_data = i_concatenated_data_ID_EX[(NB_ID_EX) - 1 - done_counter * 8 -: 8];
+                        next_done_counter = done_counter + 1;
                         next_state = SEND_ID_EX_STATE;                        
                     end
                 end
             end
             
             SEND_EX_MEM_STATE: begin
-                if (i_txDone) begin
+                if(done_counter == 0)begin
                     next_done_counter = done_counter + 1;
-                    if (done_counter == ((NB_EX_MEM/8)-1)) begin
+                    next_tx_start = 1;
+                    next_tx_data = i_concatenated_data_EX_MEM[(NB_EX_MEM) - 1 - done_counter * 8 -: 8];
+                    next_state = SEND_EX_MEM_STATE;                      
+                end
+
+                if (i_txDone) begin
+                    if (done_counter == ((NB_EX_MEM/8))) begin
                         next_state = SEND_MEM_WB_STATE;
                         next_done_counter = 0;
                         next_tx_start = 0;
                     end else begin
+                        next_done_counter = done_counter + 1;
                         next_tx_start = 1;
-                        next_tx_data = i_concatenated_data_EX_MEM[done_counter * 8 +: 8];
+                        next_tx_data = i_concatenated_data_EX_MEM[(NB_EX_MEM) - 1 - done_counter * 8 -: 8];
                         next_state = SEND_EX_MEM_STATE;                        
                     end          
                 end
             end
             
             SEND_MEM_WB_STATE: begin
-                if (i_txDone) begin   
+                if(done_counter == 0) begin
                     next_done_counter = done_counter + 1;        
-                    if (done_counter == ((NB_MEM_WB/8)-1)) begin
+                    next_tx_start = 1;
+                    next_tx_data = i_concatenated_data_MEM_WB[(NB_MEM_WB) - 1 - done_counter * 8 -: 8];
+                    next_state = SEND_MEM_WB_STATE;                    
+                end
+                if (i_txDone) begin   
+                    if (done_counter == ((NB_MEM_WB/8))) begin
                         next_state = SEND_WB_ID_STATE;
                         next_done_counter = 0;
                         next_tx_start = 0;
                     end else begin
+                        next_done_counter = done_counter + 1;        
                         next_tx_start = 1;
-                        next_tx_data = i_concatenated_data_MEM_WB[done_counter * 8 +: 8];
+                        next_tx_data = i_concatenated_data_MEM_WB[(NB_MEM_WB) - 1 - done_counter * 8 -: 8];
                         next_state = SEND_MEM_WB_STATE;
                     end
                 end
             end
 
             SEND_WB_ID_STATE: begin
-                if (i_txDone) begin   
+                if (done_counter==0) begin
                     next_done_counter = done_counter + 1;         
-                    if (done_counter == ((NB_WB_ID/8)-1)) begin
+                    next_tx_start = 1;
+                    next_tx_data = i_concatenated_data_WB_ID[(NB_WB_ID) - 1 - done_counter * 8 -: 8];
+                    next_state = SEND_WB_ID_STATE;                    
+                end
+                if (i_txDone) begin   
+                    if (done_counter == ((NB_WB_ID/8))) begin
                         next_state = SEND_CONTROL_STATE;
                         next_done_counter = 0;
                         next_tx_start = 0;
                     end else begin
+                        next_done_counter = done_counter + 1;         
                         next_tx_start = 1;
-                        next_tx_data = i_concatenated_data_WB_ID[done_counter * 8 +: 8];
+                        next_tx_data = i_concatenated_data_WB_ID[(NB_WB_ID) - 1 - done_counter * 8 -: 8];
                         next_state = SEND_WB_ID_STATE;
                     end
                 end
             end
             
             SEND_CONTROL_STATE: begin
-                if (i_txDone) begin  
+                if(done_counter==0) begin
+                    next_tx_start = 1;
                     next_done_counter = done_counter + 1;          
-                    if (done_counter == ((NB_CONTROL/8)-1)) begin
+                    next_tx_data = i_concatenated_data_CONTROL[(NB_CONTROL) - 1 - done_counter * 8 -: 8];
+                    next_state = SEND_CONTROL_STATE;
+                    
+                end
+                if (i_txDone) begin  
+                    if (done_counter == ((NB_CONTROL/8))) begin
                         if (debug_flag) begin
                             next_state = DEBUG_STATE;
                         end else begin
@@ -276,7 +301,8 @@ module uart_interface
                         next_tx_start = 0;
                     end else begin
                         next_tx_start = 1;
-                        next_tx_data = i_concatenated_data_CONTROL[done_counter * 8 +: 8];
+                        next_done_counter = done_counter + 1;          
+                        next_tx_data = i_concatenated_data_CONTROL[(NB_CONTROL) - 1 - done_counter * 8 -: 8];
                         next_state = SEND_CONTROL_STATE;
                     end
                 end

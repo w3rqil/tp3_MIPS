@@ -108,6 +108,7 @@ def load_program():
 
 def receive_uart():
     # recibe el dato A de 32 bits y actualiza la tabla de registros
+    aux = receive_data("AUX" , ser)
     id_ex_data = receive_data("ID_EX", ser)
     if id_ex_data == -1:
         print("Error receiving ID_EX data")
@@ -167,6 +168,10 @@ def receive_uart():
     register = registers_decoded["Register"]
     write_enable = registers_decoded["Write enable"]
 
+    print("write enable:" , write_enable)
+    print("address: " + str(address))  # Convertir a cadena
+    print("register: " + str(register))  # Convertir a cadena
+
     if(write_enable):
         # Buscar la fila que corresponde al registro y actualizar el valor
         for item in registers_table.get_children():
@@ -182,6 +187,7 @@ def receive_uart():
 def receive_data(type, ser):
     if type == "ID_EX":
         print("receiving ID_EX...")
+        # aux = ser.read(1)
         rcv = ser.read(18) # Lee los 18 bytes (144 bits) de la ID_EX
     elif type == "EX_MEM":
         print("receiving EX_MEM...")
@@ -195,9 +201,14 @@ def receive_data(type, ser):
     elif type == "CONTROL":
         print("receiving control...")
         rcv = ser.read(3) # Lee los 3 bytes (24 bits) de los CONTROL
+    elif type == "AUX":
+        print("receiving aux...")
+        rcv = ser.read(1) # Lee los 3 bytes (24 bits) de los CONTROL
     else:
         print("Invalid type")
         return -1
+    
+    # print(f"Data received ({len(rcv)} bytes): {rcv.hex()}")
     
     return rcv
 
@@ -217,12 +228,12 @@ def decode_data(type, data):
             "rd": format((concatenated_data >> 59) & 0x1F, '05b'),          # 5 bits en formato binario
             "shamt": format((concatenated_data >> 54) & 0x1F, '05b'),       # 5 bits en formato binario
             "funct": format((concatenated_data >> 48) & 0x3F, '06b'),       # 6 bits en formato binario
-            "imm": (concatenated_data >> 32) & 0xFFFF,                      # 16 bits en formato decimal
-            "jump_address": concatenated_data & 0xFFFFFFFF                  # 32 bits en formato decimal
+            "imm": format((concatenated_data >> 32) & 0xFFFF, '016b'),                      # 16 bits en formato decimal
+            "jump_address": format(concatenated_data & 0xFFFFFFFF, '032b'),                  # 32 bits en formato decimal
         }
     elif type == "EX_MEM":
         return {
-            "ALU result": int.from_bytes(data[0:4], byteorder='big')
+            "ALU result": format(int.from_bytes(data[0:4], byteorder='big'), '032b')
         }
     elif type == "DATA":
         return {
@@ -391,7 +402,7 @@ ex_mem_table = ttk.Treeview(ex_mem_frame, columns=("address", "value"), show='he
 ex_mem_table.heading("address", text="Address")
 ex_mem_table.heading("value", text="Value")
 ex_mem_table.column("address", width=70)
-ex_mem_table.column("value", width=70)
+ex_mem_table.column("value", width=270)
 # Recorrer las claves y valores del diccionario ex_mem_registers
 for key, value in ex_mem_registers.items():
     ex_mem_table.insert("", tk.END, values=(key, value))
