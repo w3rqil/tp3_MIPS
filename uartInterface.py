@@ -63,6 +63,7 @@ def send_uart(ser, data):
         messagebox.showerror("Connection", "Not connected to serial port")
         print("Not connected to serial port")
 
+    time.sleep(0.05)
     receive_uart()
 
 def get_ports():
@@ -193,7 +194,7 @@ def receive_data(type, ser):
         rcv = ser.read(5) # Lee los 5 bytes (40 bits) de los REGISTERS
     elif type == "CONTROL":
         print("receiving control...")
-        rcv = ser.read(2) # Lee los 3 bytes (24 bits) de los CONTROL
+        rcv = ser.read(3) # Lee los 3 bytes (24 bits) de los CONTROL
     else:
         print("Invalid type")
         return -1
@@ -208,8 +209,8 @@ def decode_data(type, data):
         # Convertir los bytes en un solo entero
         concatenated_data = int.from_bytes(data, byteorder='big')
         return {
-            "RA": (concatenated_data >> 112) & 0xFFFFFFFF,                  # 32 bits en formato decimal
-            "RB": (concatenated_data >> 80) & 0xFFFFFFFF,                   # 32 bits en formato decimal
+            "RA": format((concatenated_data >> 112) & 0xFFFFFFFF, '032b'),                  # 32 bits en formato decimal
+            "RB": format((concatenated_data >> 80) & 0xFFFFFFFF, '032b'),                   # 32 bits en formato decimal
             "Opcode": format((concatenated_data >> 74) & 0x3F, '06b'),      # 6 bits en formato binario
             "rs": format((concatenated_data >> 69) & 0x1F, '05b'),          # 5 bits en formato binario
             "rt": format((concatenated_data >> 64) & 0x1F, '05b'),          # 5 bits en formato binario
@@ -225,13 +226,13 @@ def decode_data(type, data):
         }
     elif type == "DATA":
         return {
-            "Data": int.from_bytes(data[0:4], byteorder='big'), # 32 bits en formato decimal
+            "Data":format(int.from_bytes(data[0:4], byteorder='big'), '032b'), # 32 bits en formato decimal
             "Address": data[4] % 32  # 8 bits en formato decimal
         }
     elif type == "REGISTERS":
         concatenated_data = int.from_bytes(data, byteorder='big')
         return {
-            "Register": (concatenated_data >> (8)) & 0xFFFFFFFF, # 32 bits en formato decimal
+            "Register": format((concatenated_data >> (8)) & 0xFFFFFFFF, '032b'), # 32 bits en formato decimal
             "Address": (concatenated_data >> 3) & 0x1F,  # 5 bits en formato decimal
             "Write enable": (concatenated_data >> (2)) & 0x1, # 1 bit en formato decimal
         }
@@ -348,7 +349,7 @@ data_table = ttk.Treeview(data_frame, columns=("address", "value"), show='headin
 data_table.heading("address", text="Address")
 data_table.heading("value", text="Data")
 data_table.column("address", width=60)
-data_table.column("value", width=60)
+data_table.column("value", width=260)
 for i in range(32):
     data_table.insert("", tk.END, values=((i), (0)))
 
@@ -361,7 +362,7 @@ registers_table = ttk.Treeview(registers_frame, columns=("address", "value"), sh
 registers_table.heading("address", text="Address")
 registers_table.heading("value", text="Register")
 registers_table.column("address", width=60)
-registers_table.column("value", width=60)
+registers_table.column("value", width=260)
 for i in range(32):
     registers_table.insert("", tk.END, values=((i), (0)))
 
@@ -375,7 +376,7 @@ id_ex_table = ttk.Treeview(id_ex_frame, columns=("address", "value"), show='head
 id_ex_table.heading("address", text="Address")
 id_ex_table.heading("value", text="Value")
 id_ex_table.column("address", width=70)
-id_ex_table.column("value", width=70)
+id_ex_table.column("value", width=270)
 # Recorrer las claves y valores del diccionario id_ex_registers
 for key, value in id_ex_registers.items():
     id_ex_table.insert("", tk.END, values=(key, value))
