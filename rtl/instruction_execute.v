@@ -70,18 +70,18 @@ module instruction_execute
                 LUI     = 3'b111                                ;
 
     localparam [5:0] 
-                JARL_TYPE   = 6'b001001             ,
-                R_TYPE_OP   = 6'b000000             ,
-                JAL_TYPE    = 6'b000011             ;
+                JARL_TYPE   = 6'b001001                         ,
+                R_TYPE_OP   = 6'b000000                         ,
+                JAL_TYPE    = 6'b000011                         ;
 
     localparam [1:0]
-                    LOAD_STORE = 2'b00                          ,
-                    BRANCH     = 2'b01                          ,
-                    R_TYPE     = 2'b10                          ,
-                    I_TYPE     = 2'b11                          ;
+                    LOAD_STORE = 2'b00                           ,
+                    BRANCH     = 2'b01                           ,
+                    R_TYPE     = 2'b10                           ,
+                    I_TYPE     = 2'b11                           ;
 
     reg  [5:0]           opcode                                  ;
-    reg  [NB_DATA-1:0]   alu_datoA, alu_datoB, data4Mem          ; //data4Mem_aux
+    reg  [signed NB_DATA-1:0]   alu_datoA, alu_datoB, data4Mem   ; //data4Mem_aux
     reg  [1:0]           aluOP                                   ;
     wire [NB_DATA-1:0]   alu_result                              ;
 
