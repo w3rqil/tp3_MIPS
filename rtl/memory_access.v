@@ -33,8 +33,8 @@ module memory_access
     output  reg                    o_regWrite                      , //! writes the value
 
     output  wire [31:0]            o_data2mem                       , //
-    output  wire [7 :0]            o_dataAddr                         //
-
+    output  wire [7 :0]            o_dataAddr                       ,  //
+    output  wire                   o_memWrite
 
     
 );
@@ -103,6 +103,7 @@ module memory_access
     assign writeEnable = i_memWrite ;
     assign o_data2mem  = data2mem   ;
     assign o_dataAddr  = i_result[7:0];
+    assign o_memWrite  = i_memWrite;
 
     xilinx_one_port_ram_async #(
         .NB_DATA(32),   // limita 256 addrs

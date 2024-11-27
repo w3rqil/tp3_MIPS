@@ -51,6 +51,7 @@ module pipeline
     //MEM 2 WB
     output wire [31:0]              o_data2mem      ,
     output wire [7 :0]              o_dataAddr      , // 
+    output wire                     o_memWrite      ,
 
     // WB 2 ID
     output wire [32-1:0]        o_write_dataWB2ID,
@@ -380,7 +381,8 @@ module pipeline
 
         //DU
         .o_data2mem                      (o_data2mem        ),
-        .o_dataAddr                      (o_dataAddr        )
+        .o_dataAddr                      (o_dataAddr        ),
+        .o_memWrite                      (o_memWrite        )
     );
     
 

@@ -151,26 +151,34 @@ def receive_uart():
     control_table.delete(*control_table.get_children())  # Limpiar la tabla
     for key, value in control_decoded.items():
         control_table.insert("", "end", values=(key, value))
+        if(key == "memWrite"):
+            memWrite = value
 
     # Actualizar la tabla DATA MEMORY
+    # memWrite = control_signals["memWrite"]
     address = data_decoded["Address"]
     data = data_decoded["Data"]
-    
-    # Buscar la fila que corresponde a la dirección y actualizar el valor
-    for item in data_table.get_children():
-        item_values = data_table.item(item, "values")
-        if int(item_values[0]) == address:  # Comparar la dirección
-            data_table.item(item, values=(address, data))  # Actualizar el valor
-            break
+
+    print("/////////////////////////////////////////////////////")
+    print("memWrite "+ str(memWrite))
+    print("/////////////////////////////////////////////////////")
+
+    if(memWrite):
+        # Buscar la fila que corresponde a la dirección y actualizar el valor
+        for item in data_table.get_children():
+            item_values = data_table.item(item, "values")
+            if int(item_values[0]) == address:  # Comparar la dirección
+                data_table.item(item, values=(address, data))  # Actualizar el valor
+                break
 
     # Actualizar la tabla REGISTERS
     address = registers_decoded["Address"]
     register = registers_decoded["Register"]
     write_enable = registers_decoded["Write enable"]
 
-    print("write enable:" , write_enable)
-    print("address: " + str(address))  # Convertir a cadena
-    print("register: " + str(register))  # Convertir a cadena
+    # print("write enable:" , write_enable)
+    # print("address: " + str(address))  # Convertir a cadena
+    # print("register: " + str(register))  # Convertir a cadena
 
     if(write_enable):
         # Buscar la fila que corresponde al registro y actualizar el valor
@@ -267,6 +275,33 @@ def decode_data(type, data):
         }
     return {}  # Devolver un diccionario vacío si el tipo no coincide
 
+def clean_table():
+    id_ex_table.delete(*id_ex_table.get_children())  # Limpiar la tabla
+    for key, value in id_ex_registers.items():
+        id_ex_table.insert("", "end", values=(key, "0"))
+
+    # Actualizar la tabla EX_MEM
+    ex_mem_table.delete(*ex_mem_table.get_children())  # Limpiar la tabla
+    for key, value in ex_mem_registers.items():
+        ex_mem_table.insert("", "end", values=(key, "0"))
+
+    # Actualizar la tabla CONTROL
+    control_table.delete(*control_table.get_children())  # Limpiar la tabla
+    for key, value in control_signals.items():
+        control_table.insert("", "end", values=(key, "0"))
+
+    data_table.delete(*data_table.get_children())
+    for i in range(32):
+        data_table.insert("", tk.END, values=((i), (0)))
+
+    registers_table.delete(*registers_table.get_children())
+    for i in range(32):
+        registers_table.insert("", tk.END, values=((i), (0)))
+
+
+    
+
+
 
 ventana = tk.Tk()
 ventana.title("DEBUG UNIT")
@@ -347,13 +382,16 @@ continous_button.grid(row=0,column=3, pady=10, padx=5, sticky="ew")
 debug_button = tk.Button(ventana, text="DEBUG", command=lambda: ser.write(DEBUG_MODE))
 debug_button.grid(row=1,column=3, pady=10, padx=5, sticky="ew")
 
+clean_button = tk.Button(ventana, text="CLEAN TABLES", command=(clean_table))
+clean_button.grid(row=2, column=3, pady=10, padx=5, sticky="ew" )
+
 step_button = tk.Button(ventana, text="STEP", command=lambda: send_uart(ser, STEP_MODE))
 step_button.grid(row=0,column=4, pady=10, padx=5, sticky="ew")
 
 end_debug_button = tk.Button(ventana, text="END DEBUG", command=lambda: send_uart(ser, END_DEBUG_MODE))
 end_debug_button.grid(row=1,column=4, pady=10, padx=5, sticky="ew")
 
-tk.Label(ventana, text="DATA MEMORY").grid(row=2, column=3, pady=5, padx=5)
+tk.Label(ventana, text="DATA MEMORY").grid(row=3, column=3, pady=5, padx=5)
 
 data_frame = tk.Frame(ventana)
 data_table = ttk.Treeview(data_frame, columns=("address", "value"), show='headings')

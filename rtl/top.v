@@ -62,7 +62,8 @@ module top (
     wire        [NB_DATA_32 -1 : 0] addr2jump                 ; //! jump address
     wire        [NB_DATA_32 -1 : 0] ALUresult                 ; //! ALU result                                      
     wire        [NB_DATA_32 -1 : 0] data2mem                  ; //! Memory data
-    wire        [NB_DATA_8-1: 0]      dataAddr                ; //! Memory address                                                                  
+    wire        [NB_DATA_8-1: 0]      dataAddr                ; //! Memory address 
+    wire                            memWrite                  ;                                                                 
     wire        [NB_DATA_32  -1: 0] write_dataWB2ID           ; //! Write data
     wire        [NB_5   -1: 0]      reg2writeWB2ID            ; //! Register to write
     wire                            write_enable              ; //! Write enable                                                
@@ -235,6 +236,7 @@ module top (
         .o_write_dataWB2ID      (write_dataWB2ID),
         .o_reg2writeWB2ID       (reg2writeWB2ID), 
         .o_write_enable         (write_enable),
+        .o_memWrite             (memWrite),
         .o_end                  (i_end)
     );
 
