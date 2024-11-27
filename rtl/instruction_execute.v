@@ -81,7 +81,7 @@ module instruction_execute
                     I_TYPE     = 2'b11                           ;
 
     reg  [5:0]           opcode                                  ;
-    reg  [signed NB_DATA-1:0]   alu_datoA, alu_datoB, data4Mem   ; //data4Mem_aux
+    reg  signed [NB_DATA-1:0]   alu_datoA, alu_datoB, data4Mem   ; //data4Mem_aux
     reg  [1:0]           aluOP                                   ;
     wire [NB_DATA-1:0]   alu_result                              ;
 
