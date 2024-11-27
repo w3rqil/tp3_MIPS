@@ -7,7 +7,7 @@ module uart_interface
     NB_STATES = 4                                                           , //! number of states
     NB_ID_EX  = 144                                                         , //! number of bits for ID_EX
     NB_EX_MEM = 32                                                          , //! number of bits for EX_MEM
-    NB_MEM_WB = 40                                                          , //! number of bits for MEM_WB
+    NB_MEM_WB = 48                                                          , //! number of bits for MEM_WB
     NB_WB_ID  = 40                                                          , //! number of bits for WB_ID
     NB_CONTROL = 24                                                           //! number of bits for CONTROL 
 

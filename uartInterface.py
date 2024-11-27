@@ -151,13 +151,12 @@ def receive_uart():
     control_table.delete(*control_table.get_children())  # Limpiar la tabla
     for key, value in control_decoded.items():
         control_table.insert("", "end", values=(key, value))
-        if(key == "memWrite"):
-            memWrite = value
 
     # Actualizar la tabla DATA MEMORY
     # memWrite = control_signals["memWrite"]
     address = data_decoded["Address"]
     data = data_decoded["Data"]
+    memWrite = data_decoded["MemWrite"]
 
     print("/////////////////////////////////////////////////////")
     print("memWrite "+ str(memWrite))
@@ -202,7 +201,7 @@ def receive_data(type, ser):
         rcv = ser.read(4) # Lee los 4 bytes (32 bits) de la EX_MEM
     elif type == "MEMORY":
         print("receiving Data memory...")
-        rcv = ser.read(5) # Lee los 5 bytes (40 bits) de la MEMORY
+        rcv = ser.read(6) # Lee los 6 bytes (48 bits) de la MEMORY
     elif type == "REGISTERS":
         print("receiving register...")
         rcv = ser.read(5) # Lee los 5 bytes (40 bits) de los REGISTERS
@@ -244,9 +243,11 @@ def decode_data(type, data):
             "ALU result": format(int.from_bytes(data[0:4], byteorder='big'), '032b')
         }
     elif type == "DATA":
+        concatenated_data = int.from_bytes(data, byteorder='big')
         return {
             "Data":format(int.from_bytes(data[0:4], byteorder='big'), '032b'), # 32 bits en formato decimal
-            "Address": data[4] % 32  # 8 bits en formato decimal
+            "Address": data[4] % 32,  # 8 bits en formato decimal
+            "MemWrite": (concatenated_data >> 7) & 0x1
         }
     elif type == "REGISTERS":
         concatenated_data = int.from_bytes(data, byteorder='big')
@@ -344,7 +345,8 @@ control_signals = {
 
 data_memory = {
     "Address": 0,
-    "Data": 0
+    "Data": 0,
+    "MemWrite": 0
 }
 
 registers_memory = {
