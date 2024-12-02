@@ -176,10 +176,10 @@ module pipeline
         .i_EX_RegisterRd    (aux_rdEX       ),
         .i_MEM_RegisterRd   (write_regEX2MEM),
         .i_WB_RegisterRd    (reg2writeMEM2WB),
-        .i_EX_WB_Write      (regWriteEX2MEM),
-        .i_MEM_WB_Write     (regWriteEX2MEM),
-        .i_WB_WB_Write      (regWriteMEM2WB),
-        // Output
+        .i_EX_WB_Write      (regWriteID2EX  ), //regWriteEX2MEM
+        .i_MEM_WB_Write     (regWriteEX2MEM ),
+        .i_WB_WB_Write      (regWriteMEM2WB ),
+        // Output   
         .o_stall            (stall)     // Signal to stall the pipeline
     );
 
