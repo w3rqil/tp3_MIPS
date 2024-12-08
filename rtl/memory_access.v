@@ -11,26 +11,26 @@ module memory_access
     input   wire                    i_halt                          ,
     input   wire   [4:0]            i_reg2write                     , //! o_write_reg from instruction_execute
     input   wire   [NB_DATA-1:0]    i_result                        , //! o_result from instruction_execute
-    input   wire   [NB_DATA-1:0]    i_aluOP                         , //! opcode NO LO USO
+    //input   wire   [NB_DATA-1:0]    i_aluOP                         , //! opcode NO LO USO
     input   wire   [1:0]            i_width                         , //! width
     input   wire                    i_sign_flag                     , //! sign flag || 1 = signed, 0 = unsigned
     input   wire                    i_mem2reg                       ,
-    input   wire                    i_memRead                       ,
+    //input   wire                    i_memRead                       ,
     input   wire                    i_memWrite                      , //! Si 1 -> STORE || escribo en memoria
     input   wire                    i_regWrite                      ,
-    input   wire   [1:0]            i_aluSrc                        ,
-    input   wire                    i_jump                          ,
+    //input   wire   [1:0]            i_aluSrc                        ,
+    //input   wire                    i_jump                          ,
     input   wire   [NB_DATA-1:0]    i_data4Mem                      , //! src data for store ops
 
 
 
-    output  reg   [NB_DATA-1:0]    o_reg_read                      , //! data from memory 
-    output  reg   [NB_DATA-1:0]    o_ALUresult                     , //! alu result
-    output  reg   [4:0]            o_reg2write                     , //! o_write_reg from execute (rd or rt)
+    output  reg   [NB_DATA-1:0]    o_reg_read                       , //! data from memory 
+    output  reg   [NB_DATA-1:0]    o_ALUresult                      , //! alu result
+    output  reg   [4:0]            o_reg2write                      , //! o_write_reg from execute (rd or rt)
 
     // ctrl signals
-    output  reg                    o_mem2reg                       , //! 0-> guardo el valor de leído || 1-> guardo valor de alu
-    output  reg                    o_regWrite                      , //! writes the value
+    output  reg                    o_mem2reg                        , //! 0-> guardo el valor de leído || 1-> guardo valor de alu
+    output  reg                    o_regWrite                       , //! writes the value
 
     output  wire [31:0]            o_data2mem                       , //
     output  wire [7 :0]            o_dataAddr                       ,  //
@@ -44,6 +44,7 @@ module memory_access
     wire writeEnable;
     //wire []
 
+    //! mask data
     always @(*) begin : mask
         data2mem = 0;
         case (i_width)
@@ -67,9 +68,9 @@ module memory_access
             end
             2'b10: begin
                 // word
-                data2mem = i_data4Mem[31:0] ; //signed
+                data2mem = i_data4Mem[31:0]                                                 ; //signed
 
-                masked_reg_read = reg_read  ;
+                masked_reg_read = reg_read                                                  ;
             end
             default: begin
                 // error
@@ -100,17 +101,18 @@ module memory_access
         end
     end
 
-    assign writeEnable = i_memWrite ;
-    assign o_data2mem  = data2mem   ;
-    assign o_dataAddr  = i_result[7:0];
-    assign o_memWrite  = i_memWrite;
+    assign writeEnable = i_memWrite                                                         ;
+    assign o_data2mem  = data2mem                                                           ;
+    assign o_dataAddr  = i_result[7:0]                                                      ;
+    assign o_memWrite  = i_memWrite                                                         ;
 
+    //! data memory
     xilinx_one_port_ram_async #(
         .NB_DATA(32),   // limita 256 addrs
         .NB_ADDR(8)     // 8 bits
     ) memory (
         .clk        (clk        ),
-        .i_rst_n    (i_rst_n    ),
+        //.i_rst_n    (i_rst_n    ),
         .i_we       (writeEnable),
         .i_data     (data2mem   ),
         .i_addr_w   (i_result[7:0]   ),

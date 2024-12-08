@@ -37,8 +37,8 @@ module instruction_execute
     //fwd unit
     input wire [1:0]            i_fw_a                          ,
     input wire [1:0]            i_fw_b                          ,
-    input wire [NB_DATA-1:0]    i_output_MEMWB                  , //result wb stage
-    input wire [NB_DATA-1:0]    i_output_EXMEM                  , // o_result 
+    input wire [NB_DATA-1:0]    i_output_MEMWB                  , //! result wb stage
+    input wire [NB_DATA-1:0]    i_output_EXMEM                  , //! o_result 
     
     
     // ctrl signals
@@ -47,11 +47,11 @@ module instruction_execute
     output reg                  o_memWrite                      ,
     output reg                  o_regWrite                      ,
     output reg [1:0]            o_aluSrc                        ,
-    output reg                  o_jump                          ,
+    //output reg                  o_jump                          ,
 
     output reg                  o_sign_flag                     ,
     output reg [1:0]            o_width                         ,
-    output reg [4:0]            o_write_reg                     , // EX/MEM.RegisterRd for control unit
+    output reg [4:0]            o_write_reg                     , //! EX/MEM.RegisterRd for control unit
     output reg [1:0]            o_aluOP                         ,
     output reg [NB_DATA-1:0]    o_data4Mem                      ,
     output reg [NB_DATA-1:0]    o_result                        
@@ -85,7 +85,7 @@ module instruction_execute
     reg  [1:0]           aluOP                                   ;
     wire [NB_DATA-1:0]   alu_result                              ;
 
-    // state machine for alu
+    //! state machine for alu
     always @(*) begin: alu_ctrl
 
         case(i_aluOP)
@@ -110,6 +110,8 @@ module instruction_execute
         endcase
     end
 
+    //! mux to determine dato A.
+    //!  For JAL or  JARL type there is no forwarding
     always @(*) begin: mux1_datoA
         case(i_fw_a)
             2'b00: begin
@@ -136,7 +138,8 @@ module instruction_execute
     end
 
 
-    
+    //! mux to determine datoB. For JAL or JARL type there is no forwarding. 
+    //! For immediate ops datoB = immediate value
     always @(*) begin: mux2_datoB
         case(i_fw_b)
             2'b00: begin
@@ -166,11 +169,11 @@ module instruction_execute
 
     end
     
+    //! when asserted The register destination number for the Write registeW
+    //! comes from the rd field.
+    //! when deasserted The register destination number for the Write register
+    //! comes from the rt field
     always @(posedge clk) begin: mux3
-        // when asserted The register destination number for the Write register 
-        // comes from the rd field
-        // when deasserted The register destination number for the Write register
-        // comes from the rt field
         if(!i_rst_n) begin
             o_write_reg = 5'b0                                  ;
         end else begin
@@ -212,6 +215,7 @@ module instruction_execute
         end 
     end
 
+    //! alu instance
     alu #(
         .NB_DATA    (NB_DATA        ),
         .NB_OP      (6              )

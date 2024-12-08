@@ -307,7 +307,7 @@ module pipeline
         .o_memWrite                      (memWriteEX2MEM        ),
         .o_regWrite                      (regWriteEX2MEM        ),
         .o_aluSrc                        (aluSrcEX2MEM          ),
-        .o_jump                          (),
+        //.o_jump                          (),
     
         .o_sign_flag                     (sign_flagEX2MEM       ),
         .o_width                         (widthEX2MEM           ),
@@ -326,11 +326,11 @@ module pipeline
         .NB_FW  (NB_FW)
 
     ) fu_inst ( 
-        .clk        (clk    ),
-        .i_rst_n    (i_rst_n),
-
-        .i_stall    (stall),
-        .i_halt     (),
+        //.clk        (clk    ),
+        //.i_rst_n    (i_rst_n),
+//
+        //.i_stall    (stall),
+        //.i_halt     (),
 
         .i_rs_IFID       (rsID2EX),
         .i_rt_IFID       (rtID2EX),
@@ -358,15 +358,15 @@ module pipeline
 
         .i_reg2write                     (write_regEX2MEM   ), //! o_write_reg from instruction_execute
         .i_result                        (resultALUEX2MEM   ), //! o_result from instruction_execute
-        .i_aluOP                         (), //! opcode NO LO USO
+        //.i_aluOP                         (), //! opcode NO LO USO
         .i_width                         (widthEX2MEM       ), //! width
         .i_sign_flag                     (sign_flagEX2MEM   ), //! sign flag || 1 = signed, 0 = unsigned
         .i_mem2reg                       (mem2RegEX2MEM     ),
-        .i_memRead                       (memReadEX2MEM     ),
+        //.i_memRead                       (memReadEX2MEM     ),
         .i_memWrite                      (memWriteEX2MEM    ), //! Si 1 -> STORE || escribo en memoria
         .i_regWrite                      (regWriteEX2MEM    ),
-        .i_aluSrc                        (aluSrcEX2MEM      ),
-        .i_jump                          (),
+        //.i_aluSrc                        (aluSrcEX2MEM      ),
+        //i_jump                          (),
         .i_data4Mem                      (data4MemEX2MEM    ), //! src data for store ops
     
     
