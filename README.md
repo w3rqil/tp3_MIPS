@@ -1,4 +1,4 @@
-![fcefyn](/home/leonel/Desktop/Arqui/tp3_MIPS/img/fcefyn_logo.png)
+![fcefyn]( img/fcefyn_logo.png)
 
 Este proyecto fue realizado por los alumnos: 
 - [Mansilla, Josías Leonel](https://github.com/w3rqil)
@@ -10,20 +10,20 @@ Este proyecto fue realizado por los alumnos:
 # Consigna
 En este proyecto se pide implementar  el pipeline del procesador MIPS. 
 A continuación un diagrama intuitivo del pipeline a implementar:
-![consigna](/home/leonel/Desktop/Arqui/tp3_MIPS/img/pipeline_consigna.png)
+![consigna]( img/pipeline_consigna.png)
 
 # Desarrollo
 
 En este trabajo práctico, teniendo en cuenta la consigna y la bibliografía recomendada _"Computer Organization and Design 3rd Edition.
 Chapter 6. Hennessy- Patterson"_, se implementó el pipeline de un procesador MIPS basado en el siguiente diagrama diseñado específicamente para este propósito:  
-![Diagrama](/home/leonel/Desktop/Arqui/tp3_MIPS/img/diagrams-pipeline.drawio.png "Diagrama del Pipeline")  
+![Diagrama]( img/diagrams-pipeline.drawio.png "Diagrama del Pipeline")  
 
 A continuación, describiremos en detalle cada etapa del pipeline y su interacción con la interfaz.
 
 
 # Pipeline
 ## Jerarquía de archivos
-![jerarquia](/home/leonel/Desktop/Arqui/tp3_MIPS/img/jerarquia_archivos.png)
+![jerarquia]( img/jerarquia_archivos.png)
 ## instruction fetch
 
 En esta etapa interactúan los módulos:
@@ -100,7 +100,7 @@ En caso de detectar un riesgo, el módulo genera una señal de 'stall' que va a 
 
 # Interfaz
 Reutilizando los módulos _uart_rx_ y _uart_tx_ del trabajo practico 2 realizamos la siguiete interfaz para facilitar la utilizacion del MIPS:
-![Interfaz](/home/leonel/Desktop/Arqui/tp3_MIPS/img/interfaz.png "Interfaz")
+![Interfaz]( img/interfaz.png "Interfaz")
 
 ### Sección Izquierda
 
@@ -164,11 +164,11 @@ Esta frecuencia se ve limitada debido al camino crítico del proyecto. El camino
 A continuación se probó con una frecuencia de 70 [MHz].
 Se puede observar un critical warning referido al timing.
 
-![warning](/home/leonel/Desktop/Arqui/tp3_MIPS/img/timing_warning.png)
+![warning]( img/timing_warning.png)
 
 Y los distintos paths, incluyendo el "más crítico" (el path que tiene slack más negativo, Path 1):
 
-![pathError](/home/leonel/Desktop/Arqui/tp3_MIPS/img/timing_error_sum_clk70mhz.png)
+![pathError]( img/timing_error_sum_clk70mhz.png)
 
 Estos errores se vieron solucionados utilizando un clock de 45 [MHz], con el que pudimos llevar a cabo la implementación.
 
