@@ -1,17 +1,29 @@
-# tp3_MIPS
-En este trabajo práctico, implementamos el pipeline de un procesador MIPS basado en el siguiente diagrama diseñado específicamente para este propósito:  
+![fcefyn](img/fcefyn_logo.png)
+
+
+
+# Consigna
+En este proyecto se pide implementar  el pipeline del procesador MIPS. 
+A continuación un diagrama intuitivo del pipeline a implementar:
+![consigna](img/pipeline_consigna.png)
+
+# Desarrollo
+
+En este trabajo práctico, teniendo en cuenta la consigna y la bibliografía recomendada _"Computer Organization and Design 3rd Edition.
+Chapter 6. Hennessy- Patterson"_, se implementó el pipeline de un procesador MIPS basado en el siguiente diagrama diseñado específicamente para este propósito:  
 ![Diagrama](img/diagrams-pipeline.drawio.png "Diagrama del Pipeline")  
 
 A continuación, describiremos en detalle cada etapa del pipeline y su interacción con la interfaz.
 
 
 # Pipeline
-
+## Jerarquía de archivos
+![jerarquia](img/jerarquia_archivos.png)
 ## instruction fetch
 
 En esta etapa interactúan los módulos:
 - program counter
-- instructio_fetch
+- instruction_fetch
 - xilinx_one_port_ram_async
 
 La idea intuitiva de esta etapa es buscar instrucciones en la memoria de instrucciones y enviarlas al resto del pipeline.
@@ -20,6 +32,10 @@ La idea intuitiva de esta etapa es buscar instrucciones en la memoria de instruc
 ## Instruction Decode
 
 En esta etapa se decodifican las instrucciones, y se generan las respectivas señales de control para cada caso. En una primera instancia esta etapa solo generaba señales de control, pero a medida que se fue desarrollando el pipeline se tuvieron que agregar nuevas funciones. 
+
+### Control Unit
+La unidad de control recibe el opcode y la función de la instrucción para identificar que tipo deinstrucción es y en base a esto modificar las señales de control que van a generar distintos estados en las siguientes etapas del pipeline.
+
 ### Saltos
 En la etapa instruction decode se realiza el manejo de saltos, en caso de que el salto sea inmediato, o la condición de salto se cumpla, se actualizan las señales "_o_jump, o_jump_cases y o_addr2jump_". La señal jump_cases cambia de estado y se utilizará luego para generar los stall necesarios en la hazard_detection_unit.
 El calculo de la dirección de saltos varía en los distintos escenarios.
@@ -54,7 +70,7 @@ Tambien, dependiendo de la señal de control _"i_width"_ se enmascara el valor d
 
 Por ultimo, se realiza una extension de signo dependiendo de la señal de control _"sign_flag"_.
 
-### Write Back
+## Write Back
 
 En esta última etapa del pipeline, se decide si se realizará una escritura en la memoria de registros de la etapa _Instruction Decode_, dependiendo de la señal de control **_regWrite_**.  
 
@@ -65,6 +81,17 @@ Según el valor de la señal de control **_mem2reg_**, se determina el origen de
 - Si no está activa, se escribe el resultado generado por la ALU.  
 
 Esta etapa asegura que los datos correctos sean almacenados en los registros según el flujo de control establecido.
+
+## Hazard Detection Unit
+
+La unidad de detección de riesgos, o "hazard_detection_unit", es la unidad encargada de generar los "stall" o burbujas en el pipeline en caso de que haya un riesgo, ya sea de datos o de control.
+- Data Hazards: Cuando una instrucción depende de datos que aún no están disponibles porque están siendo calculados o cargados.
+- Control Hazards: Cuando el flujo de control depende de resultados que aún no están listos, como en instrucciones de salto o ramas condicionales.
+
+Estos riesgos se dan cuando una instrucción intenta utilizar el valor de un registro que todavía no ha sido escrito en memoria, y para ello se utilizan los valores 'rs', 'rd' y 'rt' de las distintas etapas del pipeline. 
+
+En caso de detectar un riesgo, el módulo genera una señal de 'stall' que va a "parar" parte del pipeline. Esta señal de stall hace parar el program counter, y por lo tanto la lectura de instrucciones en la etapa IF, y también las salidas de control de la etapa ID. Esto permite que se sigan ejecutando el resto de etapas y se pueda completar la escritura o lectura de los datos necesarios para ejecutar la instrucción actual.
+
 
 # Interfaz
 Reutilizando los módulos _uart_rx_ y _uart_tx_ del trabajo practico 2 realizamos la siguiete interfaz para facilitar la utilizacion del MIPS:
@@ -124,7 +151,24 @@ En cada ciclo de reloj, muchas de las señales internas del pipeline también se
 Este esquema garantiza flexibilidad para depurar y analizar el comportamiento del pipeline según las necesidades del usuario.
 
 
+# Timing Analyses
+
+Para determinar la frecuencia del clock se realizaron pruebas con distintas frecuencias. 
+Esta frecuencia se ve limitada debido al camino crítico del proyecto. El camino crítico es el camino más largo en un circuito. Este camino se puede medir entre entradas y salidas, o entre registros, es por ello que una forma de achicarlo es agregando registros.
+
+A continuación se probó con una frecuencia de 70 [MHz].
+Se puede observar un critical warning referido al timing.
+
+![warning](img/timing_warning.png)
+
+Y los distintos paths, incluyendo el "más crítico" (el path que tiene slack más negativo, Path 1):
+
+![pathError](img/timing_error_sum_clk70mhz.png)
+
+Estos errores se vieron solucionados utilizando un clock de 45 [MHz], con el que pudimos llevar a cabo la implementación.
 
 
 
+
+_*Nota: Para visualizar una mejor documentación del proyecto se puede utilizar la extensión de vscode "TerosHDL"*_
 
