@@ -1,5 +1,10 @@
 ![fcefyn](img/fcefyn_logo.png)
 
+Este proyecto fue realizado por los alumnos: 
+- [Mansilla, Josías Leonel](https://github.com/w3rqil)
+    - leonel.mansilla@mi.unc.edu.ar
+- [Schroder Ferrando, Florencia](https://github.com/FlorSchroder) 
+    - florencia.schroder@mi.unc.edu.ar
 
 
 # Consigna
@@ -170,5 +175,5 @@ Estos errores se vieron solucionados utilizando un clock de 45 [MHz], con el que
 
 
 
-_*Nota: Para visualizar una mejor documentación del proyecto se puede utilizar la extensión de vscode "TerosHDL"*_
+_*Nota: Para visualizar una mejor documentación del proyecto se puede utilizar la extensión de vscode "TerosHDL".*_
 
