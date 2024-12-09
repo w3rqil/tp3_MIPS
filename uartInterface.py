@@ -400,7 +400,7 @@ data_table = ttk.Treeview(data_frame, columns=("address", "value"), show='headin
 data_table.heading("address", text="Address")
 data_table.heading("value", text="Data")
 data_table.column("address", width=60)
-data_table.column("value", width=260)
+data_table.column("value", width=280)
 for i in range(32):
     data_table.insert("", tk.END, values=((i), (0)))
 
@@ -413,7 +413,7 @@ registers_table = ttk.Treeview(registers_frame, columns=("address", "value"), sh
 registers_table.heading("address", text="Address")
 registers_table.heading("value", text="Register")
 registers_table.column("address", width=60)
-registers_table.column("value", width=260)
+registers_table.column("value", width=280)
 for i in range(32):
     registers_table.insert("", tk.END, values=((i), (0)))
 
