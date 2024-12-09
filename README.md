@@ -1,4 +1,4 @@
-![fcefyn](img/fcefyn_logo.png)
+![fcefyn](/home/leonel/Desktop/Arqui/tp3_MIPS/img/fcefyn_logo.png)
 
 Este proyecto fue realizado por los alumnos: 
 - [Mansilla, Josías Leonel](https://github.com/w3rqil)
@@ -10,20 +10,20 @@ Este proyecto fue realizado por los alumnos:
 # Consigna
 En este proyecto se pide implementar  el pipeline del procesador MIPS. 
 A continuación un diagrama intuitivo del pipeline a implementar:
-![consigna](img/pipeline_consigna.png)
+![consigna](/home/leonel/Desktop/Arqui/tp3_MIPS/img/pipeline_consigna.png)
 
 # Desarrollo
 
 En este trabajo práctico, teniendo en cuenta la consigna y la bibliografía recomendada _"Computer Organization and Design 3rd Edition.
 Chapter 6. Hennessy- Patterson"_, se implementó el pipeline de un procesador MIPS basado en el siguiente diagrama diseñado específicamente para este propósito:  
-![Diagrama](img/diagrams-pipeline.drawio.png "Diagrama del Pipeline")  
+![Diagrama](/home/leonel/Desktop/Arqui/tp3_MIPS/img/diagrams-pipeline.drawio.png "Diagrama del Pipeline")  
 
 A continuación, describiremos en detalle cada etapa del pipeline y su interacción con la interfaz.
 
 
 # Pipeline
 ## Jerarquía de archivos
-![jerarquia](img/jerarquia_archivos.png)
+![jerarquia](/home/leonel/Desktop/Arqui/tp3_MIPS/img/jerarquia_archivos.png)
 ## instruction fetch
 
 En esta etapa interactúan los módulos:
@@ -44,36 +44,36 @@ La unidad de control recibe el opcode y la función de la instrucción para iden
 ### Saltos
 En la etapa instruction decode se realiza el manejo de saltos, en caso de que el salto sea inmediato, o la condición de salto se cumpla, se actualizan las señales "_o_jump, o_jump_cases y o_addr2jump_". La señal jump_cases cambia de estado y se utilizará luego para generar los stall necesarios en la hazard_detection_unit.
 El calculo de la dirección de saltos varía en los distintos escenarios.
-- JR o JALR: 
+- `JR o JALR`: 
     - addr2jump= dato A
-- BEQ o BNE
+- `BEQ o BNE`:
     - addr2jump = i_pcounter4 + (w_immediat << 2) + 4
-- JAL o J
+- `JAL o J`:
     - addr2jump = {i_pcounter4[NB_DATA-1:NB_DATA-4], i_instruction[25:0], 2'b00}
 
 Es importante tener en cuenta que, a la hora de la ejecución de un programa en nuestro pipeline, siempre que se tenga una instrucción de salto se deberá agregar una instrucción "NOP" seguida de la misma. Esto se debe a que en el caso contrario va a ejecutar la instrucción de salto, y la etapa instruction_fetch va a enviar la siguiente instrucción antes de actualizar el program counter con la nueva dirección, generando que se ejecute una instrucción más antes de saltar.
-Luego nos dimos cuenta que esto pudo haber sido arreglado generando un control de saltos en la etapa instruction_fetch y así evitando tener que utilizar una instrucción NOP después de cada salto.
+Luego nos dimos cuenta que esto pudo haber sido arreglado generando un control de saltos en la etapa instruction_fetch y así evitando tener que utilizar una instrucción `NOP` después de cada salto.
 
 ### Escritura
-En la etapa instruction_decode se realiza también, la escritura de nuvos valores en la memoria de registros. Estos valores provienen de la etapa write_back.
+En la etapa instruction_decode se realiza también, la escritura de nuvos valores en la memoria de registros. Estos valores provienen de la etapa `write_back`.
 
 
 ## Instruction Execute
 
 En esta etapa se ejecutan las instrucciones realizando operaciones en la ALU y teniendo en cuenta las señales que provienen de la etapa instruction_decode.
-Esta etapa se compone de tres multiplexores que interactúan tanto con las señales que provienen de las otras etapas, como con la unidad de cortocircuitos "forwarding_unit".
+Esta etapa se compone de tres multiplexores que interactúan tanto con las señales que provienen de las otras etapas, como con la unidad de cortocircuitos _**"forwarding_unit"**_.
 
-Los dos primeros multiplexores tienen en cuenta el estado de la unidad de cortocircuitos para determinar el valor los datos A y B. También teniendo en cuenta que en las operaciones tipo JAL y JARL no se realiza un cortocircuitos. 
-En el caso especial del dato B, para cuando se tiene una operación "tipo inmediata" se da: dato B = valor inmediato.
+Los dos primeros multiplexores tienen en cuenta el estado de la unidad de cortocircuitos para determinar el valor los datos A y B. También teniendo en cuenta que en las operaciones tipo JAL y JARL no se realiza un cortocircuitos. \
+En el caso especial del dato B, para cuando se tiene una operación _"tipo inmediata"_ se da: dato B = valor inmediato.
 
-El tercer multiplexor determina la dirección que se va a escribir en la etapa write_back. Cuando la entrada _"i_regDst"_ proveniente de la etapa anterior esté seteada en 1, la dirección a escribirse será la guardada en el registro rt, caso contrarió será la especificada por el valor de rd.
+El tercer multiplexor determina la dirección que se va a escribir en la etapa write_back. Cuando la entrada _**"i_regDst"**_ proveniente de la etapa anterior esté seteada en 1, la dirección a escribirse será la guardada en el registro rt, caso contrarió será la especificada por el valor de rd.
 
 ## memory access
-En esta etapa se escriben o leen los datos en la memoria de datos dependiendo de la señal de control _"memWrite"_. La memoria puede almacenar hasta 32 datos de 32 bits que se almacenan en bloques de 8 bits. 
+En esta etapa se escriben o leen los datos en la memoria de datos dependiendo de la señal de control _**"memWrite"**_. La memoria puede almacenar hasta 32 datos de 32 bits que se almacenan en bloques de 8 bits. 
 
-Tambien, dependiendo de la señal de control _"i_width"_ se enmascara el valor del registro en 8, 16 o 32 bits. 
+Tambien, dependiendo de la señal de control _**"i_width"**_ se enmascara el valor del registro en 8, 16 o 32 bits. 
 
-Por ultimo, se realiza una extension de signo dependiendo de la señal de control _"sign_flag"_.
+Por ultimo, se realiza una extension de signo dependiendo de la señal de control _**"sign_flag"**_.
 
 ## Write Back
 
@@ -90,8 +90,8 @@ Esta etapa asegura que los datos correctos sean almacenados en los registros seg
 ## Hazard Detection Unit
 
 La unidad de detección de riesgos, o "hazard_detection_unit", es la unidad encargada de generar los "stall" o burbujas en el pipeline en caso de que haya un riesgo, ya sea de datos o de control.
-- Data Hazards: Cuando una instrucción depende de datos que aún no están disponibles porque están siendo calculados o cargados.
-- Control Hazards: Cuando el flujo de control depende de resultados que aún no están listos, como en instrucciones de salto o ramas condicionales.
+- **Data Hazards**: Cuando una instrucción depende de datos que aún no están disponibles porque están siendo calculados o cargados.
+- **Control Hazards**: Cuando el flujo de control depende de resultados que aún no están listos, como en instrucciones de salto o ramas condicionales.
 
 Estos riesgos se dan cuando una instrucción intenta utilizar el valor de un registro que todavía no ha sido escrito en memoria, y para ello se utilizan los valores 'rs', 'rd' y 'rt' de las distintas etapas del pipeline. 
 
@@ -100,7 +100,7 @@ En caso de detectar un riesgo, el módulo genera una señal de 'stall' que va a 
 
 # Interfaz
 Reutilizando los módulos _uart_rx_ y _uart_tx_ del trabajo practico 2 realizamos la siguiete interfaz para facilitar la utilizacion del MIPS:
-![Interfaz](img/interfaz.png "Interfaz")
+![Interfaz](/home/leonel/Desktop/Arqui/tp3_MIPS/img/interfaz.png "Interfaz")
 
 ### Sección Izquierda
 
@@ -164,16 +164,16 @@ Esta frecuencia se ve limitada debido al camino crítico del proyecto. El camino
 A continuación se probó con una frecuencia de 70 [MHz].
 Se puede observar un critical warning referido al timing.
 
-![warning](img/timing_warning.png)
+![warning](/home/leonel/Desktop/Arqui/tp3_MIPS/img/timing_warning.png)
 
 Y los distintos paths, incluyendo el "más crítico" (el path que tiene slack más negativo, Path 1):
 
-![pathError](img/timing_error_sum_clk70mhz.png)
+![pathError](/home/leonel/Desktop/Arqui/tp3_MIPS/img/timing_error_sum_clk70mhz.png)
 
 Estos errores se vieron solucionados utilizando un clock de 45 [MHz], con el que pudimos llevar a cabo la implementación.
 
 
 
 
-_*Nota: Para visualizar una mejor documentación del proyecto se puede utilizar la extensión de vscode "TerosHDL".*_
+_**Nota: Para visualizar una mejor documentación del proyecto se puede utilizar la extensión de vscode "TerosHDL".**_
 
