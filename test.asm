@@ -1,0 +1,2 @@
+ADDI R1,R0,20
+HALT
