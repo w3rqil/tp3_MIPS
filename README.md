@@ -54,8 +54,17 @@ Tambien, dependiendo de la señal de control _"i_width"_ se enmascara el valor d
 
 Por ultimo, se realiza una extension de signo dependiendo de la señal de control _"sign_flag"_.
 
-## write back
-En esta última etapa, dependiendo de la señal de control _"regWrite"_, se determina si se va a escribir o no en la etapa _instruction decode_ en la memoria de registros. Dependiendo de la señal de control _"mem2reg"_ se escribe el resultado de la ALU o el dato laido en la etapa anterior _memory access_.
+### Write Back
+
+En esta última etapa del pipeline, se decide si se realizará una escritura en la memoria de registros de la etapa _Instruction Decode_, dependiendo de la señal de control **_regWrite_**.  
+
+Si **_regWrite_** está activa, se habilita la escritura en la memoria de registros. 
+ 
+Según el valor de la señal de control **_mem2reg_**, se determina el origen del dato a escribir:  
+- Si **_mem2reg_** está activa, se escribe el dato leído en la etapa previa (_Memory Access_).  
+- Si no está activa, se escribe el resultado generado por la ALU.  
+
+Esta etapa asegura que los datos correctos sean almacenados en los registros según el flujo de control establecido.
 
 # Interfaz
 Reutilizando los módulos _uart_rx_ y _uart_tx_ del trabajo practico 2 realizamos la siguiete interfaz para facilitar la utilizacion del MIPS:
