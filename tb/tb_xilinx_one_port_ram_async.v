@@ -20,7 +20,7 @@ module tb_xilinx_one_port_ram_async;
         .NB_ADDR(NB_ADDR)
     ) ram_inst (
         .clk(clk),
-        .i_rst_n(i_rst_n),
+        //.i_rst_n(i_rst_n),
         .i_we(i_we),
         .i_data(i_data),
         .i_addr_w(i_addr_w),

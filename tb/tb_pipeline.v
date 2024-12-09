@@ -106,10 +106,12 @@ module pipeline_tb;
             end
         end
     endtask
-    `define TEST_ITYPE
-// `define TEST_JTYPE
+//    `define TEST_ITYPE
+    `define TEST_J2TYPE
 //    `define TEST_RTYPE
     `ifdef TEST_ITYPE
+//    `define TEST_JTYPE
+
     // Test sequence
         initial begin
             // Initialize inputs
@@ -257,19 +259,22 @@ module pipeline_tb;
             //@(posedge clk);
 
             // Instruction 1: ADDI R1, R0, 15 (Load the value 15 into R1)
-            i_instruction_data = 32'b001000_00000_00001_0000000000001111; // ADDI R1, R0, 15
+            i_instruction_data = 32'b001000_00000_00001_0000000000010000; // ADDI R1, R0, 15
+            i_inst_addr = 4;
             i_we_IF = 1;
             @(posedge clk);
 
             // Instruction 2: JALR R2, R1 (Jump to R1, store PC+4 in R2)
             i_instruction_data = 32'b000000_00001_00000_00010_00000_001001; // JALR R2, R1
+            i_inst_addr = 8;
             i_we_IF = 1;
             @(posedge clk);
 
             // Instruction 3: NOP
-//            i_instruction_data = 32'b000000_00000_00000_00000_00000_000000; // NOP
-//            i_we_IF = 1;
-//            @(posedge clk);
+            i_instruction_data = 32'b000000_00000_00000_00000_00000_000000; // NOP
+            i_inst_addr = 12;    
+            i_we_IF = 1;
+            @(posedge clk);
 //
 //            // Instruction 4: NOP
 //            i_instruction_data = 32'b000000_00000_00000_00000_00000_000000; // NOP
@@ -278,23 +283,133 @@ module pipeline_tb;
 
             // Instruction 5: J 10 (Jump to address 10)
             i_instruction_data = 32'b000010_00000000000000000000001010; // J 10
+            i_inst_addr = 16;
             i_we_IF = 1;
             @(posedge clk);
 
             // Instruction 6: ADDI R3, R1, 100 (R3 = R1 + 100)
             i_instruction_data = 32'b001000_00001_00011_0000000001100100; // ADDI R3, R1, 100
+            i_inst_addr = 20;
             i_we_IF = 1;
             @(posedge clk);
 
             // Instruction 7: JR R2 (Jump to R2)
             i_instruction_data = 32'b000000_00010_00000_00000_00000_001000; // JR R2
+            i_inst_addr = 24;
             i_we_IF = 1;
             @(posedge clk);
 
             // Instruction 8: HALT (Stop execution)
-            i_instruction_data = 32'b111111_00000_00000_00000_00000_000000; // HALT
+            i_instruction_data = 32'hFFFF; // HALT
+            i_inst_addr = 28;
             i_we_IF = 1;
             @(posedge clk);
+
+            // Stop writing instructions
+            i_we_IF = 0;
+            @(posedge clk);
+
+            // Apply second reset to execute instructions
+            i_rst_n = 0;
+            @(posedge clk);
+            i_rst_n = 1;
+            @(posedge clk);
+
+            $display("-----------------------------------------------------------------------------------------------");
+            $display(" START EXECUTION");
+            $display("-----------------------------------------------------------------------------------------------");
+
+            // Wait and observe outputs
+            repeat (50) @(posedge clk);
+
+            $display("-----------------------------------------------------------------------------------------------");
+            $display(" EXECUTION COMPLETE.");
+            $display("-----------------------------------------------------------------------------------------------");
+            $stop;
+        end
+        `elsif TEST_J2TYPE
+        initial begin
+            // Initialize inputs
+            i_rst_n = 0;
+            i_we_IF = 0;
+            i_instruction_data = 32'b0;
+            i_halt = 1'b0;
+            #200
+
+            // Load instructions into memory
+            @(posedge clk);
+            i_rst_n = 1;
+            
+
+
+            // /* /////////////////////////////////////////////////////////////////////////////////
+            //             JAL
+            // //////////////////////////////////////////////////////////////////////////////// */
+
+            // Instruction 1: JAL 5 (Jump and Link to address 5 * 4 = 20)
+            i_instruction_data = 32'b000011_00000_00000_00000_00000_000101; // JAL 5
+            i_inst_addr = 4;
+            i_we_IF = 1;
+            @(posedge clk);
+
+            // Instruction 2: NOP (No Operation)
+            i_instruction_data = 32'b000000_00000_00000_00000_00000_000000; // NOP
+            i_inst_addr = 8;
+            i_we_IF = 1;
+            @(posedge clk);
+
+            // Instruction 3: ADDI R4, R0, 40 (Load the value 40 into R4)
+            i_instruction_data = 32'b001000_00000_00100_0000000000101000; // ADDI R4, R0, 40
+            i_inst_addr = 12;
+            i_we_IF = 1;
+            @(posedge clk);
+
+            // Instruction 4: ADDI R5, R0, 50 (Load the value 50 into R5)
+            i_instruction_data = 32'b001000_00000_00101_0000000000110010; // ADDI R5, R0, 50
+            i_inst_addr = 16;
+            i_we_IF = 1;
+            @(posedge clk);
+
+            // Instruction 5: ADDI R6, R0, 60 (Load the value 60 into R6)
+            i_instruction_data = 32'b001000_00000_00110_0000000000111100; // ADDI R6, R0, 60
+            i_inst_addr = 20;
+            i_we_IF = 1;
+            @(posedge clk);
+
+            // Instruction 6: ADDI R1, R0, 10 (Load the value 10 into R1)
+            i_instruction_data = 32'b001000_00000_00001_0000000000001010; // ADDI R1, R0, 10
+            i_inst_addr = 24;
+            i_we_IF = 1;
+            @(posedge clk);
+
+            // Instruction 7: ADDI R2, R0, 20 (Load the value 20 into R2)
+            i_instruction_data = 32'b001000_00000_00010_0000000000010100; // ADDI R2, R0, 20
+            i_inst_addr = 28;
+            i_we_IF = 1;
+            @(posedge clk);
+
+            // Instruction 8: ADDI R3, R0, 30 (Load the value 30 into R3)
+            i_instruction_data = 32'b001000_00000_00011_0000000000011110; // ADDI R3, R0, 30
+            i_inst_addr = 32;
+            i_we_IF = 1;
+            @(posedge clk);
+
+            // Instruction 9: JR R31 (Return to address stored in R31)
+            i_instruction_data = 32'b000000_11111_00000_00000_00000_001000; // JR R31
+            i_inst_addr = 36;
+            i_we_IF = 1;
+            @(posedge clk);
+
+            // /* /////////////////////////////////////////////////////////////////////////////////
+            //             BEQ
+            // //////////////////////////////////////////////////////////////////////////////// */
+
+            
+
+
+
+
+
 
             // Stop writing instructions
             i_we_IF = 0;
